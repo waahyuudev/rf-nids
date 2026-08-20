@@ -1,0 +1,2 @@
+"""RF-NIDS training commands."""
+

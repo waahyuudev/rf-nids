@@ -1,0 +1,16 @@
+{
+  "columns": {
+    "flow_id": "flow or record identifier",
+    "source_ip": "source identity metadata",
+    "destination_ip": "destination identity metadata",
+    "src_ip": "source identity metadata",
+    "dst_ip": "destination identity metadata",
+    "timestamp": "capture-time metadata",
+    "attack_category": "direct attack-label leakage",
+    "label": "target column",
+    "target": "possible duplicate target column",
+    "file_name": "source-file identity metadata",
+    "capture_file": "capture-file identity metadata"
+  }
+}
+
