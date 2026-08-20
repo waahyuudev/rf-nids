@@ -2,6 +2,14 @@
 
 RF-NIDS adalah prototipe penelitian *Random Forest Network Intrusion Detection System* untuk klasifikasi trafik `Normal`, `DDoS`, dan `PortScan`. Implementasi saat ini mencakup pipeline eksperimen, inference tervalidasi, serta backend deteksi FastAPI dengan persistence PostgreSQL dan alert. Dashboard visual dan virtual lab belum diimplementasikan.
 
+## Status implementasi
+
+Sudah tersedia: data understanding, preprocessing, baseline RF, tuned RF, model selection,
+scenario validation, inference engine, FastAPI backend, SQL persistence, dan alert mechanism.
+
+Belum tersedia: Streamlit dashboard, live network flow ingestion, dan virtual laboratory
+integration.
+
 ## Kebutuhan dan instalasi
 
 - Python 3.11
@@ -178,18 +186,75 @@ diverifikasi satu kali pada application startup. Urutan fitur selalu berasal dar
 metadata capture seperti IP, port, protocol, dan waktu tidak dimasukkan ke model secara
 otomatis.
 
-Siapkan environment dan PostgreSQL development:
+### PostgreSQL
+
+Jalankan PostgreSQL development lokal (credential ini hanya untuk local development):
 
 ```bash
-cp .env.example .env
 docker compose up -d postgres
-alembic upgrade head
-uvicorn src.api.main:app --reload --host 0.0.0.0 --port 8000
 ```
 
-`DATABASE_URL` adalah satu-satunya sumber konfigurasi koneksi database dan credential tidak
-boleh disimpan di repository. Setelah server aktif, dokumentasi interaktif tersedia di
+### Migration
+
+Development dan production wajib membuat atau memperbarui schema dengan Alembic:
+
+```bash
+alembic upgrade head
+```
+
+Runtime PostgreSQL tidak menjalankan `Base.metadata.create_all()`. Fasilitas tersebut hanya
+tersedia melalui factory aplikasi untuk integration test SQLite temporer.
+
+### FastAPI
+
+```bash
+uvicorn src.api.main:app --reload
+```
+
+### API docs
+
+```text
+http://localhost:8000/docs
+```
+
+### Test
+
+```bash
+pytest
+```
+
+Sebagai alternatif, seluruh stack dapat dijalankan dengan `docker compose up -d --build`.
+Compose menunggu PostgreSQL sehat, menjalankan `alembic upgrade head` melalui service
+`migration`, lalu memulai API.
+
+Di dalam jaringan Compose, API memakai hostname database `postgres`. Dari aplikasi desktop
+lokal seperti DBeaver/TablePlus, gunakan host `localhost`, port `5432`, database `rf_nids`,
+user `postgres`, dan password `postgres`. `DATABASE_URL` tetap menjadi satu-satunya sumber
+konfigurasi koneksi backend dan credential production tidak boleh disimpan di repository.
+
+Setelah server aktif, dokumentasi interaktif tersedia di
 [`/docs`](http://localhost:8000/docs) dan [`/redoc`](http://localhost:8000/redoc).
+
+Operasi Docker yang umum:
+
+```bash
+# Melihat status dan log
+docker compose ps
+docker compose logs -f api
+
+# Restart API
+docker compose restart api
+
+# Hentikan stack tanpa menghapus database
+docker compose down
+
+# Reset total termasuk data PostgreSQL (destruktif)
+docker compose down -v
+```
+
+Menjalankan API langsung dari virtual environment masih memungkinkan untuk debugging, tetapi
+ubah `DATABASE_URL` menjadi host `localhost` khusus pada shell tersebut. Konfigurasi default
+project ditujukan untuk full Docker Compose.
 
 Endpoint backend:
 
@@ -220,6 +285,17 @@ membangun collector. Batch dibatasi `MAX_BATCH_SIZE`, sedangkan pagination dibat
 Prediction selalu disimpan. Alert hanya dibuat bila label bukan `Normal` dan confidence
 mencapai `ALERT_CONFIDENCE_THRESHOLD` (default `0.70`): `DDoS` menjadi `HIGH`, sedangkan
 `PortScan` menjadi `MEDIUM`. Confidence rendah tidak mengubah label hasil model.
+
+Batch prediction disimpan dalam satu transaction: seluruh flow, prediction, dan alert di-flush
+lalu di-commit sekali; kegagalan apa pun memicu rollback seluruh batch. Relasi data mengikuti
+ownership berikut: menghapus traffic flow di level database menghapus prediction dan alert
+turunannya (`ON DELETE CASCADE`), dan menghapus prediction menghapus alert. Model yang sudah
+direferensikan prediction tidak boleh dihapus (`ON DELETE RESTRICT`) agar versi model pada
+audit history tidak hilang. Backend belum menyediakan delete endpoint.
+
+Pada PostgreSQL, `traffic_flows.raw_features` dan
+`predictions.class_probabilities` menggunakan `JSONB`. Model memakai variant SQLAlchemy
+`JSON` untuk SQLite agar integration test tetap ringan dan portable.
 
 Test API memakai model deterministik kecil dan SQLite temporer sehingga tidak memerlukan
 dataset CICIDS2017 maupun PostgreSQL yang sedang berjalan:

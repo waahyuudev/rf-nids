@@ -15,5 +15,61 @@ services:
       timeout: 5s
       retries: 10
 
+  migration:
+    build:
+      context: .
+    command: ["alembic", "upgrade", "head"]
+    environment: &backend-environment
+      APP_ENV: development
+      APP_HOST: 0.0.0.0
+      APP_PORT: "8000"
+      DATABASE_URL: postgresql+psycopg2://postgres:postgres@postgres:5432/rf_nids
+      MODEL_PATH: models/random_forest_active.joblib
+      MODEL_METADATA_PATH: models/model_metadata.json
+      ALERT_CONFIDENCE_THRESHOLD: "0.70"
+      MAX_BATCH_SIZE: "1000"
+      MAX_PAGE_SIZE: "100"
+      LOG_LEVEL: INFO
+      LEAKAGE_COLUMNS_CONFIG: config/leakage_columns.json
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: "no"
+
+  api:
+    build:
+      context: .
+    command:
+      - uvicorn
+      - src.api.main:app
+      - --host
+      - 0.0.0.0
+      - --port
+      - "8000"
+      - --reload
+    environment: *backend-environment
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./src:/app/src
+      - ./config:/app/config:ro
+      - ./models:/app/models:ro
+    depends_on:
+      postgres:
+        condition: service_healthy
+      migration:
+        condition: service_completed_successfully
+    restart: unless-stopped
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - "import urllib.request; urllib.request.urlopen('http://localhost:8000/health', timeout=5)"
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
 volumes:
   rf_nids_postgres:

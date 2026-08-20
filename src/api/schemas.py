@@ -1,9 +1,26 @@
 """Validated API request and response contracts."""
 
 from datetime import datetime
+from enum import Enum
 from typing import Any
 
 from pydantic import BaseModel, ConfigDict, Field
+
+
+class PredictionLabel(str, Enum):
+    NORMAL = "Normal"
+    DDOS = "DDoS"
+    PORTSCAN = "PortScan"
+
+
+class Severity(str, Enum):
+    HIGH = "HIGH"
+    MEDIUM = "MEDIUM"
+
+
+class AlertStatus(str, Enum):
+    ACTIVE = "ACTIVE"
+    ACKNOWLEDGED = "ACKNOWLEDGED"
 
 
 class FlowMetadata(BaseModel):
@@ -26,7 +43,7 @@ class BatchPredictionRequest(BaseModel):
 
 class PredictionResult(BaseModel):
     prediction_id: int
-    prediction: str
+    prediction: PredictionLabel
     confidence: float
     probabilities: dict[str, float]
     model_version: str
@@ -53,7 +70,7 @@ class PredictionDetail(BaseModel):
     model_config = ConfigDict(from_attributes=True)
     id: int
     traffic_flow_id: int
-    predicted_label: str
+    predicted_label: PredictionLabel
     confidence_score: float
     class_probabilities: dict[str, float]
     prediction_time: datetime
@@ -65,10 +82,10 @@ class AlertDetail(BaseModel):
     model_config = ConfigDict(from_attributes=True)
     id: int
     prediction_id: int
-    severity: str
+    severity: Severity
     title: str
     description: str
-    status: str
+    status: AlertStatus
     acknowledged_at: datetime | None
     created_at: datetime
 

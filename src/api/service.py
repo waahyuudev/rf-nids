@@ -53,33 +53,39 @@ def sync_active_model(db: Session, metadata: dict) -> ModelRecord:
 
 def persist_predictions(db: Session, requests, outputs, model_id: int, threshold: float):
     results = []
-    for request, output in zip(requests, outputs, strict=True):
-        metadata = request.metadata.model_dump() if request.metadata else {}
-        flow = TrafficFlow(raw_features=request.features, **metadata)
-        prediction = Prediction(
-            traffic_flow=flow,
-            model_id=model_id,
-            predicted_label=output["prediction"],
-            confidence_score=output["confidence"],
-            class_probabilities=output["probabilities"],
-        )
-        db.add(prediction)
-        if output["prediction"] != "Normal" and output["confidence"] >= threshold:
-            severity = SEVERITY.get(output["prediction"], "MEDIUM")
-            db.add(
-                Alert(
-                    prediction=prediction,
-                    severity=severity,
-                    title=f"{severity} confidence {output['prediction']} detected",
-                    description=(
-                        f"RF-NIDS classified this flow as {output['prediction']} "
-                        f"with confidence {output['confidence']:.4f}."
-                    ),
-                    status="ACTIVE",
-                )
+    try:
+        for request, output in zip(requests, outputs, strict=True):
+            metadata = request.metadata.model_dump() if request.metadata else {}
+            flow = TrafficFlow(raw_features=request.features, **metadata)
+            prediction = Prediction(
+                traffic_flow=flow,
+                model_id=model_id,
+                predicted_label=output["prediction"],
+                confidence_score=output["confidence"],
+                class_probabilities=output["probabilities"],
             )
-        results.append((prediction, output))
-    db.commit()
+            db.add(prediction)
+            if output["prediction"] != "Normal" and output["confidence"] >= threshold:
+                severity = SEVERITY.get(output["prediction"], "MEDIUM")
+                db.add(
+                    Alert(
+                        prediction=prediction,
+                        severity=severity,
+                        title=f"{severity} confidence {output['prediction']} detected",
+                        description=(
+                            f"RF-NIDS classified this flow as {output['prediction']} "
+                            f"with confidence {output['confidence']:.4f}."
+                        ),
+                        status="ACTIVE",
+                    )
+                )
+            results.append((prediction, output))
+        # Flush assigns every ID and exposes constraint failures before the one commit.
+        db.flush()
+        db.commit()
+    except Exception:
+        db.rollback()
+        raise
     return [
         {
             "prediction_id": prediction.id,

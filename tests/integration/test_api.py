@@ -3,9 +3,13 @@ from pathlib import Path
 import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import func, select
+from sqlalchemy.exc import SQLAlchemyError
 
+from src.api import main as api_main
 from src.api.main import create_app
 from src.api.models import Alert, Prediction, TrafficFlow
+from src.api.schemas import PredictionRequest
+from src.api.service import persist_predictions
 from src.common.config import Settings
 from src.inference import FeatureValidationError
 
@@ -164,3 +168,63 @@ def test_batch_is_persisted_and_not_found_responses(client):
     assert http.get("/api/predictions/999").status_code == 404
     assert http.get("/api/alerts/999").status_code == 404
     assert http.patch("/api/alerts/999/acknowledge").status_code == 404
+
+
+def test_invalid_prediction_and_alert_filters_are_rejected(client):
+    http, _ = client
+    assert http.get("/api/predictions", params={"predicted_label": "Malware"}).status_code == 422
+    assert http.get("/api/alerts", params={"severity": "LOW"}).status_code == 422
+    assert http.get("/api/alerts", params={"status": "CLOSED"}).status_code == 422
+
+
+def test_prediction_batch_rolls_back_atomically_when_commit_fails(client, monkeypatch):
+    _, app = client
+    output = {
+        "prediction": "Normal",
+        "confidence": 0.99,
+        "probabilities": {"Normal": 0.99, "DDoS": 0.005, "PortScan": 0.005},
+        "model_version": "test-v1",
+    }
+    with app.state.session_factory() as db:
+        rollback_called = False
+        original_rollback = db.rollback
+
+        def fail_commit():
+            raise SQLAlchemyError("simulated database failure containing sensitive SQL")
+
+        def track_rollback():
+            nonlocal rollback_called
+            rollback_called = True
+            original_rollback()
+
+        monkeypatch.setattr(db, "commit", fail_commit)
+        monkeypatch.setattr(db, "rollback", track_rollback)
+        with pytest.raises(SQLAlchemyError):
+            persist_predictions(
+                db,
+                [PredictionRequest(features={"feature_a": 1, "feature_b": 1})] * 2,
+                [output, output],
+                app.state.model_record.id,
+                threshold=0.70,
+            )
+        assert rollback_called
+
+    with app.state.session_factory() as verification_db:
+        assert verification_db.scalar(select(func.count(TrafficFlow.id))) == 0
+        assert verification_db.scalar(select(func.count(Prediction.id))) == 0
+
+
+def test_database_error_is_logged_but_response_is_sanitized(client, monkeypatch, caplog):
+    http, _ = client
+    sensitive_message = "password=secret SELECT raw_features FROM traffic_flows"
+
+    def fail_persistence(*args, **kwargs):
+        raise SQLAlchemyError(sensitive_message)
+
+    monkeypatch.setattr(api_main, "persist_predictions", fail_persistence)
+    response = http.post("/api/predict", json=payload(1))
+
+    assert response.status_code == 503
+    assert response.json() == {"detail": "Database unavailable"}
+    assert sensitive_message not in response.text
+    assert sensitive_message in caplog.text

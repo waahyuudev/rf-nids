@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from contextlib import asynccontextmanager
 from datetime import datetime, timezone
+import logging
 from typing import Annotated
 
 from fastapi import Depends, FastAPI, HTTPException, Query, Request, status
@@ -15,6 +16,7 @@ from sqlalchemy.orm import Session
 from src.api.database import Base, configure_database, get_db
 from src.api.models import Alert, Prediction, TrafficFlow
 from src.api.schemas import (
+    AlertStatus,
     AlertDetail,
     BatchPredictionRequest,
     BatchPredictionResult,
@@ -23,6 +25,8 @@ from src.api.schemas import (
     PredictionDetail,
     PredictionRequest,
     PredictionResult,
+    PredictionLabel,
+    Severity,
 )
 from src.api.service import metadata_metrics, persist_predictions, sync_active_model
 from src.common.config import Settings
@@ -30,6 +34,7 @@ from src.common.logging import configure_logging
 from src.inference import FeatureValidationError, InferenceEngine
 
 Db = Annotated[Session, Depends(get_db)]
+logger = logging.getLogger(__name__)
 
 
 def _parse_datetime(value) -> datetime | None:
@@ -68,6 +73,11 @@ def create_app(
         configure_logging(settings.log_level)
         configure_database(application, settings)
         if create_tables:
+            if application.state.engine.dialect.name != "sqlite":
+                raise RuntimeError(
+                    "create_tables is reserved for SQLite integration tests; "
+                    "run 'alembic upgrade head' for development and production"
+                )
             Base.metadata.create_all(application.state.engine)
         application.state.inference = engine_factory(
             settings.model_path, settings.model_metadata_path
@@ -92,7 +102,8 @@ def create_app(
         return JSONResponse(status_code=422, content={"detail": str(exc)})
 
     @application.exception_handler(SQLAlchemyError)
-    async def database_error_handler(_: Request, __: SQLAlchemyError):
+    async def database_error_handler(_: Request, exc: SQLAlchemyError):
+        logger.exception("Database operation failed", exc_info=exc)
         return JSONResponse(status_code=503, content={"detail": "Database unavailable"})
 
     @application.get("/health", summary="Service health")
@@ -168,13 +179,13 @@ def create_app(
         db: Db,
         limit: int = Query(default_page_size, ge=1, le=settings.max_page_size),
         offset: int = Query(0, ge=0),
-        predicted_label: str | None = None,
+        predicted_label: PredictionLabel | None = None,
         source_ip: str | None = None,
         destination_ip: str | None = None,
     ):
         query = select(Prediction).join(Prediction.traffic_flow)
         if predicted_label:
-            query = query.where(Prediction.predicted_label == predicted_label)
+            query = query.where(Prediction.predicted_label == predicted_label.value)
         if source_ip:
             query = query.where(TrafficFlow.source_ip == source_ip)
         if destination_ip:
@@ -200,14 +211,14 @@ def create_app(
         db: Db,
         limit: int = Query(default_page_size, ge=1, le=settings.max_page_size),
         offset: int = Query(0, ge=0),
-        severity: str | None = None,
-        alert_status: str | None = Query(None, alias="status"),
+        severity: Severity | None = None,
+        alert_status: AlertStatus | None = Query(None, alias="status"),
     ):
         query = select(Alert)
         if severity:
-            query = query.where(Alert.severity == severity)
+            query = query.where(Alert.severity == severity.value)
         if alert_status:
-            query = query.where(Alert.status == alert_status)
+            query = query.where(Alert.status == alert_status.value)
         return db.scalars(query.order_by(Alert.id.desc()).limit(limit).offset(offset)).all()
 
     @application.get(
