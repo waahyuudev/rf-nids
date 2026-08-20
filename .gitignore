@@ -9,6 +9,8 @@ htmlcov/
 data/raw/*
 data/processed/*
 data/external/*
+data/lab/pcap/*
+data/lab/flows/*
 !data/**/.gitkeep
 models/*.joblib
 reports/figures/*
@@ -17,4 +19,3 @@ reports/experiments/*
 !reports/**/.gitkeep
 tmp/
 .DS_Store
-

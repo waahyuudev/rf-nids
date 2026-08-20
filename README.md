@@ -227,6 +227,64 @@ Sebagai alternatif, seluruh stack dapat dijalankan dengan `docker compose up -d 
 Compose menunggu PostgreSQL sehat, menjalankan `alembic upgrade head` melalui service
 `migration`, lalu memulai API.
 
+## macOS Flow Extraction
+
+Development compatibility workflow (this is not the Experiment C virtual lab):
+
+```text
+macOS -> Docker CICFlowMeter-compatible extractor -> Flow CSV -> Compatibility Check
+```
+
+The tools-profile image pins the Python/Scapy implementation
+[`hieulw/cicflowmeter` 0.4.2](https://github.com/hieulw/cicflowmeter). It is maintained
+and uses Scapy plus Debian's native `libpcap`. It runs natively in Docker on both Apple Silicon (`linux/arm64`) and Intel
+(`linux/amd64`); Compose therefore does not force amd64 emulation. It is not identical
+to the original Java CICFlowMeter used for CICIDS2017. The original's Java 8-era
+jNetPcap and native Linux x86_64 dependencies are unsuitable for a clean,
+reproducible modern arm64 setup, so schema compatibility is checked strictly rather
+than assumed.
+
+Create a benign sample capture without hard-coding the network interface:
+
+```bash
+ifconfig
+sudo tcpdump -i <interface> -w data/lab/pcap/sample.pcap
+```
+
+While capture is active, generate normal traffic (for example `ping -c 5 8.8.8.8`
+and `curl https://example.com`), then stop `tcpdump` with Ctrl-C. No attack traffic is
+needed. Alternatively, copy an existing benign PCAP into `data/lab/pcap/`.
+
+Build and extract one offline CSV:
+
+```bash
+docker compose build cicflowmeter
+docker compose --profile tools run --rm cicflowmeter \
+  /input/sample.pcap /output/sample.csv
+```
+
+Run the strict 78-feature audit and inspect the generated report:
+
+```bash
+python scripts/check_live_feature_compatibility.py \
+  --input data/lab/flows/sample.csv
+cat reports/metrics/live_feature_compatibility.json
+```
+
+The checker reuses the training column normalizer. Compatibility is true only when
+every active-model feature maps independently and there are no normalized-name
+collisions. In particular, `fwd_header_length` and `fwd_header_length.1` must both be
+present; neither is copied or synthesized. Missing extractor features are never
+zero-filled or imputed. A false result blocks Experiment C.
+
+For `hieulw/cicflowmeter` 0.4.2, the adapter additionally applies the reviewed,
+explicit aliases in `src/ingestion/cicflowmeter_mapping.py`; it never performs fuzzy
+matching. The mapping audit is written to
+`reports/metrics/live_feature_mapping_audit.json`. The current sample resolves 50
+naming aliases but remains incompatible at 76/78: the extractor has no independent
+`fwd_header_length.1`, and its `cwr_flag_count` implementation is not a valid source
+for the model's `cwe_flag_count`.
+
 Di dalam jaringan Compose, API memakai hostname database `postgres`. Dari aplikasi desktop
 lokal seperti DBeaver/TablePlus, gunakan host `localhost`, port `5432`, database `rf_nids`,
 user `postgres`, dan password `postgres`. `DATABASE_URL` tetap menjadi satu-satunya sumber
