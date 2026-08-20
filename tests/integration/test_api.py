@@ -1,0 +1,166 @@
+from pathlib import Path
+
+import pytest
+from fastapi.testclient import TestClient
+from sqlalchemy import func, select
+
+from src.api.main import create_app
+from src.api.models import Alert, Prediction, TrafficFlow
+from src.common.config import Settings
+from src.inference import FeatureValidationError
+
+
+class FakeInferenceEngine:
+    def __init__(self, model_path, metadata_path):
+        self.metadata = {
+            "model_name": "Test RF",
+            "model_version": "test-v1",
+            "feature_names": ["feature_a", "feature_b"],
+            "class_names": ["Normal", "DDoS", "PortScan"],
+            "created_at_utc": "2026-08-20T00:00:00+00:00",
+            "metrics": {
+                "accuracy": 0.99,
+                "macro_f1": 0.98,
+                "classification_report": {
+                    "DDoS": {"recall": 0.97},
+                    "PortScan": {"recall": 0.96},
+                },
+            },
+        }
+
+    def predict_one(self, features):
+        missing = [name for name in self.metadata["feature_names"] if name not in features]
+        if missing:
+            raise FeatureValidationError(f"Missing required features: {missing}")
+        try:
+            value = float(features["feature_a"])
+            float(features["feature_b"])
+        except (TypeError, ValueError) as exc:
+            raise FeatureValidationError("Feature must be numeric") from exc
+        if value < 10:
+            label, confidence = "Normal", 0.99
+        elif value < 20:
+            label, confidence = "DDoS", 0.95
+        elif value < 30:
+            label, confidence = "PortScan", 0.90
+        else:
+            label, confidence = "DDoS", 0.60
+        remaining = (1 - confidence) / 2
+        probabilities = {name: remaining for name in self.metadata["class_names"]}
+        probabilities[label] = confidence
+        return {
+            "prediction": label,
+            "confidence": confidence,
+            "probabilities": probabilities,
+            "model_version": "test-v1",
+            "ignored_features": [],
+        }
+
+    def predict_batch(self, rows):
+        if not rows:
+            raise FeatureValidationError("Prediction batch must not be empty")
+        return [self.predict_one(row) for row in rows]
+
+
+@pytest.fixture
+def client(tmp_path: Path):
+    settings = Settings(
+        app_env="test",
+        log_level="WARNING",
+        leakage_columns_config=tmp_path / "unused.json",
+        database_url=f"sqlite:///{tmp_path / 'api.db'}",
+        model_path=tmp_path / "unused.joblib",
+        model_metadata_path=tmp_path / "unused.json",
+        alert_confidence_threshold=0.70,
+        max_batch_size=2,
+        max_page_size=10,
+    )
+    app = create_app(settings, engine_factory=FakeInferenceEngine, create_tables=True)
+    with TestClient(app) as test_client:
+        yield test_client, app
+
+
+def payload(value, **metadata):
+    return {
+        "features": {"feature_a": value, "feature_b": 1},
+        "metadata": metadata or None,
+    }
+
+
+def test_health_and_model(client):
+    http, _ = client
+    assert http.get("/health").json() == {
+        "status": "healthy",
+        "database": "connected",
+        "model_loaded": True,
+    }
+    model = http.get("/api/model")
+    assert model.status_code == 200
+    assert model.json()["feature_count"] == 2
+    assert model.json()["ddos_recall"] == 0.97
+    assert "model_path" not in model.json()
+
+
+def test_validation_and_batch_limit(client):
+    http, _ = client
+    assert http.post("/api/predict", json={"features": {"feature_a": 1}}).status_code == 422
+    invalid = payload("bad")
+    assert http.post("/api/predict", json=invalid).status_code == 422
+    assert http.post("/api/predict/batch", json={"flows": []}).status_code == 422
+    too_large = {"flows": [payload(1), payload(2), payload(3)]}
+    assert http.post("/api/predict/batch", json=too_large).status_code == 413
+
+
+def test_prediction_alert_rules_and_persistence(client):
+    http, app = client
+    normal = http.post(
+        "/api/predict", json=payload(1, source_ip="10.0.0.1", destination_ip="10.0.0.2")
+    )
+    assert normal.status_code == 201
+    ddos = http.post("/api/predict", json=payload(10)).json()
+    portscan = http.post("/api/predict", json=payload(20)).json()
+    low_confidence = http.post("/api/predict", json=payload(30)).json()
+    assert ddos["prediction"] == "DDoS"
+    assert portscan["prediction"] == "PortScan"
+    assert low_confidence["prediction"] == "DDoS"
+
+    with app.state.session_factory() as db:
+        assert db.scalar(select(func.count(TrafficFlow.id))) == 4
+        assert db.scalar(select(func.count(Prediction.id))) == 4
+        alerts = db.scalars(select(Alert).order_by(Alert.id)).all()
+        assert [(row.severity, row.status) for row in alerts] == [
+            ("HIGH", "ACTIVE"),
+            ("MEDIUM", "ACTIVE"),
+        ]
+
+    listed = http.get("/api/predictions", params={"source_ip": "10.0.0.1"}).json()
+    assert len(listed) == 1
+    assert http.get(f"/api/predictions/{normal.json()['prediction_id']}").status_code == 200
+    alerts_response = http.get("/api/alerts")
+    assert alerts_response.status_code == 200, alerts_response.text
+    alerts = alerts_response.json()
+    high = next(item for item in alerts if item["severity"] == "HIGH")
+    acknowledged = http.patch(f"/api/alerts/{high['id']}/acknowledge")
+    assert acknowledged.json()["status"] == "ACKNOWLEDGED"
+    assert acknowledged.json()["acknowledged_at"] is not None
+
+    summary = http.get("/api/dashboard/summary").json()
+    assert summary["total_flows"] == 4
+    assert summary["total_normal"] == 1
+    assert summary["total_ddos"] == 2
+    assert summary["total_portscan"] == 1
+    assert summary["active_alerts"] == 1
+    assert summary["acknowledged_alerts"] == 1
+    assert summary["latest_prediction_timestamp"] is not None
+
+
+def test_batch_is_persisted_and_not_found_responses(client):
+    http, _ = client
+    response = http.post(
+        "/api/predict/batch", json={"flows": [payload(1), payload(10)]}
+    )
+    assert response.status_code == 201
+    assert len(response.json()["predictions"]) == 2
+    assert http.get("/api/predictions/999").status_code == 404
+    assert http.get("/api/alerts/999").status_code == 404
+    assert http.patch("/api/alerts/999/acknowledge").status_code == 404

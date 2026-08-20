@@ -67,8 +67,10 @@ def prepare_dataset(
     data[normalized_label] = mapped_labels.loc[retained_mask]
     distribution_after_filtering = class_distribution(data[normalized_label])
 
-    duplicate_rows = int(data.duplicated().sum())
-    data = data.drop_duplicates().reset_index(drop=True)
+    # Source provenance must not make otherwise identical flow rows unique.
+    deduplication_columns = [column for column in data.columns if column != "source_file"]
+    duplicate_rows = int(data.duplicated(subset=deduplication_columns).sum())
+    data = data.drop_duplicates(subset=deduplication_columns).reset_index(drop=True)
     labels = data[normalized_label].astype(str)
     distribution_after_deduplication = class_distribution(labels)
     missing_classes = [class_name for class_name in CLASS_NAMES if class_name not in set(labels)]
@@ -89,6 +91,8 @@ def prepare_dataset(
         if column in normalized_leakage
     }
     metadata_columns = list(leakage_found)
+    if "source_file" in candidates and "source_file" not in metadata_columns:
+        metadata_columns.append("source_file")
     metadata = candidates[metadata_columns].copy()
     without_leakage = candidates.drop(columns=metadata_columns)
     numeric = without_leakage.select_dtypes(include=["number"]).copy()

@@ -1,6 +1,6 @@
 # RF-NIDS
 
-RF-NIDS adalah prototipe penelitian *Random Forest Network Intrusion Detection System* untuk klasifikasi trafik `Normal`, `DDoS`, dan `PortScan`. Implementasi saat ini mencakup data understanding, preprocessing anti-leakage, baseline, hyperparameter tuning, pemilihan model aktif, dan inference tervalidasi. API, database, dashboard, dan virtual lab belum diimplementasikan.
+RF-NIDS adalah prototipe penelitian *Random Forest Network Intrusion Detection System* untuk klasifikasi trafik `Normal`, `DDoS`, dan `PortScan`. Implementasi saat ini mencakup pipeline eksperimen, inference tervalidasi, serta backend deteksi FastAPI dengan persistence PostgreSQL dan alert. Dashboard visual dan virtual lab belum diimplementasikan.
 
 ## Kebutuhan dan instalasi
 
@@ -27,6 +27,8 @@ src/data/               inspeksi dataset
 src/training/           training Random Forest baseline
 src/evaluation/         metrik dan visualisasi evaluasi
 src/inference/          validasi fitur dan prediksi model aktif
+src/api/                FastAPI, schema, persistence, dan alert
+migrations/             migrasi skema PostgreSQL (Alembic)
 reports/{figures,metrics,experiments}/
 tests/{unit,integration}/
 ```
@@ -88,6 +90,34 @@ Artefak yang dihasilkan:
 
 Metrik mencakup accuracy, macro dan weighted precision/recall/F1, classification report, confusion matrix, FPR one-vs-rest, kesalahan IDS penting, waktu training, dan waktu inferensi. Jangan menilai model hanya dari accuracy; tinjau recall DDoS, recall PortScan, macro F1, false positive terhadap trafik Normal, serta risiko bias capture/file.
 
+## Experiment A dan Experiment B
+
+**Experiment A — Stratified Random Split** adalah baseline utama untuk mengukur performa
+klasifikasi dengan pembagian acak terstratifikasi 80/20. Artefak baseline, tuned model,
+perbandingan model, dan active model tetap dipertahankan dan tidak dipilih ulang oleh
+validasi tambahan.
+
+**Experiment B — Unseen/Scenario Validation** mengurangi risiko estimasi yang terlalu
+optimistis ketika flow dari capture atau bagian capture yang sama tersebar antara training
+dan testing. Pada distribusi CICIDS2017 ini, DDoS dan PortScan masing-masing terkonsentrasi
+pada satu source file. Full source-file holdout tidak valid karena akan menghilangkan kelas
+tersebut dari training. Karena CSV juga tidak menyediakan session identifier yang tervalidasi,
+Experiment B memakai holdout blok kontigu berurutan: di setiap pasangan `source_file × class`,
+seluruh blok paling akhir menjadi testing dan blok sebelumnya menjadi training. Tidak ada
+grup blok yang muncul pada kedua split, `source_file` hanya metadata, dan median imputer tetap
+di-fit hanya pada training.
+
+Jalankan validasi tambahan setelah artefak Experiment A tersedia:
+
+```bash
+python -m src.evaluation.scenario_validation
+```
+
+Perintah menghasilkan distribusi per source file, feature audit, metrik scenario, perbandingan
+Experiment A/B, dan confusion matrix di `reports/metrics/` serta `reports/figures/`. Strategi
+ini adalah stress test tambahan berbasis urutan baris capture, bukan representasi sempurna
+production traffic atau pengganti evaluasi lintas jaringan/waktu yang benar-benar independen.
+
 ## Hyperparameter tuning
 
 Tuning default mempertahankan `n_iter=20`, stratified `cv=5`, scoring `f1_macro`, dan ruang parameter penelitian. Agar eksperimen praktis, CV menggunakan stratified sample 50.000 baris dari training set. Parameter terbaik kemudian di-fit ulang pada seluruh training set dan dievaluasi pada test set baseline yang sama.
@@ -140,6 +170,64 @@ result = engine.predict_one(feature_values)
 pytest
 ```
 
+## Detection backend
+
+Alur backend adalah `FastAPI request → InferenceEngine → active Random Forest Pipeline →
+traffic flow + prediction transaction → conditional alert`. Model aktif dimuat dan hash-nya
+diverifikasi satu kali pada application startup. Urutan fitur selalu berasal dari metadata;
+metadata capture seperti IP, port, protocol, dan waktu tidak dimasukkan ke model secara
+otomatis.
+
+Siapkan environment dan PostgreSQL development:
+
+```bash
+cp .env.example .env
+docker compose up -d postgres
+alembic upgrade head
+uvicorn src.api.main:app --reload --host 0.0.0.0 --port 8000
+```
+
+`DATABASE_URL` adalah satu-satunya sumber konfigurasi koneksi database dan credential tidak
+boleh disimpan di repository. Setelah server aktif, dokumentasi interaktif tersedia di
+[`/docs`](http://localhost:8000/docs) dan [`/redoc`](http://localhost:8000/redoc).
+
+Endpoint backend:
+
+- `GET /health`
+- `GET /api/model`
+- `POST /api/predict` dan `POST /api/predict/batch`
+- `GET /api/predictions` dan `GET /api/predictions/{id}`
+- `GET /api/alerts`, `GET /api/alerts/{id}`, dan `PATCH /api/alerts/{id}/acknowledge`
+- `GET /api/dashboard/summary`
+
+Contoh request prediksi (objek `features` harus memuat seluruh 78 fitur sesuai
+`models/model_metadata.json`):
+
+```bash
+curl -X POST http://localhost:8000/api/predict \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "features": {"destination_port": 80, "flow_duration": 1250},
+    "metadata": {"source_ip": "10.0.0.10", "destination_ip": "10.0.0.20"}
+  }'
+```
+
+Contoh ringkas di atas sengaja tidak memuat semua fitur dan akan menghasilkan validasi
+`422`; gunakan daftar feature lengkap dari `models/model_metadata.json` saat
+membangun collector. Batch dibatasi `MAX_BATCH_SIZE`, sedangkan pagination dibatasi
+`MAX_PAGE_SIZE`.
+
+Prediction selalu disimpan. Alert hanya dibuat bila label bukan `Normal` dan confidence
+mencapai `ALERT_CONFIDENCE_THRESHOLD` (default `0.70`): `DDoS` menjadi `HIGH`, sedangkan
+`PortScan` menjadi `MEDIUM`. Confidence rendah tidak mengubah label hasil model.
+
+Test API memakai model deterministik kecil dan SQLite temporer sehingga tidak memerlukan
+dataset CICIDS2017 maupun PostgreSQL yang sedang berjalan:
+
+```bash
+pytest
+```
+
 ## Batasan dan troubleshooting
 
 - Jika kolom label tidak ditemukan, periksa nama aktual lalu gunakan `--label-column`.
@@ -147,4 +235,6 @@ pytest
 - CSV rusak atau encoding yang tidak didukung akan dihentikan dengan pesan error dan tidak menghasilkan laporan parsial.
 - Simulasi trafik keamanan hanya boleh dilakukan pada jaringan laboratorium milik sendiri atau sistem yang telah memiliki izin resmi.
 
-Tahap berikutnya adalah membungkus inference aktif dalam FastAPI setelah hasil model ditinjau secara kritis.
+Tahap berikutnya adalah membangun Streamlit monitoring dashboard yang membaca endpoint
+summary, predictions, dan alerts tanpa mengulang inference atau mengakses tabel secara
+langsung.

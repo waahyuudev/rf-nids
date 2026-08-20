@@ -13,5 +13,6 @@ def test_cicids_schemas_match_after_normalization(tmp_path: Path) -> None:
     first.to_csv(first_path, index=False)
     second.to_csv(second_path, index=False)
     combined = load_csv_files([first_path, second_path])
-    assert list(combined.columns) == ["feature", "label"]
+    assert list(combined.columns) == ["feature", "label", "source_file"]
+    assert combined["source_file"].tolist() == ["first.csv", "second.csv"]
     assert combined["feature"].tolist() == [1, 2]
