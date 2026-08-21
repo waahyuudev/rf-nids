@@ -12,6 +12,10 @@ from src.common.logging import configure_logging
 
 from .api_sender import ApiSendError, ApiSender
 from .capture import CICFlowMeterCapture, CaptureError
+from .cicflowmeter_mapping import (
+    COMPATIBILITY_POLICIES,
+    DEFAULT_COMPATIBILITY_POLICY,
+)
 from .feature_adapter import FeatureAdapter, FeatureCompatibilityError
 from .flow_extractor import FlowCsvExtractor
 
@@ -30,6 +34,14 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--extractor", default=os.getenv("CICFLOWMETER_EXECUTABLE", "cicflowmeter"))
     parser.add_argument("--batch-size", type=int, default=int(os.getenv("INGESTION_BATCH_SIZE", "100")))
     parser.add_argument("--flush-seconds", type=float, default=float(os.getenv("INGESTION_FLUSH_SECONDS", "2")))
+    parser.add_argument(
+        "--compatibility-policy",
+        choices=COMPATIBILITY_POLICIES,
+        default=os.getenv(
+            "LIVE_FEATURE_COMPATIBILITY_POLICY",
+            DEFAULT_COMPATIBILITY_POLICY,
+        ),
+    )
     return parser
 
 
@@ -46,7 +58,15 @@ def run(args: argparse.Namespace) -> dict[str, int]:
         csv_path = args.flow_csv
 
     extractor = FlowCsvExtractor()
-    adapter = FeatureAdapter.from_metadata(args.metadata)
+    adapter = FeatureAdapter.from_metadata(
+        args.metadata,
+        compatibility_policy=args.compatibility_policy,
+    )
+    logger.warning(
+        "Live feature compatibility policy=%s; reproduced dataset artifacts are not "
+        "independent network measurements",
+        args.compatibility_policy,
+    )
     report = adapter.compatibility(extractor.field_names(csv_path))
     if not report["compatible"]:
         raise FeatureCompatibilityError(

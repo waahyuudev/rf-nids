@@ -5,6 +5,7 @@ import json
 from pathlib import Path
 
 from scripts.check_live_feature_compatibility import build_report
+from src.ingestion.cicflowmeter_mapping import STRICT_SEMANTIC
 
 
 FEATURES = [
@@ -42,6 +43,7 @@ def test_missing_header_length_1_is_incompatible(tmp_path: Path) -> None:
     report = build_report(
         _csv(tmp_path / "flows.csv", FEATURES[:-1]),
         _metadata(tmp_path / "metadata.json"),
+        compatibility_policy=STRICT_SEMANTIC,
     )
     assert report["compatible"] is False
     assert report["missing_features"] == ["fwd_header_length.1"]
@@ -75,3 +77,31 @@ def test_normalized_duplicate_is_detected(tmp_path: Path) -> None:
     assert report["compatible"] is False
     assert report["duplicate_features"] == ["fwd_header_length"]
     assert report["duplicate_feature_audit"]["normalized_names"] == ["fwd_header_length"]
+
+
+def test_report_distinguishes_exact_alias_and_artifact_categories(tmp_path: Path) -> None:
+    metadata = tmp_path / "metadata.json"
+    metadata.write_text(
+        json.dumps({
+            "feature_names": [
+                "flow_duration",
+                "fwd_urg_flags",
+                "fwd_header_length",
+                "fwd_header_length.1",
+                "cwe_flag_count",
+            ]
+        }),
+        encoding="utf-8",
+    )
+    report = build_report(
+        _csv(
+            tmp_path / "flows.csv",
+            ["flow_duration", "fwd_urg_flags", "fwd_header_len"],
+        ),
+        metadata,
+    )
+    assert report["exact_match_count"] == 2
+    assert report["verified_alias_count"] == 1
+    assert report["artifact_reproduced_count"] == 2
+    assert report["missing_count"] == 0
+    assert report["compatible"] is True

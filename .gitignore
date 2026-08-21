@@ -11,6 +11,7 @@ data/processed/*
 data/external/*
 data/lab/pcap/*
 data/lab/flows/*
+data/lab/live/*
 !data/**/.gitkeep
 models/*.joblib
 reports/figures/*

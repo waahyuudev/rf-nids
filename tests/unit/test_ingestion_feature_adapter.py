@@ -5,6 +5,7 @@ import math
 import pytest
 
 from src.ingestion.feature_adapter import FeatureAdapter, FeatureCompatibilityError
+from src.ingestion.cicflowmeter_mapping import STRICT_SEMANTIC
 from src.ingestion.models import ExtractedFlow
 
 
@@ -43,7 +44,7 @@ def test_adapter_maps_orders_and_normalizes_numbers() -> None:
 
 def test_adapter_rejects_missing_feature_without_zero_fill() -> None:
     with pytest.raises(FeatureCompatibilityError, match="fwd_header_length.1"):
-        FeatureAdapter(FEATURES).adapt(
+        FeatureAdapter(FEATURES, compatibility_policy=STRICT_SEMANTIC).adapt(
             ExtractedFlow(fields={name: 1 for name in FEATURES[:-1]})
         )
 
@@ -59,7 +60,9 @@ def test_adapter_rejects_non_numeric_and_boolean() -> None:
 
 
 def test_compatibility_audits_header_pair_and_duplicate_normalization() -> None:
-    report = FeatureAdapter(FEATURES).compatibility(
+    report = FeatureAdapter(
+        FEATURES, compatibility_policy=STRICT_SEMANTIC
+    ).compatibility(
         ["Destination Port", "Flow Duration", "Fwd Header Length", " fwd header length"]
     )
     assert report["compatible"] is False

@@ -16,8 +16,12 @@ if str(ROOT) not in sys.path:
 from src.ingestion.feature_adapter import FeatureAdapter
 from src.ingestion.cicflowmeter_mapping import (
     ALIAS_EVIDENCE,
+    CICIDS2017_DATASET_ARTIFACT_REPRODUCTION,
+    COMPATIBILITY_POLICIES,
+    DEFAULT_COMPATIBILITY_POLICY,
     EXTRACTOR_TO_MODEL_FEATURE,
     INCOMPATIBLE_MODEL_FEATURES,
+    STRICT_SEMANTIC,
 )
 from src.ingestion.flow_extractor import FlowCsvExtractor
 from src.preprocessing.columns import normalize_column_name
@@ -43,23 +47,50 @@ def _identical_percentage(path: Path, first: str, second: str) -> float | None:
     return round(100 * sum(left == right for left, right in pairs) / len(pairs), 4)
 
 
-def build_report(input_path: Path, metadata_path: Path) -> dict:
-    adapter = FeatureAdapter.from_metadata(metadata_path)
+def build_report(
+    input_path: Path,
+    metadata_path: Path,
+    *,
+    compatibility_policy: str = DEFAULT_COMPATIBILITY_POLICY,
+) -> dict:
+    adapter = FeatureAdapter.from_metadata(
+        metadata_path,
+        compatibility_policy=compatibility_policy,
+    )
     report = adapter.compatibility(FlowCsvExtractor.field_names(input_path))
     report["status"] = "completed"
     report["fwd_header_length_audit"]["identical_value_percentage"] = (
         _identical_percentage(input_path, "fwd_header_length", "fwd_header_length.1")
     )
-    report["fwd_header_length_audit"]["treated_as_independent_model_features"] = True
+    report["fwd_header_length_audit"]["treated_as_independent_model_features"] = (
+        compatibility_policy == STRICT_SEMANTIC
+    )
     report["exact_match_count"] = len(report["exact_matches"])
     report["verified_alias_count"] = len(report["mapped_matches"])
+    report["artifact_reproduced_count"] = len(report["artifact_reproductions"])
     report["unresolved_features"] = [
         name for name in report["missing_features"]
         if name not in INCOMPATIBLE_MODEL_FEATURES
     ]
     report["unresolved_count"] = len(report["unresolved_features"])
     report["incompatible_count"] = len(report["incompatible_features"])
+    report["missing_count"] = len(report["missing_features"])
     return report
+
+
+def _policy_summary(report: dict) -> dict:
+    resolved = report["active_model_feature_count"] - report["missing_count"]
+    return {
+        "compatibility_policy": report["compatibility_policy"],
+        "active_model_feature_count": report["active_model_feature_count"],
+        "exact_match_count": report["exact_match_count"],
+        "verified_alias_count": report["verified_alias_count"],
+        "artifact_reproduced_count": report["artifact_reproduced_count"],
+        "missing_count": report["missing_count"],
+        "resolved_count": resolved,
+        "missing_features": report["missing_features"],
+        "compatible": report["compatible"],
+    }
 
 
 def build_mapping_audit(report: dict) -> dict:
@@ -81,6 +112,13 @@ def build_mapping_audit(report: dict) -> dict:
                 "status": "incompatible",
                 "reason": detail["reason"],
             })
+    for model, detail in report["artifact_reproductions"].items():
+        entries.append({
+            "model_feature": model,
+            "extractor_candidate": detail["source"],
+            "status": "artifact_reproduced",
+            "reason": detail["reason"],
+        })
     for model in report["unresolved_features"]:
         entries.append({
             "model_feature": model,
@@ -91,7 +129,13 @@ def build_mapping_audit(report: dict) -> dict:
     return {
         "extractor": report.get("extractor"),
         "audited_feature_count": len(entries),
-        "categories": ["exact", "alias_verified", "unresolved", "incompatible"],
+        "categories": [
+            "exact",
+            "alias_verified",
+            "artifact_reproduced",
+            "unresolved",
+            "incompatible",
+        ],
         "features": sorted(entries, key=lambda item: item["model_feature"]),
     }
 
@@ -104,6 +148,7 @@ def _print_summary(report: dict) -> None:
     print(f"Extractor features    : {report['extractor_feature_count']}")
     print(f"Exact matches         : {len(report['exact_matches'])}")
     print(f"Normalized/mapped     : {mapped}")
+    print(f"Artifact reproduced   : {report['artifact_reproduced_count']}")
     print(f"Missing               : {len(report['missing_features'])}")
     print(f"Extra                 : {len(report['extra_features'])}\n")
     print(f"Compatible            : {'YES' if report['compatible'] else 'NO'}")
@@ -118,6 +163,11 @@ def main() -> int:
     parser.add_argument("--input", "--extractor-csv", dest="input", type=Path, required=True)
     parser.add_argument("--metadata", type=Path, default=ROOT / "models/model_metadata.json")
     parser.add_argument(
+        "--policy",
+        choices=COMPATIBILITY_POLICIES,
+        default=DEFAULT_COMPATIBILITY_POLICY,
+    )
+    parser.add_argument(
         "--output", type=Path,
         default=ROOT / "reports/metrics/live_feature_compatibility.json",
     )
@@ -126,7 +176,21 @@ def main() -> int:
         default=ROOT / "reports/metrics/live_feature_mapping_audit.json",
     )
     args = parser.parse_args()
-    report = build_report(args.input, args.metadata)
+    report = build_report(
+        args.input,
+        args.metadata,
+        compatibility_policy=args.policy,
+    )
+    strict_report = build_report(
+        args.input,
+        args.metadata,
+        compatibility_policy=STRICT_SEMANTIC,
+    )
+    artifact_report = build_report(
+        args.input,
+        args.metadata,
+        compatibility_policy=CICIDS2017_DATASET_ARTIFACT_REPRODUCTION,
+    )
     report.update({
         "generated_at_utc": datetime.now(timezone.utc).isoformat(),
         "extractor_csv": str(args.input),
@@ -142,6 +206,10 @@ def main() -> int:
             "Python compatible implementation; not identical to the original Java CICFlowMeter used for CICIDS2017.",
             "Compatibility describes the observed CSV schema, not numerical equivalence with CICIDS2017 extraction.",
         ],
+        "policy_comparison": {
+            STRICT_SEMANTIC: _policy_summary(strict_report),
+            CICIDS2017_DATASET_ARTIFACT_REPRODUCTION: _policy_summary(artifact_report),
+        },
     })
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")

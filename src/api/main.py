@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 from contextlib import asynccontextmanager
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 import logging
 from typing import Annotated
 
@@ -27,6 +27,7 @@ from src.api.schemas import (
     PredictionResult,
     PredictionLabel,
     Severity,
+    TimelinePoint,
 )
 from src.api.service import metadata_metrics, persist_predictions, sync_active_model
 from src.common.config import Settings
@@ -55,7 +56,33 @@ def _prediction_detail(row: Prediction) -> PredictionDetail:
         class_probabilities=row.class_probabilities,
         prediction_time=row.prediction_time,
         source_ip=row.traffic_flow.source_ip,
+        source_port=row.traffic_flow.source_port,
         destination_ip=row.traffic_flow.destination_ip,
+        destination_port=row.traffic_flow.destination_port,
+        protocol=row.traffic_flow.protocol,
+        capture_session_id=row.traffic_flow.capture_session_id,
+        capture_interface=row.traffic_flow.capture_interface,
+        pcap_segment=row.traffic_flow.pcap_segment,
+        model_version=row.model.model_version,
+        flow_features=row.traffic_flow.raw_features,
+    )
+
+
+def _alert_detail(row: Alert) -> AlertDetail:
+    prediction = row.prediction
+    return AlertDetail(
+        id=row.id,
+        prediction_id=row.prediction_id,
+        severity=row.severity,
+        title=row.title,
+        description=row.description,
+        status=row.status,
+        acknowledged_at=row.acknowledged_at,
+        created_at=row.created_at,
+        predicted_label=prediction.predicted_label,
+        confidence_score=prediction.confidence_score,
+        source_ip=prediction.traffic_flow.source_ip,
+        destination_ip=prediction.traffic_flow.destination_ip,
     )
 
 
@@ -219,7 +246,8 @@ def create_app(
             query = query.where(Alert.severity == severity.value)
         if alert_status:
             query = query.where(Alert.status == alert_status.value)
-        return db.scalars(query.order_by(Alert.id.desc()).limit(limit).offset(offset)).all()
+        rows = db.scalars(query.order_by(Alert.id.desc()).limit(limit).offset(offset)).all()
+        return [_alert_detail(row) for row in rows]
 
     @application.get(
         "/api/alerts/{alert_id}", response_model=AlertDetail, summary="Get one alert"
@@ -228,7 +256,7 @@ def create_app(
         row = db.get(Alert, alert_id)
         if row is None:
             raise HTTPException(404, "Alert not found")
-        return row
+        return _alert_detail(row)
 
     @application.patch(
         "/api/alerts/{alert_id}/acknowledge",
@@ -244,7 +272,7 @@ def create_app(
             row.acknowledged_at = datetime.now(timezone.utc)
             db.commit()
             db.refresh(row)
-        return row
+        return _alert_detail(row)
 
     @application.get(
         "/api/dashboard/summary",
@@ -264,6 +292,18 @@ def create_app(
         alert_counts = db.execute(
             select(
                 func.sum(case((Alert.status == "ACTIVE", 1), else_=0)),
+                func.sum(
+                    case(
+                        ((Alert.status == "ACTIVE") & (Alert.severity == "HIGH"), 1),
+                        else_=0,
+                    )
+                ),
+                func.sum(
+                    case(
+                        ((Alert.status == "ACTIVE") & (Alert.severity == "MEDIUM"), 1),
+                        else_=0,
+                    )
+                ),
                 func.sum(case((Alert.status == "ACKNOWLEDGED", 1), else_=0)),
             )
         ).one()
@@ -273,9 +313,47 @@ def create_app(
             total_ddos=prediction_counts[2] or 0,
             total_portscan=prediction_counts[3] or 0,
             active_alerts=alert_counts[0] or 0,
-            acknowledged_alerts=alert_counts[1] or 0,
+            active_high_alerts=alert_counts[1] or 0,
+            active_medium_alerts=alert_counts[2] or 0,
+            acknowledged_alerts=alert_counts[3] or 0,
             latest_prediction_timestamp=prediction_counts[4],
         )
+
+    @application.get(
+        "/api/dashboard/timeline",
+        response_model=list[TimelinePoint],
+        summary="Aggregate recent prediction activity by minute",
+    )
+    def dashboard_timeline(
+        db: Db,
+        minutes: int = Query(60, ge=1, le=1440),
+    ):
+        since = datetime.now(timezone.utc) - timedelta(minutes=minutes)
+        dialect = db.bind.dialect.name if db.bind is not None else ""
+        if dialect == "sqlite":
+            bucket = func.strftime("%Y-%m-%dT%H:%M:00+00:00", Prediction.prediction_time)
+        else:
+            bucket = func.date_trunc("minute", Prediction.prediction_time)
+        rows = db.execute(
+            select(
+                bucket.label("bucket"),
+                func.sum(case((Prediction.predicted_label == "Normal", 1), else_=0)),
+                func.sum(case((Prediction.predicted_label == "DDoS", 1), else_=0)),
+                func.sum(case((Prediction.predicted_label == "PortScan", 1), else_=0)),
+            )
+            .where(Prediction.prediction_time >= since)
+            .group_by(bucket)
+            .order_by(bucket)
+        ).all()
+        return [
+            TimelinePoint(
+                bucket=_parse_datetime(row[0]),
+                normal=row[1] or 0,
+                ddos=row[2] or 0,
+                portscan=row[3] or 0,
+            )
+            for row in rows
+        ]
 
     return application
 

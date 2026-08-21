@@ -24,6 +24,9 @@ class AlertStatus(str, Enum):
 
 
 class FlowMetadata(BaseModel):
+    capture_session_id: str | None = Field(default=None, max_length=80)
+    capture_interface: str | None = Field(default=None, max_length=100)
+    pcap_segment: str | None = Field(default=None, max_length=255)
     capture_time: datetime | None = None
     source_ip: str | None = Field(default=None, max_length=45)
     source_port: int | None = Field(default=None, ge=0, le=65535)
@@ -75,7 +78,15 @@ class PredictionDetail(BaseModel):
     class_probabilities: dict[str, float]
     prediction_time: datetime
     source_ip: str | None = None
+    source_port: int | None = None
     destination_ip: str | None = None
+    destination_port: int | None = None
+    protocol: str | None = None
+    capture_session_id: str | None = None
+    capture_interface: str | None = None
+    pcap_segment: str | None = None
+    model_version: str
+    flow_features: dict[str, Any] | None = None
 
 
 class AlertDetail(BaseModel):
@@ -88,6 +99,10 @@ class AlertDetail(BaseModel):
     status: AlertStatus
     acknowledged_at: datetime | None
     created_at: datetime
+    predicted_label: PredictionLabel
+    confidence_score: float
+    source_ip: str | None = None
+    destination_ip: str | None = None
 
 
 class DashboardSummary(BaseModel):
@@ -96,5 +111,14 @@ class DashboardSummary(BaseModel):
     total_ddos: int
     total_portscan: int
     active_alerts: int
+    active_high_alerts: int
+    active_medium_alerts: int
     acknowledged_alerts: int
     latest_prediction_timestamp: datetime | None
+
+
+class TimelinePoint(BaseModel):
+    bucket: datetime
+    normal: int
+    ddos: int
+    portscan: int

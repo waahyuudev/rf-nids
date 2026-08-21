@@ -140,6 +140,9 @@ def test_prediction_alert_rules_and_persistence(client):
     listed = http.get("/api/predictions", params={"source_ip": "10.0.0.1"}).json()
     assert len(listed) == 1
     assert http.get(f"/api/predictions/{normal.json()['prediction_id']}").status_code == 200
+    detail = http.get(f"/api/predictions/{normal.json()['prediction_id']}").json()
+    assert detail["source_ip"] == "10.0.0.1"
+    assert detail["model_version"] == "test-v1"
     alerts_response = http.get("/api/alerts")
     assert alerts_response.status_code == 200, alerts_response.text
     alerts = alerts_response.json()
@@ -154,8 +157,13 @@ def test_prediction_alert_rules_and_persistence(client):
     assert summary["total_ddos"] == 2
     assert summary["total_portscan"] == 1
     assert summary["active_alerts"] == 1
+    assert summary["active_high_alerts"] == 0
+    assert summary["active_medium_alerts"] == 1
     assert summary["acknowledged_alerts"] == 1
     assert summary["latest_prediction_timestamp"] is not None
+    timeline = http.get("/api/dashboard/timeline", params={"minutes": 60})
+    assert timeline.status_code == 200
+    assert sum(point["normal"] for point in timeline.json()) == 1
 
 
 def test_batch_is_persisted_and_not_found_responses(client):

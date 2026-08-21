@@ -52,6 +52,17 @@ class ApiSender:
                 response = self._post(self.url, json=payload, timeout=self.timeout_seconds)
                 response.raise_for_status()
                 predictions = response.json()["predictions"]
+                if not isinstance(predictions, list) or len(predictions) != len(flows):
+                    raise ValueError(
+                        "API response prediction count does not match submitted flow count"
+                    )
+                for prediction in predictions:
+                    if not isinstance(prediction, dict) or prediction.get("prediction") not in {
+                        "Normal", "DDoS", "PortScan"
+                    }:
+                        raise ValueError(
+                            f"API returned invalid prediction result {prediction!r}"
+                        )
                 counts = Counter(item["prediction"] for item in predictions)
                 logger.info(
                     "API batch success flows=%d Normal=%d DDoS=%d PortScan=%d",
@@ -65,5 +76,5 @@ class ApiSender:
                     attempt + 1, self.max_retries + 1, exc,
                 )
                 if attempt < self.max_retries:
-                    self._sleep(self.retry_delay_seconds)
+                    self._sleep(self.retry_delay_seconds * (2**attempt))
         raise ApiSendError(f"API batch failed after {self.max_retries + 1} attempts") from last_error

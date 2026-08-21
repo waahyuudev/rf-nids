@@ -1,5 +1,6 @@
 {
-  "compatible": false,
+  "compatible": true,
+  "compatibility_policy": "CICIDS2017_DATASET_ARTIFACT_REPRODUCTION",
   "active_model_feature_count": 78,
   "extractor_feature_count": 82,
   "exact_matches": [
@@ -83,10 +84,24 @@
     "total_length_of_fwd_packets",
     "urg_flag_count"
   ],
-  "missing_features": [
+  "artifact_reproductions": {
+    "fwd_header_length.1": {
+      "source": "fwd_header_length",
+      "reason": "duplicate CICIDS2017 raw header",
+      "independent_measurement": false
+    },
+    "cwe_flag_count": {
+      "source": "fwd_urg_flags",
+      "reason": "released CICIDS2017 values are identical to fwd_urg_flags across all 2,830,743 audited rows",
+      "semantic_cwr_equivalence_verified": false
+    }
+  },
+  "artifact_reproduced_features": [
     "cwe_flag_count",
     "fwd_header_length.1"
   ],
+  "artifact_reproduced_count": 2,
+  "missing_features": [],
   "extra_features": [
     "cwr_flag_count"
   ],
@@ -177,35 +192,28 @@
     "total_length_of_fwd_packets",
     "urg_flag_count"
   ],
-  "missing_fields": [
-    "cwe_flag_count",
-    "fwd_header_length.1"
-  ],
+  "missing_fields": [],
   "extra_fields": [
     "cwr_flag_count"
   ],
   "duplicate_fields": [],
-  "suspicious_fields": [
-    "fwd_header_length pair is incomplete"
-  ],
+  "suspicious_fields": [],
   "fwd_header_length_audit": {
-    "policy": "Both fwd_header_length and fwd_header_length.1 are independent required model inputs. The adapter never copies one into the other.",
+    "policy": "Under STRICT_SEMANTIC both inputs require independent sources. Under CICIDS2017_DATASET_ARTIFACT_REPRODUCTION the .1 value explicitly reproduces the audited duplicate training-schema artifact and is not an independent measurement.",
     "fwd_header_length_present": true,
-    "fwd_header_length_1_present": false,
+    "fwd_header_length_1_present": true,
     "identical_value_percentage": null,
-    "treated_as_independent_model_features": true
+    "treated_as_independent_model_features": false
   },
-  "incompatible_features": [
-    "cwe_flag_count",
-    "fwd_header_length.1"
-  ],
+  "incompatible_features": [],
   "status": "completed",
   "exact_match_count": 26,
   "verified_alias_count": 50,
   "unresolved_features": [],
   "unresolved_count": 0,
-  "incompatible_count": 2,
-  "generated_at_utc": "2026-08-20T08:23:06.429959+00:00",
+  "incompatible_count": 0,
+  "missing_count": 0,
+  "generated_at_utc": "2026-08-20T08:34:43.224903+00:00",
   "extractor_csv": "data/lab/flows/sample.csv",
   "model_metadata": "/Users/wahyudev/Wahyudev/ai_projects/rf_nids/models/model_metadata.json",
   "extractor": {
@@ -218,5 +226,32 @@
   "limitations": [
     "Python compatible implementation; not identical to the original Java CICFlowMeter used for CICIDS2017.",
     "Compatibility describes the observed CSV schema, not numerical equivalence with CICIDS2017 extraction."
-  ]
+  ],
+  "policy_comparison": {
+    "STRICT_SEMANTIC": {
+      "compatibility_policy": "STRICT_SEMANTIC",
+      "active_model_feature_count": 78,
+      "exact_match_count": 26,
+      "verified_alias_count": 50,
+      "artifact_reproduced_count": 0,
+      "missing_count": 2,
+      "resolved_count": 76,
+      "missing_features": [
+        "cwe_flag_count",
+        "fwd_header_length.1"
+      ],
+      "compatible": false
+    },
+    "CICIDS2017_DATASET_ARTIFACT_REPRODUCTION": {
+      "compatibility_policy": "CICIDS2017_DATASET_ARTIFACT_REPRODUCTION",
+      "active_model_feature_count": 78,
+      "exact_match_count": 26,
+      "verified_alias_count": 50,
+      "artifact_reproduced_count": 2,
+      "missing_count": 0,
+      "resolved_count": 78,
+      "missing_features": [],
+      "compatible": true
+    }
+  }
 }

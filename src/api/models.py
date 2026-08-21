@@ -50,6 +50,9 @@ class ModelRecord(Base):
 class TrafficFlow(Base):
     __tablename__ = "traffic_flows"
     id: Mapped[int] = mapped_column(primary_key=True)
+    capture_session_id: Mapped[str | None] = mapped_column(String(80), index=True)
+    capture_interface: Mapped[str | None] = mapped_column(String(100))
+    pcap_segment: Mapped[str | None] = mapped_column(String(255))
     capture_time: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), index=True)
     source_ip: Mapped[str | None] = mapped_column(String(45), index=True)
     source_port: Mapped[int | None] = mapped_column(Integer)

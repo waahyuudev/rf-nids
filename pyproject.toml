@@ -20,6 +20,8 @@ dependencies = [
   "sqlalchemy>=2.0,<3",
   "psycopg2-binary>=2.9,<3",
   "alembic>=1.13,<2",
+  "streamlit>=1.37,<2",
+  "requests>=2.31,<3",
 ]
 
 [project.optional-dependencies]

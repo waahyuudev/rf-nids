@@ -1,14 +1,23 @@
 # RF-NIDS
 
-RF-NIDS adalah prototipe penelitian *Random Forest Network Intrusion Detection System* untuk klasifikasi trafik `Normal`, `DDoS`, dan `PortScan`. Implementasi saat ini mencakup pipeline eksperimen, inference tervalidasi, serta backend deteksi FastAPI dengan persistence PostgreSQL dan alert. Dashboard visual dan virtual lab belum diimplementasikan.
+RF-NIDS adalah prototipe penelitian *Random Forest Network Intrusion Detection System* untuk klasifikasi trafik `Normal`, `DDoS`, dan `PortScan`. Implementasi saat ini mencakup pipeline eksperimen, inference tervalidasi, backend FastAPI, persistence PostgreSQL, alert, dan dashboard monitoring Streamlit.
 
 ## Status implementasi
 
-Sudah tersedia: data understanding, preprocessing, baseline RF, tuned RF, model selection,
-scenario validation, inference engine, FastAPI backend, SQL persistence, dan alert mechanism.
-
-Belum tersedia: Streamlit dashboard, live network flow ingestion, dan virtual laboratory
-integration.
+| Komponen | Status |
+|---|---|
+| Data pipeline | ✅ |
+| Random Forest training | ✅ |
+| Hyperparameter tuning | ✅ |
+| Scenario validation | ✅ |
+| Inference engine | ✅ |
+| FastAPI backend | ✅ |
+| PostgreSQL persistence | ✅ |
+| Alert management | ✅ |
+| Streamlit dashboard | ✅ |
+| Offline PCAP ingestion | ⚠️ adapter ready; extractor compatibility must be audited |
+| Live flow ingestion | ⚠️ optional; extractor compatibility and capture privilege required |
+| Virtual laboratory | 📋 documented; Experiment C not yet run |
 
 ## Kebutuhan dan instalasi
 
@@ -36,6 +45,8 @@ src/training/           training Random Forest baseline
 src/evaluation/         metrik dan visualisasi evaluasi
 src/inference/          validasi fitur dan prediksi model aktif
 src/api/                FastAPI, schema, persistence, dan alert
+src/ingestion/          capture wrapper, strict feature adapter, batching, dan API sender
+dashboard/              client API dan halaman monitoring Streamlit
 migrations/             migrasi skema PostgreSQL (Alembic)
 reports/{figures,metrics,experiments}/
 tests/{unit,integration}/
@@ -271,19 +282,37 @@ python scripts/check_live_feature_compatibility.py \
 cat reports/metrics/live_feature_compatibility.json
 ```
 
-The checker reuses the training column normalizer. Compatibility is true only when
-every active-model feature maps independently and there are no normalized-name
-collisions. In particular, `fwd_header_length` and `fwd_header_length.1` must both be
-present; neither is copied or synthesized. Missing extractor features are never
-zero-filled or imputed. A false result blocks Experiment C.
+The checker reuses the training column normalizer and never uses fuzzy mapping,
+zero-fill, or a generic missing-feature fallback. Unknown missing features always
+make the selected policy incompatible.
 
 For `hieulw/cicflowmeter` 0.4.2, the adapter additionally applies the reviewed,
 explicit aliases in `src/ingestion/cicflowmeter_mapping.py`; it never performs fuzzy
 matching. The mapping audit is written to
-`reports/metrics/live_feature_mapping_audit.json`. The current sample resolves 50
-naming aliases but remains incompatible at 76/78: the extractor has no independent
-`fwd_header_length.1`, and its `cwr_flag_count` implementation is not a valid source
-for the model's `cwe_flag_count`.
+`reports/metrics/live_feature_mapping_audit.json`.
+
+The active model was trained using the released CICIDS2017 MachineLearningCSV
+schema. Provenance auditing identified two released-dataset artifacts. For
+compatibility with the existing trained model, the prototype explicitly reproduces
+these audited artifacts at inference time. These values are not presented as
+independent network measurements.
+
+Two explicit policies are supported:
+
+- `STRICT_SEMANTIC` resolves 76/78 and requires independent semantic sources.
+- `CICIDS2017_DATASET_ARTIFACT_REPRODUCTION` additionally reproduces only the two
+  audited allowlisted artifacts: `fwd_header_length.1` from
+  `fwd_header_length`, and `cwe_flag_count` from `fwd_urg_flags`. The latter is
+  dataset-value reproduction and is not claimed to be genuine TCP CWR.
+
+The artifact policy is the thesis-prototype runtime default and is logged by the
+ingestion runner. Select strict mode explicitly when required:
+
+```bash
+python scripts/check_live_feature_compatibility.py \
+  --input data/lab/flows/sample.csv \
+  --policy STRICT_SEMANTIC
+```
 
 Di dalam jaringan Compose, API memakai hostname database `postgres`. Dari aplikasi desktop
 lokal seperti DBeaver/TablePlus, gunakan host `localhost`, port `5432`, database `rf_nids`,
@@ -322,6 +351,7 @@ Endpoint backend:
 - `GET /api/predictions` dan `GET /api/predictions/{id}`
 - `GET /api/alerts`, `GET /api/alerts/{id}`, dan `PATCH /api/alerts/{id}/acknowledge`
 - `GET /api/dashboard/summary`
+- `GET /api/dashboard/timeline` (agregasi per menit; parameter `minutes`, default 60)
 
 Contoh request prediksi (objek `features` harus memuat seluruh 78 fitur sesuai
 `models/model_metadata.json`):
@@ -369,6 +399,150 @@ pytest
 - CSV rusak atau encoding yang tidak didukung akan dihentikan dengan pesan error dan tidak menghasilkan laporan parsial.
 - Simulasi trafik keamanan hanya boleh dilakukan pada jaringan laboratorium milik sendiri atau sistem yang telah memiliki izin resmi.
 
-Tahap berikutnya adalah membangun Streamlit monitoring dashboard yang membaca endpoint
-summary, predictions, dan alerts tanpa mengulang inference atau mengakses tabel secara
-langsung.
+## Monitoring Dashboard
+
+Dashboard menyediakan halaman **Overview**, **Predictions**, **Alerts**, dan **Model** untuk
+demo penelitian dan pemantauan hasil klasifikasi. Arsitekturnya adalah
+`Streamlit → FastAPI → PostgreSQL`: Streamlit tidak mengakses database, memuat model, atau
+melakukan inference. Semua runtime monitoring data berasal dari API backend.
+
+Setelah menyalin `.env.example` ke `.env`, jalankan komponen secara berurutan:
+
+```bash
+docker compose up -d postgres
+alembic upgrade head
+uvicorn src.api.main:app --reload
+streamlit run dashboard/app.py
+```
+
+Dashboard tersedia di `http://localhost:8501`. URL backend, interval refresh, dan timeout
+diatur dengan `FASTAPI_BASE_URL`, `DASHBOARD_REFRESH_SECONDS`, dan
+`DASHBOARD_REQUEST_TIMEOUT`. Saat backend offline atau database kosong, UI tetap terbuka dan
+menampilkan pesan informatif. Acknowledgement alert selalu dikirim melalui FastAPI.
+
+Dashboard ini masih prototipe development/laboratory: belum memiliki authentication atau
+production-grade authentication.
+
+## Offline PCAP Validation
+
+Validasi offline menjalankan batas arsitektur produksi secara utuh:
+
+```text
+PCAP -> CICFlowMeter -> Feature Adapter -> FastAPI
+     -> Random Forest -> PostgreSQL -> Streamlit
+```
+
+Jalankan service aplikasi, lalu validasi PCAP normal yang sudah tersedia:
+
+```bash
+docker compose up -d --build
+python scripts/run_offline_pcap_validation.py \
+  --pcap data/lab/pcap/sample.pcap
+```
+
+Extractor dijalankan melalui service Docker `cicflowmeter` pada profile `tools`.
+Hasil aktual—termasuk kegagalan parsial—ditulis ke
+`reports/metrics/offline_pcap_validation.json`. URL API dan lokasi laporan dapat
+diubah tanpa melewati FastAPI:
+
+```bash
+python scripts/run_offline_pcap_validation.py \
+  --pcap data/lab/pcap/sample.pcap \
+  --api-url http://localhost:8000 \
+  --output reports/metrics/offline_pcap_validation.json
+```
+
+Untuk mengulang validasi API dari CSV yang telah diekstrak tanpa menjalankan
+extractor lagi, gunakan `--flow-csv data/lab/flows/sample.csv`.
+
+Runner menerapkan policy
+`CICIDS2017_DATASET_ARTIFACT_REPRODUCTION`, menghasilkan tepat 78 fitur dalam
+urutan model, mempertahankan metadata flow secara terpisah, mengirim batch
+terbatas ke `POST /api/predict/batch`, lalu memverifikasi ID prediksi dan kenaikan
+counter melalui API. Tidak ada traffic serangan yang dibuat oleh proses ini.
+
+Validasi dashboard secara manual setelah run:
+
+```bash
+streamlit run dashboard/app.py
+```
+
+Periksa halaman Overview, Predictions, Alerts, dan Model. Data baru tersedia
+melalui endpoint yang sama dengan yang dikonsumsi dashboard.
+
+Ini adalah validasi fungsi pipeline, bukan Experiment C dan bukan pengukuran
+akurasi deteksi. Kompatibilitas schema tidak membuktikan ekuivalensi numerik;
+`hieulw/cicflowmeter` juga bukan implementasi Java CICFlowMeter historis.
+
+## Live Normal Traffic Validation
+
+Arsitektur khusus macOS mempertahankan FastAPI sebagai satu-satunya boundary inferensi:
+
+```text
+macOS Interface -> tcpdump -> Rotating/Short PCAP -> CICFlowMeter Docker
+                -> Feature Adapter -> FastAPI -> Random Forest
+                -> PostgreSQL -> Streamlit
+```
+
+Prototipe ini melakukan deteksi berbasis flow secara *near-real-time* menggunakan segmen
+packet capture pendek. Ini bukan inspeksi packet inline dan bukan sistem prevention. Docker
+Desktop tidak diasumsikan dapat menangkap interface host macOS; hanya ekstraksi flow yang
+berjalan di Docker, sedangkan `tcpdump` berjalan pada host.
+
+Temukan interface, lalu pilih secara eksplisit (nama interface tidak di-hardcode):
+
+```bash
+python scripts/run_live_capture.py --list-interfaces
+# Alternatif dengan keterangan hardware port:
+networksetup -listallhardwareports
+```
+
+Siapkan izin capture tanpa menyimpan password, hidupkan backend, lalu jalankan smoke test
+normal selama 30–60 detik. Contoh berikut memakai empat segmen 15 detik; durasi ini hanya
+smoke test dan bukan durasi evaluasi ilmiah:
+
+```bash
+sudo -v
+docker compose up -d --build
+python scripts/run_live_capture.py \
+  --interface <interface> \
+  --segment-seconds 15 \
+  --max-segments 4
+```
+
+Tanpa `--max-segments`, runner berlanjut sampai `Ctrl+C`. Shutdown menghentikan `tcpdump`
+dengan aman, memproses segmen yang sudah ditutup, dan selalu menulis report. Selama capture,
+lakukan aktivitas normal saja, misalnya membuka situs biasa atau:
+
+```bash
+ping -c 5 8.8.8.8
+curl https://example.com
+curl https://github.com
+```
+
+Jangan menjalankan nmap, hping3, flood, stress traffic, atau skenario ofensif pada tahap ini.
+Prediksi DDoS/PortScan dari traffic yang diketahui normal tidak disembunyikan atau diubah;
+hasil tersebut dicatat sebagai kandidat false positive.
+
+Evidence lokal disimpan di `data/lab/live/<session-id>/{pcap,flows,logs}` dan report gate di
+`reports/metrics/live_normal_validation.json`. Keduanya diabaikan Git. PCAP tidak diunggah,
+payload tidak dicatat ke log atau PostgreSQL, dan hanya metadata flow/prediksi yang dipersist.
+Hapus session secara manual hanya setelah evidence tidak diperlukan; report tidak pernah
+dihapus otomatis.
+
+Preflight memeriksa interface, `tcpdump`, API/model 78 fitur, PostgreSQL melalui health API,
+dan service extractor. Adapter tetap memakai policy
+`CICIDS2017_DATASET_ARTIFACT_REPRODUCTION`; hanya dua artifact yang telah diaudit
+(`fwd_header_length.1` dan `cwe_flag_count`) yang direproduksi. Flow dengan fitur asing yang
+hilang gagal tanpa zero-fill. Metadata session/interface/segmen/5-tuple/timestamp disimpan
+terpisah dan tidak menjadi input RF. Pengiriman memakai batch terbatas, timeout, retry
+terbatas, dan exponential backoff.
+
+Verifikasi Streamlit dengan `streamlit run dashboard/app.py`: counter Overview dan Recent
+Predictions harus berubah, alert harus muncul bila dibuat, dan detail prediksi menyediakan
+metadata capture. Streamlit tetap membaca FastAPI/PostgreSQL, bukan PCAP.
+
+Keterbatasan: `hieulw/cicflowmeter` berbeda dari Java CICFlowMeter historis; kompatibilitas
+78/78 tidak membuktikan parity numerik sempurna; policy reproduksi artifact dataset tetap
+aktif; dan observed candidate false-positive rate dari session normal ini bukan FPR final
+model. Experiment C hanya boleh dimulai sebagai tahap terpisah setelah instruksi eksplisit.

@@ -2,6 +2,16 @@
 
 from __future__ import annotations
 
+STRICT_SEMANTIC = "STRICT_SEMANTIC"
+CICIDS2017_DATASET_ARTIFACT_REPRODUCTION = (
+    "CICIDS2017_DATASET_ARTIFACT_REPRODUCTION"
+)
+DEFAULT_COMPATIBILITY_POLICY = CICIDS2017_DATASET_ARTIFACT_REPRODUCTION
+COMPATIBILITY_POLICIES = (
+    STRICT_SEMANTIC,
+    CICIDS2017_DATASET_ARTIFACT_REPRODUCTION,
+)
+
 # Each entry was checked against Flow.get_data() in hieulw/cicflowmeter 0.4.2.
 # These are spelling/abbreviation changes only; fuzzy matching is never used.
 EXTRACTOR_TO_MODEL_FEATURE = {
@@ -81,3 +91,31 @@ INCOMPATIBLE_MODEL_FEATURES = {
         ),
     },
 }
+
+# Closed allowlist based on reports/metrics/feature_provenance_audit.json. These
+# rules reproduce released training-dataset artifacts; they are not semantic aliases
+# and do not establish independent network measurements.
+ARTIFACT_REPRODUCTIONS = {
+    "fwd_header_length.1": {
+        "source": "fwd_header_length",
+        "reason": "duplicate CICIDS2017 raw header",
+        "independent_measurement": False,
+    },
+    "cwe_flag_count": {
+        "source": "fwd_urg_flags",
+        "reason": (
+            "released CICIDS2017 values are identical to fwd_urg_flags across all "
+            "2,830,743 audited rows"
+        ),
+        "semantic_cwr_equivalence_verified": False,
+    },
+}
+
+
+def validate_compatibility_policy(policy: str) -> str:
+    if policy not in COMPATIBILITY_POLICIES:
+        raise ValueError(
+            f"Unknown compatibility policy {policy!r}; expected one of "
+            f"{COMPATIBILITY_POLICIES}"
+        )
+    return policy

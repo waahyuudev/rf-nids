@@ -10,6 +10,7 @@
   "categories": [
     "exact",
     "alias_verified",
+    "artifact_reproduced",
     "unresolved",
     "incompatible"
   ],
@@ -106,9 +107,9 @@
     },
     {
       "model_feature": "cwe_flag_count",
-      "extractor_candidate": "cwr_flag_count",
-      "status": "incompatible",
-      "reason": "Not equivalent in this build: Flow.get_data() assigns cwr_flag_count from fwd_urg_flags instead of counting the TCP CWR flag."
+      "extractor_candidate": "fwd_urg_flags",
+      "status": "artifact_reproduced",
+      "reason": "released CICIDS2017 values are identical to fwd_urg_flags across all 2,830,743 audited rows"
     },
     {
       "model_feature": "destination_port",
@@ -166,9 +167,9 @@
     },
     {
       "model_feature": "fwd_header_length.1",
-      "extractor_candidate": null,
-      "status": "incompatible",
-      "reason": "No second independent forward-header-length field exists. fwd_header_len is already consumed by fwd_header_length and must not be copied."
+      "extractor_candidate": "fwd_header_length",
+      "status": "artifact_reproduced",
+      "reason": "duplicate CICIDS2017 raw header"
     },
     {
       "model_feature": "fwd_iat_total",

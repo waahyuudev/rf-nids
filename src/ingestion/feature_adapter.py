@@ -13,8 +13,12 @@ from typing import Any
 from src.preprocessing.columns import normalize_column_name
 
 from .cicflowmeter_mapping import (
+    ARTIFACT_REPRODUCTIONS,
+    CICIDS2017_DATASET_ARTIFACT_REPRODUCTION,
+    DEFAULT_COMPATIBILITY_POLICY,
     EXTRACTOR_TO_MODEL_FEATURE,
     INCOMPATIBLE_MODEL_FEATURES,
+    validate_compatibility_policy,
 )
 from .models import AdaptedFlow, ExtractedFlow
 
@@ -48,17 +52,30 @@ def load_feature_names(metadata_path: Path) -> list[str]:
 class FeatureAdapter:
     """Normalize, validate, order, and numerically coerce one extracted flow."""
 
-    def __init__(self, feature_names: list[str]) -> None:
+    def __init__(
+        self,
+        feature_names: list[str],
+        *,
+        compatibility_policy: str = DEFAULT_COMPATIBILITY_POLICY,
+    ) -> None:
         if len(feature_names) != len(set(feature_names)):
             raise ValueError("Active model feature names contain duplicates")
         self.feature_names = list(feature_names)
+        self.compatibility_policy = validate_compatibility_policy(compatibility_policy)
 
     @classmethod
-    def from_metadata(cls, metadata_path: Path) -> "FeatureAdapter":
-        return cls(load_feature_names(metadata_path))
+    def from_metadata(
+        cls,
+        metadata_path: Path,
+        *,
+        compatibility_policy: str = DEFAULT_COMPATIBILITY_POLICY,
+    ) -> "FeatureAdapter":
+        return cls(
+            load_feature_names(metadata_path),
+            compatibility_policy=compatibility_policy,
+        )
 
-    @staticmethod
-    def _normalized(fields: Mapping[str, Any]) -> dict[str, Any]:
+    def _normalized(self, fields: Mapping[str, Any]) -> dict[str, Any]:
         result: dict[str, Any] = {}
         for raw_name, value in fields.items():
             normalized_name = normalize_column_name(raw_name)
@@ -68,6 +85,11 @@ class FeatureAdapter:
                     f"Duplicate field after normalization: {name}"
                 )
             result[name] = value
+        if self.compatibility_policy == CICIDS2017_DATASET_ARTIFACT_REPRODUCTION:
+            for target, rule in ARTIFACT_REPRODUCTIONS.items():
+                source = rule["source"]
+                if target in self.feature_names and target not in result and source in result:
+                    result[target] = result[source]
         return result
 
     def compatibility(self, extractor_names: list[str]) -> dict[str, Any]:
@@ -87,16 +109,26 @@ class FeatureAdapter:
             if source in normalized and target in required
         )
         normalized_matches = sorted((set(normalized) & required) - set(exact))
+        artifact_reproductions = {}
+        if self.compatibility_policy == CICIDS2017_DATASET_ARTIFACT_REPRODUCTION:
+            for target, rule in ARTIFACT_REPRODUCTIONS.items():
+                if target in required and target not in available and rule["source"] in available:
+                    artifact_reproductions[target] = dict(rule)
+                    available.add(target)
         suspicious = list(duplicates)
         if ("fwd_header_length" in available) != ("fwd_header_length.1" in available):
             suspicious.append("fwd_header_length pair is incomplete")
         return {
             "compatible": not (required - available) and not duplicates,
+            "compatibility_policy": self.compatibility_policy,
             "active_model_feature_count": len(self.feature_names),
             "extractor_feature_count": len(extractor_names),
             "exact_matches": exact,
             "normalized_matches": normalized_matches,
             "mapped_matches": alias_matches,
+            "artifact_reproductions": artifact_reproductions,
+            "artifact_reproduced_features": sorted(artifact_reproductions),
+            "artifact_reproduced_count": len(artifact_reproductions),
             "missing_features": [name for name in self.feature_names if name not in available],
             "extra_features": sorted(set(normalized) - set(EXTRACTOR_TO_MODEL_FEATURE) - required - set(METADATA_ALIASES)),
             "duplicate_features": sorted(set(raw_duplicates + duplicates)),
@@ -115,8 +147,10 @@ class FeatureAdapter:
             "suspicious_fields": sorted(set(suspicious)),
             "fwd_header_length_audit": {
                 "policy": (
-                    "Both fwd_header_length and fwd_header_length.1 are independent required "
-                    "model inputs. The adapter never copies one into the other."
+                    "Under STRICT_SEMANTIC both inputs require independent sources. Under "
+                    "CICIDS2017_DATASET_ARTIFACT_REPRODUCTION the .1 value explicitly "
+                    "reproduces the audited duplicate training-schema artifact and is not "
+                    "an independent measurement."
                 ),
                 "fwd_header_length_present": "fwd_header_length" in available,
                 "fwd_header_length_1_present": "fwd_header_length.1" in available,

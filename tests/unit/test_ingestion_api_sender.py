@@ -55,7 +55,7 @@ def test_sender_retries_with_bound_and_delay() -> None:
     )
     assert sender.send([flow()])[0]["prediction"] == "DDoS"
     assert attempts == 3
-    assert delays == [0.25, 0.25]
+    assert delays == [0.25, 0.5]
 
 
 def test_sender_raises_after_retry_limit() -> None:
