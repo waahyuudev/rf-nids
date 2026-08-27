@@ -12,11 +12,16 @@ data/external/*
 data/lab/pcap/*
 data/lab/flows/*
 data/lab/live/*
+data/lab/experiment_c/**/*.pcap
+data/lab/experiment_c/**/*.pcapng
+data/lab/experiment_c/**/*.csv
 !data/**/.gitkeep
 models/*.joblib
 reports/figures/*
 reports/metrics/*
 reports/experiments/*
 !reports/**/.gitkeep
+!reports/metrics/experiment_c_lab_setup.json
+!reports/experiment_c/experiment_manifest.json
 tmp/
 .DS_Store

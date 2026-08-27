@@ -1,0 +1,4 @@
+actual_class,Predicted Normal,Predicted DDoS,Predicted PortScan
+Actual Normal,61,0,0
+Actual DDoS,10226,0,0
+Actual PortScan,1000,0,0

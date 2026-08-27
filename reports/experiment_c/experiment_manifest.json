@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "RF-NIDS Experiment C scenario manifest",
+  "description": "Schema only; this file does not represent an experiment run.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "experiment_id", "scenario", "expected_class", "start_time", "end_time",
+    "source_ip", "target_ip", "capture_session_id", "status"
+  ],
+  "properties": {
+    "experiment_id": {"type": "string", "pattern": "^expc-[0-9]{8}T[0-9]{6}Z-[0-9a-f]{8}$"},
+    "scenario": {"enum": ["normal", "ddos", "portscan"]},
+    "expected_class": {"enum": ["Normal", "DDoS", "PortScan"]},
+    "start_time": {"type": "string", "format": "date-time"},
+    "end_time": {"type": "string", "format": "date-time"},
+    "source_ip": {"type": "string", "format": "ip-address"},
+    "target_ip": {"type": "string", "format": "ip-address"},
+    "capture_session_id": {"type": "string", "minLength": 1},
+    "status": {"type": "string", "minLength": 1}
+  }
+}

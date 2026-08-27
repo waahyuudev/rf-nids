@@ -1,0 +1,10 @@
+lab:
+  subnet: 192.168.56.0/24
+  target_ip: 192.168.56.10
+  attacker_ip: 192.168.56.20
+
+safety:
+  require_private_target: true
+  allow_loopback: false
+  allowed_targets:
+    - 192.168.56.10

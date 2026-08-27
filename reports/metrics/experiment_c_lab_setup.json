@@ -1,0 +1,42 @@
+{
+  "status": "incomplete",
+  "experiment": "Experiment C",
+  "phase": "lab_setup",
+  "host": {
+    "os": "macOS 26.0",
+    "architecture": "arm64",
+    "virtualization": null
+  },
+  "network": {
+    "isolated": false,
+    "subnet": "192.168.56.0/24",
+    "host_capture_interface": null
+  },
+  "machines": {
+    "target": {"os": "Ubuntu Server LTS", "ip": "192.168.56.10", "reachable": false},
+    "attacker": {"os": "Kali Linux", "ip": "192.168.56.20", "reachable": false}
+  },
+  "connectivity": {
+    "kali_to_ubuntu_ping": false,
+    "kali_to_ubuntu_http": false
+  },
+  "rf_nids": {
+    "capture_interface_verified": false,
+    "traffic_observed": false
+  },
+  "attack_testing_performed": false,
+  "missing_requirements": [
+    "Select and configure an Apple-Silicon-compatible hypervisor",
+    "Create an isolated private network",
+    "Create the Ubuntu Server target VM and verify its private IP",
+    "Create the Kali VM and verify its private IP",
+    "Verify Kali-to-Ubuntu ping",
+    "Verify a benign Kali-to-Ubuntu HTTP request",
+    "Identify and verify the macOS private-network capture interface",
+    "Observe benign lab traffic through the RF-NIDS pipeline"
+  ],
+  "limitations": [
+    "Phase 1 virtual infrastructure has not yet been created or manually verified",
+    "No connectivity or capture result is inferred from configuration alone"
+  ]
+}

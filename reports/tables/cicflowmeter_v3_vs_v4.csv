@@ -1,0 +1,155 @@
+record_type,scenario,v3_flow_count,v4_flow_count,reliably_matched_flows,unmatched_v3,unmatched_v4,orientation_differences,segmentation_boundary_differences,start_timestamp_difference_seconds,matching,v3_header,v4_header,matched_finite_count,exact_equality_percentage,mean_absolute_difference,max_absolute_difference,mean_symmetric_relative_difference,correlation
+flow_summary,normal-http-test,61.0,61.0,61.0,0.0,0.0,0.0,30.0,"{'min': 0.0, 'median': 0.0, 'max': 0.0}",Protocol and canonical bidirectional five-tuple; Hungarian one-to-one assignment within identity minimizes start-time then duration difference; orientation checked separately.,,,,,,,,
+feature_comparison,normal-http-test,,,,,,,,,,Flow Duration,Flow Duration,61.0,50.81967213114754,13.442622950819672,81.0,0.11648335325777322,0.9999999996139592
+feature_comparison,normal-http-test,,,,,,,,,,Tot Fwd Pkts,Total Fwd Packet,61.0,100.0,0.0,0.0,0.0,1.0
+feature_comparison,normal-http-test,,,,,,,,,,Tot Bwd Pkts,Total Bwd packets,61.0,50.81967213114754,0.4918032786885246,1.0,0.4918032786885246,0.9964707564321824
+feature_comparison,normal-http-test,,,,,,,,,,TotLen Fwd Pkts,Total Length of Fwd Packet,61.0,100.0,0.0,0.0,0.0,1.0
+feature_comparison,normal-http-test,,,,,,,,,,TotLen Bwd Pkts,Total Length of Bwd Packet,61.0,100.0,0.0,0.0,0.0,1.0
+feature_comparison,normal-http-test,,,,,,,,,,Fwd Pkt Len Max,Fwd Packet Length Max,61.0,100.0,0.0,0.0,0.0,1.0
+feature_comparison,normal-http-test,,,,,,,,,,Fwd Pkt Len Min,Fwd Packet Length Min,61.0,100.0,0.0,0.0,0.0,
+feature_comparison,normal-http-test,,,,,,,,,,Fwd Pkt Len Mean,Fwd Packet Length Mean,61.0,100.0,0.0,0.0,0.0,0.9999999999999999
+feature_comparison,normal-http-test,,,,,,,,,,Fwd Pkt Len Std,Fwd Packet Length Std,61.0,100.0,0.0,0.0,0.0,1.0
+feature_comparison,normal-http-test,,,,,,,,,,Bwd Pkt Len Max,Bwd Packet Length Max,61.0,100.0,0.0,0.0,0.0,1.0
+feature_comparison,normal-http-test,,,,,,,,,,Bwd Pkt Len Min,Bwd Packet Length Min,61.0,100.0,0.0,0.0,0.0,
+feature_comparison,normal-http-test,,,,,,,,,,Bwd Pkt Len Mean,Bwd Packet Length Mean,61.0,100.0,0.0,0.0,0.0,1.0
+feature_comparison,normal-http-test,,,,,,,,,,Bwd Pkt Len Std,Bwd Packet Length Std,61.0,100.0,0.0,0.0,0.0,1.0
+feature_comparison,normal-http-test,,,,,,,,,,Flow Byts/s,Flow Bytes/s,56.0,100.0,0.0,0.0,0.0,1.0
+feature_comparison,normal-http-test,,,,,,,,,,Flow Pkts/s,Flow Packets/s,56.0,55.35714285714286,1590.8250724852242,8323.13341493268,0.12036846248576816,0.9947801125587115
+feature_comparison,normal-http-test,,,,,,,,,,Flow IAT Mean,Flow IAT Mean,61.0,50.81967213114754,83.95081967213115,1385.5,0.2673028758098731,0.9999999523226553
+feature_comparison,normal-http-test,,,,,,,,,,Flow IAT Std,Flow IAT Std,61.0,50.81967213114754,118.7243877526659,1959.3928906679232,0.4918032786885246,0.9462251839540581
+feature_comparison,normal-http-test,,,,,,,,,,Flow IAT Max,Flow IAT Max,61.0,91.80327868852459,4.180327868852459,81.0,0.08196721311475409,0.999999999754137
+feature_comparison,normal-http-test,,,,,,,,,,Flow IAT Min,Flow IAT Min,61.0,59.01639344262295,163.72131147540983,2771.0,0.3706713253902381,0.9999998110369713
+feature_comparison,normal-http-test,,,,,,,,,,Fwd IAT Tot,Fwd IAT Total,61.0,100.0,0.0,0.0,0.0,1.0
+feature_comparison,normal-http-test,,,,,,,,,,Fwd IAT Mean,Fwd IAT Mean,61.0,100.0,0.0,0.0,0.0,1.0
+feature_comparison,normal-http-test,,,,,,,,,,Fwd IAT Std,Fwd IAT Std,61.0,100.0,0.0,0.0,0.0,1.0
+feature_comparison,normal-http-test,,,,,,,,,,Fwd IAT Max,Fwd IAT Max,61.0,100.0,0.0,0.0,0.0,0.9999999999999998
+feature_comparison,normal-http-test,,,,,,,,,,Fwd IAT Min,Fwd IAT Min,61.0,100.0,0.0,0.0,0.0,1.0
+feature_comparison,normal-http-test,,,,,,,,,,Bwd IAT Tot,Bwd IAT Total,61.0,100.0,0.0,0.0,0.0,1.0
+feature_comparison,normal-http-test,,,,,,,,,,Bwd IAT Mean,Bwd IAT Mean,61.0,100.0,0.0,0.0,0.0,1.0
+feature_comparison,normal-http-test,,,,,,,,,,Bwd IAT Std,Bwd IAT Std,61.0,100.0,0.0,0.0,0.0,1.0
+feature_comparison,normal-http-test,,,,,,,,,,Bwd IAT Max,Bwd IAT Max,61.0,100.0,0.0,0.0,0.0,1.0
+feature_comparison,normal-http-test,,,,,,,,,,Bwd IAT Min,Bwd IAT Min,61.0,100.0,0.0,0.0,0.0,1.0
+feature_comparison,normal-http-test,,,,,,,,,,Fwd PSH Flags,Fwd PSH Flags,61.0,100.0,0.0,0.0,0.0,
+feature_comparison,normal-http-test,,,,,,,,,,Bwd PSH Flags,Bwd PSH Flags,61.0,100.0,0.0,0.0,0.0,
+feature_comparison,normal-http-test,,,,,,,,,,Fwd URG Flags,Fwd URG Flags,61.0,100.0,0.0,0.0,0.0,
+feature_comparison,normal-http-test,,,,,,,,,,Bwd URG Flags,Bwd URG Flags,61.0,100.0,0.0,0.0,0.0,
+feature_comparison,normal-http-test,,,,,,,,,,Fwd Header Len,Fwd Header Length,61.0,100.0,0.0,0.0,0.0,1.0
+feature_comparison,normal-http-test,,,,,,,,,,Bwd Header Len,Bwd Header Length,61.0,50.81967213114754,15.737704918032787,32.0,0.4918032786885246,0.9969963539922411
+feature_comparison,normal-http-test,,,,,,,,,,Fwd Pkts/s,Fwd Packets/s,61.0,50.81967213114754,4421.501527346177,80000.0,0.11648335325777322,0.21020201279544912
+feature_comparison,normal-http-test,,,,,,,,,,Bwd Pkts/s,Bwd Packets/s,61.0,50.81967213114754,3917.420369123158,40000.0,0.4918032786885246,-0.35177849342785233
+feature_comparison,normal-http-test,,,,,,,,,,Pkt Len Min,Packet Length Min,61.0,100.0,0.0,0.0,0.0,
+feature_comparison,normal-http-test,,,,,,,,,,Pkt Len Max,Packet Length Max,61.0,100.0,0.0,0.0,0.0,1.0
+feature_comparison,normal-http-test,,,,,,,,,,Pkt Len Mean,Packet Length Mean,61.0,100.0,0.0,0.0,0.0,1.0
+feature_comparison,normal-http-test,,,,,,,,,,Pkt Len Std,Packet Length Std,61.0,100.0,0.0,0.0,0.0,1.0
+feature_comparison,normal-http-test,,,,,,,,,,Pkt Len Var,Packet Length Variance,61.0,100.0,0.0,0.0,0.0,1.0
+feature_comparison,normal-http-test,,,,,,,,,,FIN Flag Cnt,FIN Flag Count,61.0,1.639344262295082,0.9836065573770492,1.0,0.9836065573770492,
+feature_comparison,normal-http-test,,,,,,,,,,SYN Flag Cnt,SYN Flag Count,61.0,50.81967213114754,0.9836065573770492,2.0,0.4918032786885246,
+feature_comparison,normal-http-test,,,,,,,,,,RST Flag Cnt,RST Flag Count,61.0,100.0,0.0,0.0,0.0,
+feature_comparison,normal-http-test,,,,,,,,,,PSH Flag Cnt,PSH Flag Count,61.0,50.81967213114754,0.9836065573770492,2.0,0.32786885245901637,1.0
+feature_comparison,normal-http-test,,,,,,,,,,ACK Flag Cnt,ACK Flag Count,61.0,1.639344262295082,3.9672131147540983,8.0,0.8196721311475409,-0.8723059078556464
+feature_comparison,normal-http-test,,,,,,,,,,URG Flag Cnt,URG Flag Count,61.0,100.0,0.0,0.0,0.0,
+feature_comparison,normal-http-test,,,,,,,,,,CWE Flag Count,CWR Flag Count,61.0,100.0,0.0,0.0,0.0,
+feature_comparison,normal-http-test,,,,,,,,,,ECE Flag Cnt,ECE Flag Count,61.0,100.0,0.0,0.0,0.0,
+feature_comparison,normal-http-test,,,,,,,,,,Down/Up Ratio,Down/Up Ratio,61.0,100.0,0.0,0.0,0.0,1.0
+feature_comparison,normal-http-test,,,,,,,,,,Pkt Size Avg,Average Packet Size,61.0,100.0,0.0,0.0,0.0,1.0
+feature_comparison,normal-http-test,,,,,,,,,,Fwd Seg Size Avg,Fwd Segment Size Avg,61.0,100.0,0.0,0.0,0.0,0.9999999999999999
+feature_comparison,normal-http-test,,,,,,,,,,Bwd Seg Size Avg,Bwd Segment Size Avg,61.0,100.0,0.0,0.0,0.0,1.0
+feature_comparison,normal-http-test,,,,,,,,,,Fwd Byts/b Avg,Fwd Bytes/Bulk Avg,61.0,100.0,0.0,0.0,0.0,
+feature_comparison,normal-http-test,,,,,,,,,,Fwd Pkts/b Avg,Fwd Packet/Bulk Avg,61.0,100.0,0.0,0.0,0.0,
+feature_comparison,normal-http-test,,,,,,,,,,Fwd Blk Rate Avg,Fwd Bulk Rate Avg,61.0,100.0,0.0,0.0,0.0,
+feature_comparison,normal-http-test,,,,,,,,,,Bwd Byts/b Avg,Bwd Bytes/Bulk Avg,61.0,100.0,0.0,0.0,0.0,
+feature_comparison,normal-http-test,,,,,,,,,,Bwd Pkts/b Avg,Bwd Packet/Bulk Avg,61.0,100.0,0.0,0.0,0.0,
+feature_comparison,normal-http-test,,,,,,,,,,Bwd Blk Rate Avg,Bwd Bulk Rate Avg,61.0,100.0,0.0,0.0,0.0,
+feature_comparison,normal-http-test,,,,,,,,,,Subflow Fwd Pkts,Subflow Fwd Packets,61.0,1.639344262295082,2.4754098360655736,4.0,0.9836065573770492,-0.12338949839561683
+feature_comparison,normal-http-test,,,,,,,,,,Subflow Fwd Byts,Subflow Fwd Bytes,61.0,50.81967213114754,40.32786885245902,82.0,0.4918032786885246,
+feature_comparison,normal-http-test,,,,,,,,,,Subflow Bwd Pkts,Subflow Bwd Packets,61.0,50.81967213114754,1.9836065573770492,5.0,0.4918032786885246,
+feature_comparison,normal-http-test,,,,,,,,,,Subflow Bwd Byts,Subflow Bwd Bytes,61.0,50.81967213114754,104.75409836065573,213.0,0.4918032786885246,
+feature_comparison,normal-http-test,,,,,,,,,,Init Fwd Win Byts,FWD Init Win Bytes,61.0,98.36065573770492,0.01639344262295082,1.0,0.01639344262295082,0.9999999999922808
+feature_comparison,normal-http-test,,,,,,,,,,Init Bwd Win Byts,Bwd Init Win Bytes,61.0,49.18032786885246,125.91803278688525,256.0,0.5101253616200578,0.12700012700019056
+feature_comparison,normal-http-test,,,,,,,,,,Fwd Act Data Pkts,Fwd Act Data Pkts,61.0,100.0,0.0,0.0,0.0,1.0
+feature_comparison,normal-http-test,,,,,,,,,,Fwd Seg Size Min,Fwd Seg Size Min,61.0,100.0,0.0,0.0,0.0,0.9999999999999998
+feature_comparison,normal-http-test,,,,,,,,,,Active Mean,Active Mean,61.0,100.0,0.0,0.0,0.0,
+feature_comparison,normal-http-test,,,,,,,,,,Active Std,Active Std,61.0,100.0,0.0,0.0,0.0,
+feature_comparison,normal-http-test,,,,,,,,,,Active Max,Active Max,61.0,100.0,0.0,0.0,0.0,
+feature_comparison,normal-http-test,,,,,,,,,,Active Min,Active Min,61.0,100.0,0.0,0.0,0.0,
+feature_comparison,normal-http-test,,,,,,,,,,Idle Mean,Idle Mean,61.0,100.0,0.0,0.0,0.0,1.0
+feature_comparison,normal-http-test,,,,,,,,,,Idle Std,Idle Std,61.0,100.0,0.0,0.0,0.0,
+feature_comparison,normal-http-test,,,,,,,,,,Idle Max,Idle Max,61.0,100.0,0.0,0.0,0.0,1.0
+feature_comparison,normal-http-test,,,,,,,,,,Idle Min,Idle Min,61.0,100.0,0.0,0.0,0.0,1.0
+flow_summary,portscan-test,1000.0,1000.0,1000.0,0.0,0.0,0.0,0.0,"{'min': 0.0, 'median': 0.0, 'max': 0.0}",Protocol and canonical bidirectional five-tuple; Hungarian one-to-one assignment within identity minimizes start-time then duration difference; orientation checked separately.,,,,,,,,
+feature_comparison,portscan-test,,,,,,,,,,Flow Duration,Flow Duration,1000.0,100.0,0.0,0.0,0.0,1.0
+feature_comparison,portscan-test,,,,,,,,,,Tot Fwd Pkts,Total Fwd Packet,1000.0,100.0,0.0,0.0,0.0,1.0
+feature_comparison,portscan-test,,,,,,,,,,Tot Bwd Pkts,Total Bwd packets,1000.0,100.0,0.0,0.0,0.0,
+feature_comparison,portscan-test,,,,,,,,,,TotLen Fwd Pkts,Total Length of Fwd Packet,1000.0,100.0,0.0,0.0,0.0,
+feature_comparison,portscan-test,,,,,,,,,,TotLen Bwd Pkts,Total Length of Bwd Packet,1000.0,100.0,0.0,0.0,0.0,
+feature_comparison,portscan-test,,,,,,,,,,Fwd Pkt Len Max,Fwd Packet Length Max,1000.0,100.0,0.0,0.0,0.0,
+feature_comparison,portscan-test,,,,,,,,,,Fwd Pkt Len Min,Fwd Packet Length Min,1000.0,100.0,0.0,0.0,0.0,
+feature_comparison,portscan-test,,,,,,,,,,Fwd Pkt Len Mean,Fwd Packet Length Mean,1000.0,100.0,0.0,0.0,0.0,
+feature_comparison,portscan-test,,,,,,,,,,Fwd Pkt Len Std,Fwd Packet Length Std,1000.0,100.0,0.0,0.0,0.0,
+feature_comparison,portscan-test,,,,,,,,,,Bwd Pkt Len Max,Bwd Packet Length Max,1000.0,100.0,0.0,0.0,0.0,
+feature_comparison,portscan-test,,,,,,,,,,Bwd Pkt Len Min,Bwd Packet Length Min,1000.0,100.0,0.0,0.0,0.0,
+feature_comparison,portscan-test,,,,,,,,,,Bwd Pkt Len Mean,Bwd Packet Length Mean,1000.0,100.0,0.0,0.0,0.0,
+feature_comparison,portscan-test,,,,,,,,,,Bwd Pkt Len Std,Bwd Packet Length Std,1000.0,100.0,0.0,0.0,0.0,
+feature_comparison,portscan-test,,,,,,,,,,Flow Byts/s,Flow Bytes/s,993.0,100.0,0.0,0.0,0.0,
+feature_comparison,portscan-test,,,,,,,,,,Flow Pkts/s,Flow Packets/s,993.0,100.0,0.0,0.0,0.0,1.0
+feature_comparison,portscan-test,,,,,,,,,,Flow IAT Mean,Flow IAT Mean,1000.0,100.0,0.0,0.0,0.0,0.9999999999999999
+feature_comparison,portscan-test,,,,,,,,,,Flow IAT Std,Flow IAT Std,1000.0,100.0,0.0,0.0,0.0,1.0
+feature_comparison,portscan-test,,,,,,,,,,Flow IAT Max,Flow IAT Max,1000.0,100.0,0.0,0.0,0.0,0.9999999999999999
+feature_comparison,portscan-test,,,,,,,,,,Flow IAT Min,Flow IAT Min,1000.0,100.0,0.0,0.0,0.0,1.0
+feature_comparison,portscan-test,,,,,,,,,,Fwd IAT Tot,Fwd IAT Total,1000.0,100.0,0.0,0.0,0.0,1.0
+feature_comparison,portscan-test,,,,,,,,,,Fwd IAT Mean,Fwd IAT Mean,1000.0,100.0,0.0,0.0,0.0,1.0
+feature_comparison,portscan-test,,,,,,,,,,Fwd IAT Std,Fwd IAT Std,1000.0,100.0,0.0,0.0,0.0,
+feature_comparison,portscan-test,,,,,,,,,,Fwd IAT Max,Fwd IAT Max,1000.0,100.0,0.0,0.0,0.0,1.0
+feature_comparison,portscan-test,,,,,,,,,,Fwd IAT Min,Fwd IAT Min,1000.0,100.0,0.0,0.0,0.0,1.0
+feature_comparison,portscan-test,,,,,,,,,,Bwd IAT Tot,Bwd IAT Total,1000.0,100.0,0.0,0.0,0.0,
+feature_comparison,portscan-test,,,,,,,,,,Bwd IAT Mean,Bwd IAT Mean,1000.0,100.0,0.0,0.0,0.0,
+feature_comparison,portscan-test,,,,,,,,,,Bwd IAT Std,Bwd IAT Std,1000.0,100.0,0.0,0.0,0.0,
+feature_comparison,portscan-test,,,,,,,,,,Bwd IAT Max,Bwd IAT Max,1000.0,100.0,0.0,0.0,0.0,
+feature_comparison,portscan-test,,,,,,,,,,Bwd IAT Min,Bwd IAT Min,1000.0,100.0,0.0,0.0,0.0,
+feature_comparison,portscan-test,,,,,,,,,,Fwd PSH Flags,Fwd PSH Flags,1000.0,100.0,0.0,0.0,0.0,
+feature_comparison,portscan-test,,,,,,,,,,Bwd PSH Flags,Bwd PSH Flags,1000.0,100.0,0.0,0.0,0.0,
+feature_comparison,portscan-test,,,,,,,,,,Fwd URG Flags,Fwd URG Flags,1000.0,100.0,0.0,0.0,0.0,
+feature_comparison,portscan-test,,,,,,,,,,Bwd URG Flags,Bwd URG Flags,1000.0,100.0,0.0,0.0,0.0,
+feature_comparison,portscan-test,,,,,,,,,,Fwd Header Len,Fwd Header Length,1000.0,100.0,0.0,0.0,0.0,1.0
+feature_comparison,portscan-test,,,,,,,,,,Bwd Header Len,Bwd Header Length,1000.0,100.0,0.0,0.0,0.0,1.0
+feature_comparison,portscan-test,,,,,,,,,,Fwd Pkts/s,Fwd Packets/s,1000.0,100.0,0.0,0.0,0.0,1.0
+feature_comparison,portscan-test,,,,,,,,,,Bwd Pkts/s,Bwd Packets/s,1000.0,100.0,0.0,0.0,0.0,1.0
+feature_comparison,portscan-test,,,,,,,,,,Pkt Len Min,Packet Length Min,1000.0,100.0,0.0,0.0,0.0,
+feature_comparison,portscan-test,,,,,,,,,,Pkt Len Max,Packet Length Max,1000.0,100.0,0.0,0.0,0.0,
+feature_comparison,portscan-test,,,,,,,,,,Pkt Len Mean,Packet Length Mean,1000.0,100.0,0.0,0.0,0.0,
+feature_comparison,portscan-test,,,,,,,,,,Pkt Len Std,Packet Length Std,1000.0,100.0,0.0,0.0,0.0,
+feature_comparison,portscan-test,,,,,,,,,,Pkt Len Var,Packet Length Variance,1000.0,100.0,0.0,0.0,0.0,
+feature_comparison,portscan-test,,,,,,,,,,FIN Flag Cnt,FIN Flag Count,1000.0,100.0,0.0,0.0,0.0,
+feature_comparison,portscan-test,,,,,,,,,,SYN Flag Cnt,SYN Flag Count,1000.0,0.0,1.001,2.0,1.0,
+feature_comparison,portscan-test,,,,,,,,,,RST Flag Cnt,RST Flag Count,1000.0,0.0,1.0,1.0,1.0,
+feature_comparison,portscan-test,,,,,,,,,,PSH Flag Cnt,PSH Flag Count,1000.0,0.0,1.0,1.0,1.0,
+feature_comparison,portscan-test,,,,,,,,,,ACK Flag Cnt,ACK Flag Count,1000.0,0.0,1.0,1.0,1.0,
+feature_comparison,portscan-test,,,,,,,,,,URG Flag Cnt,URG Flag Count,1000.0,100.0,0.0,0.0,0.0,
+feature_comparison,portscan-test,,,,,,,,,,CWE Flag Count,CWR Flag Count,1000.0,100.0,0.0,0.0,0.0,
+feature_comparison,portscan-test,,,,,,,,,,ECE Flag Cnt,ECE Flag Count,1000.0,100.0,0.0,0.0,0.0,
+feature_comparison,portscan-test,,,,,,,,,,Down/Up Ratio,Down/Up Ratio,1000.0,100.0,0.0,0.0,0.0,1.0
+feature_comparison,portscan-test,,,,,,,,,,Pkt Size Avg,Average Packet Size,1000.0,100.0,0.0,0.0,0.0,
+feature_comparison,portscan-test,,,,,,,,,,Fwd Seg Size Avg,Fwd Segment Size Avg,1000.0,100.0,0.0,0.0,0.0,
+feature_comparison,portscan-test,,,,,,,,,,Bwd Seg Size Avg,Bwd Segment Size Avg,1000.0,100.0,0.0,0.0,0.0,
+feature_comparison,portscan-test,,,,,,,,,,Fwd Byts/b Avg,Fwd Bytes/Bulk Avg,1000.0,100.0,0.0,0.0,0.0,
+feature_comparison,portscan-test,,,,,,,,,,Fwd Pkts/b Avg,Fwd Packet/Bulk Avg,1000.0,100.0,0.0,0.0,0.0,
+feature_comparison,portscan-test,,,,,,,,,,Fwd Blk Rate Avg,Fwd Bulk Rate Avg,1000.0,100.0,0.0,0.0,0.0,
+feature_comparison,portscan-test,,,,,,,,,,Bwd Byts/b Avg,Bwd Bytes/Bulk Avg,1000.0,100.0,0.0,0.0,0.0,
+feature_comparison,portscan-test,,,,,,,,,,Bwd Pkts/b Avg,Bwd Packet/Bulk Avg,1000.0,100.0,0.0,0.0,0.0,
+feature_comparison,portscan-test,,,,,,,,,,Bwd Blk Rate Avg,Bwd Bulk Rate Avg,1000.0,100.0,0.0,0.0,0.0,
+feature_comparison,portscan-test,,,,,,,,,,Subflow Fwd Pkts,Subflow Fwd Packets,1000.0,0.0,1.001,2.0,1.0,
+feature_comparison,portscan-test,,,,,,,,,,Subflow Fwd Byts,Subflow Fwd Bytes,1000.0,100.0,0.0,0.0,0.0,
+feature_comparison,portscan-test,,,,,,,,,,Subflow Bwd Pkts,Subflow Bwd Packets,1000.0,0.0,1.0,1.0,1.0,
+feature_comparison,portscan-test,,,,,,,,,,Subflow Bwd Byts,Subflow Bwd Bytes,1000.0,100.0,0.0,0.0,0.0,
+feature_comparison,portscan-test,,,,,,,,,,Init Fwd Win Byts,FWD Init Win Bytes,1000.0,100.0,0.0,0.0,0.0,
+feature_comparison,portscan-test,,,,,,,,,,Init Bwd Win Byts,Bwd Init Win Bytes,1000.0,100.0,0.0,0.0,0.0,1.0
+feature_comparison,portscan-test,,,,,,,,,,Fwd Act Data Pkts,Fwd Act Data Pkts,1000.0,100.0,0.0,0.0,0.0,
+feature_comparison,portscan-test,,,,,,,,,,Fwd Seg Size Min,Fwd Seg Size Min,1000.0,100.0,0.0,0.0,0.0,1.0
+feature_comparison,portscan-test,,,,,,,,,,Active Mean,Active Mean,1000.0,100.0,0.0,0.0,0.0,
+feature_comparison,portscan-test,,,,,,,,,,Active Std,Active Std,1000.0,100.0,0.0,0.0,0.0,
+feature_comparison,portscan-test,,,,,,,,,,Active Max,Active Max,1000.0,100.0,0.0,0.0,0.0,
+feature_comparison,portscan-test,,,,,,,,,,Active Min,Active Min,1000.0,100.0,0.0,0.0,0.0,
+feature_comparison,portscan-test,,,,,,,,,,Idle Mean,Idle Mean,1000.0,100.0,0.0,0.0,0.0,
+feature_comparison,portscan-test,,,,,,,,,,Idle Std,Idle Std,1000.0,100.0,0.0,0.0,0.0,
+feature_comparison,portscan-test,,,,,,,,,,Idle Max,Idle Max,1000.0,100.0,0.0,0.0,0.0,
+feature_comparison,portscan-test,,,,,,,,,,Idle Min,Idle Min,1000.0,100.0,0.0,0.0,0.0,

@@ -1,0 +1,4 @@
+experiment,purpose,name,accuracy,macro_f1,ddos_recall,portscan_recall,false_positive_rate_normal_as_attack,normal_recall
+A,in-dataset stratified/random evaluation,Stratified Random Split,0.9995680942591089,0.9981178480101865,0.999882826231301,0.9996146223298833,0.000453139421460206,
+B,scenario/ordered CICIDS2017 validation,Scenario/Unseen Split,0.9997110699319385,0.998837244166789,0.99785836664763,0.9958278020102409,1.6807368350284767e-05,
+C,external controlled virtual laboratory validation,,0.005404447594577833,0.0035835976970978733,0.0,0.0,,1.0

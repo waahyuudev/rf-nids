@@ -1,0 +1,4 @@
+class,precision,recall,f1,support
+Normal,0.005404447594577833,1.0,0.01075079309129362,61
+DDoS,0.0,0.0,0.0,10226
+PortScan,0.0,0.0,0.0,1000
