@@ -26,7 +26,6 @@ services:
       DATABASE_URL: postgresql+psycopg2://postgres:postgres@postgres:5432/rf_nids
       MODEL_PATH: models/random_forest_active.joblib
       MODEL_METADATA_PATH: models/model_metadata.json
-      ALERT_CONFIDENCE_THRESHOLD: "0.70"
       MAX_BATCH_SIZE: "1000"
       MAX_PAGE_SIZE: "100"
       AUTH_SESSION_HOURS: "8"

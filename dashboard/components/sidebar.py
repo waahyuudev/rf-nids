@@ -1,10 +1,18 @@
 import streamlit as st
 
 
-def render_sidebar(online: bool, model_version: str | None, refresh_seconds: int) -> tuple[str, bool]:
+def render_sidebar(
+    online: bool,
+    model_version: str | None,
+    refresh_seconds: int,
+    user: dict,
+) -> tuple[str, bool, bool]:
     with st.sidebar:
         st.title("RF-NIDS")
         st.caption("Thesis application")
+        st.markdown(f"**{user.get('name', 'Administrator')}**")
+        st.caption(user.get("email", ""))
+        st.caption(f"Role · {user.get('role', 'ADMIN')}")
         page = st.radio(
             "Navigation",
             ["Dashboard", "Dataset", "Models", "Evaluation", "Monitoring", "Predictions", "Alerts"],
@@ -19,5 +27,6 @@ def render_sidebar(online: bool, model_version: str | None, refresh_seconds: int
             st.caption(f"Updating every {refresh_seconds} seconds")
         if st.button("Refresh now", width="stretch"):
             st.rerun()
+        logout = st.button("Logout", width="stretch")
         st.caption("Development environment")
-    return page, auto_refresh
+    return page, auto_refresh, logout

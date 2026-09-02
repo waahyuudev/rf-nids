@@ -145,6 +145,7 @@ class MonitoringSummary(BaseModel):
     total_ddos: int
     total_portscan: int
     total_alerts: int
+    active_alerts: int
     latest_detection_timestamp: datetime | None
     active_model: str | None
 
@@ -158,11 +159,22 @@ class AlertDetail(BaseModel):
     description: str
     status: AlertStatus
     acknowledged_at: datetime | None
+    acknowledged_by_user_id: int | None
+    acknowledged_by_name: str | None
+    acknowledged_by_email: str | None
     created_at: datetime
     predicted_label: PredictionLabel
     confidence_score: float
+    class_probabilities: dict[str, float] | None
     source_ip: str | None = None
+    source_port: int | None = None
     destination_ip: str | None = None
+    destination_port: int | None = None
+    protocol: str | None = None
+    capture_time: datetime | None = None
+    model_name: str | None = None
+    model_version: str | None = None
+    source_type: str | None = None
 
 
 class DashboardSummary(BaseModel):

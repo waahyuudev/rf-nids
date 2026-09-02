@@ -60,7 +60,7 @@ def sync_active_model(db: Session, metadata: dict) -> ModelRecord:
     return record
 
 
-def persist_predictions(db: Session, requests, outputs, model_id: int, threshold: float):
+def persist_predictions(db: Session, requests, outputs, model_id: int):
     results = []
     try:
         for request, output in zip(requests, outputs, strict=True):
@@ -75,13 +75,13 @@ def persist_predictions(db: Session, requests, outputs, model_id: int, threshold
                 class_probabilities=output["probabilities"],
             )
             db.add(prediction)
-            if output["prediction"] != "Normal" and output["confidence"] >= threshold:
-                severity = SEVERITY.get(output["prediction"], "MEDIUM")
+            if output["prediction"] in SEVERITY:
+                severity = SEVERITY[output["prediction"]]
                 db.add(
                     Alert(
                         prediction=prediction,
                         severity=severity,
-                        title=f"{severity} confidence {output['prediction']} detected",
+                        title=f"{severity} severity {output['prediction']} detected",
                         description=(
                             f"RF-NIDS classified this flow as {output['prediction']} "
                             f"with confidence {output['confidence']:.4f}."

@@ -7,11 +7,13 @@ from dashboard.config import DashboardConfig
 
 
 class Response:
-    def __init__(self, payload=None, status=200, invalid=False):
+    def __init__(self, payload=None, status=200, invalid=False, content=b"", headers=None):
         self.payload = payload
         self.status_code = status
         self.ok = status < 400
         self.invalid = invalid
+        self.content = content
+        self.headers = headers or {}
 
     def json(self):
         if self.invalid:
@@ -58,9 +60,32 @@ def test_prediction_and_alert_parsing():
 
 def test_acknowledge_uses_patch_request():
     session = Session([Response({"id": 4, "status": "ACKNOWLEDGED"})])
-    api = RFNIDSClient("http://api.test", session=session)
+    api = RFNIDSClient("http://api.test", session=session, access_token="session-token")
     assert api.acknowledge_alert(4)["status"] == "ACKNOWLEDGED"
     assert session.calls[0][0:2] == ("PATCH", "http://api.test/api/alerts/4/acknowledge")
+    assert session.calls[0][2]["headers"] == {"Authorization": "Bearer session-token"}
+
+
+def test_dynamic_token_provider_and_auth_paths():
+    token = {"value": "first-token"}
+    session = Session([
+        Response({"access_token": "new-token", "user": {"role": "ADMIN"}}),
+        Response({"email": "admin@example.test"}),
+        Response({"status": "logged_out"}),
+    ])
+    api = RFNIDSClient(
+        "http://api.test", session=session, token_provider=lambda: token["value"]
+    )
+    api.login("admin@example.test", "secret")
+    token["value"] = "second-token"
+    api.current_user()
+    api.logout()
+    assert session.calls[0][2]["json"] == {
+        "email": "admin@example.test", "password": "secret"
+    }
+    assert session.calls[1][2]["headers"] == {
+        "Authorization": "Bearer second-token"
+    }
 
 
 def test_phase_3_read_clients_map_paths_and_filters():
@@ -117,3 +142,46 @@ def test_config_reads_dashboard_environment(monkeypatch):
     assert config.api_base_url == "http://backend:9000"
     assert config.refresh_seconds == 7
     assert config.request_timeout == 2.5
+
+
+def test_alert_client_maps_phase_5_server_side_filters():
+    session = Session([Response([])])
+    api = RFNIDSClient("http://api.test", session=session)
+    assert api.alerts(
+        limit=20,
+        offset=0,
+        predicted_label="DDoS",
+        severity="HIGH",
+        status="ACTIVE",
+        source_ip="192.0.2.1",
+        destination_ip="198.51.100.1",
+    ) == []
+    assert session.calls[0][2]["params"] == {
+        "limit": 20,
+        "offset": 0,
+        "predicted_label": "DDoS",
+        "severity": "HIGH",
+        "status": "ACTIVE",
+        "source_ip": "192.0.2.1",
+        "destination_ip": "198.51.100.1",
+    }
+
+
+def test_phase_7_download_clients_preserve_bytes_names_auth_and_filters():
+    response = Response(
+        content=b"prediction_id\n",
+        headers={"Content-Disposition": 'attachment; filename="rf_nids_predictions_2026-09-02.csv"',
+                 "Content-Type": "text/csv; charset=utf-8"},
+    )
+    session = Session([response])
+    api = RFNIDSClient("http://api.test", session=session, access_token="admin-token")
+    download = api.export_predictions(
+        format="csv", predicted_label="DDoS", source_ip="192.0.2.1", destination_ip=None
+    )
+    assert download.content == b"prediction_id\n"
+    assert download.filename == "rf_nids_predictions_2026-09-02.csv"
+    assert download.content_type.startswith("text/csv")
+    assert session.calls[0][2]["headers"] == {"Authorization": "Bearer admin-token"}
+    assert session.calls[0][2]["params"] == {
+        "format": "csv", "predicted_label": "DDoS", "source_ip": "192.0.2.1"
+    }

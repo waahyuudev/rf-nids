@@ -37,6 +37,24 @@ def render(client) -> None:
     rows = client.experiment_evaluation(experiment["id"])
     overall, classes = split_evaluations(rows)
 
+    json_export = client.export_experiment(experiment["id"], "json")
+    csv_export = client.export_experiment(experiment["id"], "csv")
+    download_columns = st.columns(3)
+    download_columns[0].download_button(
+        "Download evaluation JSON", json_export.content,
+        file_name=json_export.filename, mime=json_export.content_type,
+    )
+    download_columns[1].download_button(
+        "Download metrics CSV", csv_export.content,
+        file_name=csv_export.filename, mime=csv_export.content_type,
+    )
+    if overall and overall.get("confusion_matrix"):
+        matrix_export = client.export_confusion_matrix(experiment["id"])
+        download_columns[2].download_button(
+            "Download confusion matrix CSV", matrix_export.content,
+            file_name=matrix_export.filename, mime=matrix_export.content_type,
+        )
+
     st.subheader(EXPERIMENT_LABELS.get(selected, experiment["experiment_name"]))
     st.caption(f"{experiment['experiment_type']} · {experiment['status']}")
     if experiment.get("description"):

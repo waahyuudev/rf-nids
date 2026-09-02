@@ -6,7 +6,9 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from scripts.bootstrap_admin import create_admin
-from src.api.auth import hash_password, verify_password
+from fastapi import HTTPException
+
+from src.api.auth import hash_password, require_admin, verify_password
 from src.api.database import Base
 from src.api.models import (
     Alert,
@@ -65,6 +67,18 @@ def test_database_unique_email_constraint(db):
     with pytest.raises(IntegrityError):
         db.commit()
     db.rollback()
+
+
+def test_admin_dependency_rejects_other_roles():
+    user = User(
+        name="Viewer",
+        email="viewer@example.test",
+        password_hash=hash_password("a-secure-local-password"),
+        role="VIEWER",
+    )
+    with pytest.raises(HTTPException) as raised:
+        require_admin(user)
+    assert raised.value.status_code == 403
 
 
 def test_dataset_experiment_evaluation_and_model_relationships(db):

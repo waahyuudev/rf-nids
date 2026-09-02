@@ -10,7 +10,7 @@ PAGE_SIZE = 20
 
 
 def _value(value):
-    return "Not available" if value is None or value == "" else value
+    return "Not available" if value is None or value == "" else str(value)
 
 
 def _confidence(value):
@@ -108,6 +108,12 @@ def render(client) -> None:
     }
     rows = client.predictions(
         limit=PAGE_SIZE, offset=(page - 1) * PAGE_SIZE, **filters
+    )
+    export = client.export_predictions(format="csv", **filters)
+    st.download_button(
+        "Export current filtered predictions", export.content,
+        file_name=export.filename, mime=export.content_type,
+        help="Exports up to 10,000 matching records in deterministic ID order.",
     )
     predictions_table(rows)
     st.caption(f"Page {page} · showing {len(rows)} of at most {PAGE_SIZE} records.")

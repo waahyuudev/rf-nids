@@ -26,7 +26,8 @@ def alerts_table(rows: list[dict]) -> None:
     if not rows:
         st.info("No alerts available yet.")
         return
-    fields = ["id", "created_at", "severity", "title", "predicted_label", "confidence_score", "source_ip", "destination_ip", "status"]
-    frame = pd.DataFrame(rows).reindex(columns=fields).rename(columns={"id": "ID", "created_at": "Time", "severity": "Severity", "title": "Alert", "predicted_label": "Class", "confidence_score": "Confidence", "source_ip": "Source IP", "destination_ip": "Destination IP", "status": "Status"})
+    fields = ["id", "created_at", "predicted_label", "severity", "source_ip", "destination_ip", "confidence_score", "status", "acknowledged_by_name", "acknowledged_at"]
+    frame = pd.DataFrame(rows).reindex(columns=fields).rename(columns={"id": "ID", "created_at": "Time", "predicted_label": "Attack Type", "severity": "Severity", "source_ip": "Source IP", "destination_ip": "Destination IP", "confidence_score": "Confidence", "status": "Status", "acknowledged_by_name": "Acknowledged By", "acknowledged_at": "Acknowledged At"})
     frame["Time"] = pd.to_datetime(frame["Time"]).dt.strftime("%d %b %Y · %H:%M:%S")
+    frame["Acknowledged At"] = pd.to_datetime(frame["Acknowledged At"]).dt.strftime("%d %b %Y · %H:%M:%S")
     st.dataframe(frame, width="stretch", hide_index=True, column_config={"Confidence": st.column_config.ProgressColumn("Confidence", min_value=0.0, max_value=1.0, format="percent")})

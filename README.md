@@ -370,9 +370,16 @@ Contoh ringkas di atas sengaja tidak memuat semua fitur dan akan menghasilkan va
 membangun collector. Batch dibatasi `MAX_BATCH_SIZE`, sedangkan pagination dibatasi
 `MAX_PAGE_SIZE`.
 
-Prediction selalu disimpan. Alert hanya dibuat bila label bukan `Normal` dan confidence
-mencapai `ALERT_CONFIDENCE_THRESHOLD` (default `0.70`): `DDoS` menjadi `HIGH`, sedangkan
-`PortScan` menjadi `MEDIUM`. Confidence rendah tidak mengubah label hasil model.
+Prediction selalu disimpan. Alert mengikuti aturan aplikasi deterministik: `Normal` tidak
+membuat alert, `DDoS` selalu membuat alert `HIGH`, dan `PortScan` selalu membuat alert
+`MEDIUM`. Confidence tetap disimpan dan ditampilkan sebagai informasi prediction, tetapi
+tidak menentukan pembuatan alert. Konfigurasi lama `ALERT_CONFIDENCE_THRESHOLD` telah
+dihapus karena tidak lagi memiliki efek aplikasi.
+
+Endpoint acknowledge memerlukan sesi administrator Bearer yang diperoleh melalui
+`POST /api/auth/login`. Streamlit menyediakan Login interaktif, menyimpan token opaque
+di session state, menambahkan Bearer token ke request terproteksi, dan menyediakan Logout.
+Seluruh halaman aplikasi hanya muncul setelah sesi ADMIN diverifikasi.
 
 Batch prediction disimpan dalam satu transaction: seluruh flow, prediction, dan alert di-flush
 lalu di-commit sekali; kegagalan apa pun memicu rollback seluruh batch. Relasi data mengikuti

@@ -1,9 +1,11 @@
 from pathlib import Path
+import csv
+from io import StringIO
 
 import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import func, select
-from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 
 from src.api import main as api_main
 from src.api.main import create_app
@@ -12,6 +14,7 @@ from src.api.auth import hash_password
 from src.api.models import Dataset, EvidenceSource, EvaluationResult, Experiment, User
 from src.api.schemas import PredictionRequest
 from src.api.service import persist_predictions
+from src.application.evidence_sync import synchronize_evidence
 from src.common.config import Settings
 from src.inference import FeatureValidationError
 
@@ -49,8 +52,10 @@ class FakeInferenceEngine:
             label, confidence = "DDoS", 0.95
         elif value < 30:
             label, confidence = "PortScan", 0.90
-        else:
+        elif value < 40:
             label, confidence = "DDoS", 0.60
+        else:
+            label, confidence = "PortScan", 0.40
         remaining = (1 - confidence) / 2
         probabilities = {name: remaining for name in self.metadata["class_names"]}
         probabilities[label] = confidence
@@ -77,12 +82,32 @@ def client(tmp_path: Path):
         database_url=f"sqlite:///{tmp_path / 'api.db'}",
         model_path=tmp_path / "unused.joblib",
         model_metadata_path=tmp_path / "unused.json",
-        alert_confidence_threshold=0.70,
         max_batch_size=2,
         max_page_size=10,
     )
     app = create_app(settings, engine_factory=FakeInferenceEngine, create_tables=True)
     with TestClient(app) as test_client:
+        with app.state.session_factory() as db:
+            db.add(
+                User(
+                    name="Default Test Admin",
+                    email="default-admin@example.test",
+                    password_hash=hash_password("default-test-password"),
+                    role="ADMIN",
+                    is_active=True,
+                )
+            )
+            db.commit()
+        login = test_client.post(
+            "/api/auth/login",
+            json={
+                "email": "default-admin@example.test",
+                "password": "default-test-password",
+            },
+        )
+        test_client.headers.update(
+            {"Authorization": f"Bearer {login.json()['access_token']}"}
+        )
         yield test_client, app
 
 
@@ -91,6 +116,26 @@ def payload(value, **metadata):
         "features": {"feature_a": value, "feature_b": 1},
         "metadata": metadata or None,
     }
+
+
+def authenticated_admin(http, app, *, email="admin@example.test"):
+    with app.state.session_factory() as db:
+        admin = User(
+            name="Thesis Admin",
+            email=email,
+            password_hash=hash_password("correct-horse-battery"),
+            role="ADMIN",
+            is_active=True,
+        )
+        db.add(admin)
+        db.commit()
+        user_id = admin.id
+    login = http.post(
+        "/api/auth/login",
+        json={"email": email, "password": "correct-horse-battery"},
+    )
+    token = login.json()["access_token"]
+    return {"Authorization": f"Bearer {token}"}, user_id
 
 
 def test_health_and_model(client):
@@ -105,6 +150,17 @@ def test_health_and_model(client):
     assert model.json()["feature_count"] == 2
     assert model.json()["ddos_recall"] == 0.97
     assert "model_path" not in model.json()
+
+
+def test_application_endpoints_require_admin_but_runtime_inference_stays_local(client):
+    http, _ = client
+    no_auth = {"Authorization": ""}
+    assert http.get("/health", headers=no_auth).status_code == 200
+    assert http.post("/api/predict", json=payload(1), headers=no_auth).status_code == 201
+    assert http.get("/api/model", headers=no_auth).status_code == 401
+    assert http.get("/api/dashboard/summary", headers=no_auth).status_code == 401
+    assert http.get("/api/alerts", headers=no_auth).status_code == 401
+    assert http.get("/api/auth/me", headers={"Authorization": "Bearer unknown"}).status_code == 401
 
 
 def test_validation_and_batch_limit(client):
@@ -137,6 +193,7 @@ def test_prediction_alert_rules_and_persistence(client):
         assert [(row.severity, row.status) for row in alerts] == [
             ("HIGH", "ACTIVE"),
             ("MEDIUM", "ACTIVE"),
+            ("HIGH", "ACTIVE"),
         ]
 
     listed = http.get("/api/predictions", params={"source_ip": "10.0.0.1"}).json()
@@ -148,20 +205,15 @@ def test_prediction_alert_rules_and_persistence(client):
     alerts_response = http.get("/api/alerts")
     assert alerts_response.status_code == 200, alerts_response.text
     alerts = alerts_response.json()
-    high = next(item for item in alerts if item["severity"] == "HIGH")
-    acknowledged = http.patch(f"/api/alerts/{high['id']}/acknowledge")
-    assert acknowledged.json()["status"] == "ACKNOWLEDGED"
-    assert acknowledged.json()["acknowledged_at"] is not None
-
     summary = http.get("/api/dashboard/summary").json()
     assert summary["total_flows"] == 4
     assert summary["total_normal"] == 1
     assert summary["total_ddos"] == 2
     assert summary["total_portscan"] == 1
-    assert summary["active_alerts"] == 1
-    assert summary["active_high_alerts"] == 0
+    assert summary["active_alerts"] == 3
+    assert summary["active_high_alerts"] == 2
     assert summary["active_medium_alerts"] == 1
-    assert summary["acknowledged_alerts"] == 1
+    assert summary["acknowledged_alerts"] == 0
     assert summary["latest_prediction_timestamp"] is not None
     timeline = http.get("/api/dashboard/timeline", params={"minutes": 60})
     assert timeline.status_code == 200
@@ -177,7 +229,9 @@ def test_batch_is_persisted_and_not_found_responses(client):
     assert len(response.json()["predictions"]) == 2
     assert http.get("/api/predictions/999").status_code == 404
     assert http.get("/api/alerts/999").status_code == 404
-    assert http.patch("/api/alerts/999/acknowledge").status_code == 404
+    assert http.patch(
+        "/api/alerts/999/acknowledge", headers={"Authorization": ""}
+    ).status_code == 401
 
 
 def test_invalid_prediction_and_alert_filters_are_rejected(client):
@@ -215,7 +269,6 @@ def test_prediction_batch_rolls_back_atomically_when_commit_fails(client, monkey
                 [PredictionRequest(features={"feature_a": 1, "feature_b": 1})] * 2,
                 [output, output],
                 app.state.model_record.id,
-                threshold=0.70,
             )
         assert rollback_called
 
@@ -253,7 +306,7 @@ def test_authentication_login_me_logout_and_failures(client):
         db.add(admin)
         db.commit()
 
-    assert http.get("/api/auth/me").status_code == 401
+    assert http.get("/api/auth/me", headers={"Authorization": ""}).status_code == 401
     assert http.post(
         "/api/auth/login",
         json={"email": "admin@example.test", "password": "wrong-password"},
@@ -266,6 +319,8 @@ def test_authentication_login_me_logout_and_failures(client):
     body = login.json()
     assert body["token_type"] == "bearer"
     assert body["user"]["role"] == "ADMIN"
+    assert "password" not in body["user"]
+    assert "password_hash" not in body["user"]
     headers = {"Authorization": f"Bearer {body['access_token']}"}
     assert http.get("/api/auth/me", headers=headers).json()["email"] == "admin@example.test"
     assert http.post("/api/auth/logout", headers=headers).json() == {"status": "logged_out"}
@@ -290,6 +345,102 @@ def test_inactive_user_cannot_login(client):
         json={"email": "inactive@example.test", "password": "correct-horse-battery"},
     )
     assert response.status_code == 403
+
+
+def test_phase_7_dataset_and_experiment_exports_preserve_evidence(client):
+    http, app = client
+    with app.state.session_factory() as db:
+        synchronize_evidence(db, root=Path(__file__).resolve().parents[2])
+
+    assert http.get("/api/export/dataset", headers={"Authorization": ""}).status_code == 401
+    dataset_response = http.get("/api/export/dataset")
+    assert dataset_response.headers["content-type"].startswith("application/json")
+    assert "rf_nids_dataset.json" in dataset_response.headers["content-disposition"]
+    dataset = dataset_response.json()["datasets"][0]
+    assert dataset["total_rows"] == 2_830_743
+    assert dataset["total_features"] == 78
+    assert dataset["source_sha256"] == "f3eb36a4949a7fc157d731b6a20cf732c718d8cf1ce9a75b67edcd43df3c0543"
+    assert "password" not in dataset_response.text.lower()
+    assert "token" not in dataset_response.text.lower()
+
+    experiments = {row["experiment_code"]: row for row in http.get("/api/experiments").json()}
+    for code in ("EXPERIMENT_A", "EXPERIMENT_B", "EXPERIMENT_C"):
+        response = http.get(f"/api/export/experiments/{experiments[code]['id']}")
+        assert response.status_code == 200
+        assert response.json()["experiment"]["experiment_code"] == code
+        assert response.json()["provenance"]
+
+    experiment_c = experiments["EXPERIMENT_C"]
+    exported = http.get(f"/api/export/experiments/{experiment_c['id']}").json()
+    by_key = {row["metric_key"]: row for row in exported["evaluations"]}
+    assert by_key["OVERALL"]["accuracy"] == 0.005404447594577833
+    assert by_key["OVERALL"]["macro_precision"] is None
+    assert by_key["OVERALL"]["macro_recall"] is None
+    assert by_key["OVERALL"]["macro_f1"] is None
+    assert by_key["CLASS:DDoS"]["recall"] == 0.0
+    assert by_key["CLASS:PortScan"]["recall"] == 0.0
+
+    metrics = http.get(f"/api/export/experiments/{experiment_c['id']}", params={"format": "csv"})
+    assert metrics.headers["content-type"].startswith("text/csv")
+    assert "_metrics.csv" in metrics.headers["content-disposition"]
+    csv_rows = list(csv.DictReader(StringIO(metrics.text)))
+    assert next(row for row in csv_rows if row["metric_key"] == "OVERALL")["macro_f1"] == ""
+
+    matrix = http.get(f"/api/export/experiments/{experiment_c['id']}/confusion-matrix")
+    matrix_rows = list(csv.DictReader(StringIO(matrix.text)))
+    assert matrix_rows == [
+        {"actual_class": "Normal", "predicted_Normal": "61", "predicted_DDoS": "0", "predicted_PortScan": "0"},
+        {"actual_class": "DDoS", "predicted_Normal": "10226", "predicted_DDoS": "0", "predicted_PortScan": "0"},
+        {"actual_class": "PortScan", "predicted_Normal": "1000", "predicted_DDoS": "0", "predicted_PortScan": "0"},
+    ]
+    assert http.get("/api/export/experiments/999").status_code == 404
+    assert http.get("/api/export/experiments/999/confusion-matrix").status_code == 404
+
+
+def test_phase_7_prediction_and_alert_exports_filters_order_and_empty_state(client):
+    http, _ = client
+    for value, source, destination in (
+        (10, "192.0.2.2", "198.51.100.1"),
+        (20, "192.0.2.1", "198.51.100.2"),
+        (1, "192.0.2.3", "198.51.100.3"),
+    ):
+        assert http.post("/api/predict", json=payload(
+            value, source_ip=source, destination_ip=destination, protocol="TCP"
+        )).status_code == 201
+
+    for path in ("/api/export/predictions", "/api/export/alerts"):
+        assert http.get(path, headers={"Authorization": ""}).status_code == 401
+
+    predictions = http.get("/api/export/predictions", params={
+        "format": "json", "predicted_label": "DDoS", "source_ip": "192.0.2.2", "protocol": "TCP"
+    }).json()
+    assert predictions["metadata"]["filters"] == {
+        "predicted_label": "DDoS", "protocol": "TCP", "source_ip": "192.0.2.2"
+    }
+    assert [row["prediction_id"] for row in predictions["predictions"]] == [1]
+    assert "flow_features" not in predictions["predictions"][0]
+
+    empty_predictions = http.get("/api/export/predictions", params={"source_ip": "203.0.113.99"})
+    assert list(csv.DictReader(StringIO(empty_predictions.text))) == []
+    assert "prediction_id" in empty_predictions.text
+
+    alert_list = http.get("/api/alerts", params={"predicted_label": "PortScan"}).json()
+    alert_id = alert_list[0]["id"]
+    http.patch(f"/api/alerts/{alert_id}/acknowledge")
+    alerts = http.get("/api/export/alerts", params={
+        "format": "json", "predicted_label": "PortScan", "severity": "MEDIUM",
+        "status": "ACKNOWLEDGED", "destination_ip": "198.51.100.2",
+    }).json()
+    assert [row["alert_id"] for row in alerts["alerts"]] == [alert_id]
+    assert alerts["alerts"][0]["acknowledged_by_name"] == "Default Test Admin"
+    assert alerts["alerts"][0]["acknowledged_by_email"] == "default-admin@example.test"
+    assert "password_hash" not in str(alerts)
+    assert "access_token" not in str(alerts)
+
+    all_predictions = http.get("/api/export/predictions", params={"format": "json"}).json()["predictions"]
+    assert [row["prediction_id"] for row in all_predictions] == sorted(row["prediction_id"] for row in all_predictions)
+    empty_alerts = http.get("/api/export/alerts", params={"source_ip": "203.0.113.99"})
+    assert list(csv.DictReader(StringIO(empty_alerts.text))) == []
 
 
 def test_evidence_read_endpoints(client):
@@ -372,6 +523,7 @@ def test_monitoring_empty_state_and_unpredicted_legacy_flow(client):
         "total_ddos": 0,
         "total_portscan": 0,
         "total_alerts": 0,
+        "active_alerts": 0,
         "latest_detection_timestamp": None,
         "active_model": "test-v1",
     }
@@ -414,6 +566,7 @@ def test_monitoring_server_side_filters_and_pagination(client):
     summary = http.get("/api/monitoring/summary").json()
     assert summary["total_flows"] == 3
     assert summary["total_alerts"] == 2
+    assert summary["active_alerts"] == 2
     assert summary["latest_detection_timestamp"] is not None
 
 
@@ -482,3 +635,118 @@ def test_runtime_views_exclude_imported_scientific_prediction_context(client):
     # Direct detail remains available for provenance-aware read-only inspection.
     detail = http.get(f"/api/predictions/{imported_id}").json()
     assert detail["source_type"] == "EXPERIMENT_IMPORT"
+
+
+def test_low_confidence_attacks_always_create_mapped_alerts(client):
+    http, app = client
+    low_ddos = http.post("/api/predict", json=payload(30)).json()
+    low_portscan = http.post("/api/predict", json=payload(40)).json()
+    assert low_ddos["confidence"] == 0.60
+    assert low_portscan["confidence"] == 0.40
+    with app.state.session_factory() as db:
+        alerts = db.scalars(select(Alert).order_by(Alert.id)).all()
+        assert [(row.prediction_id, row.severity, row.status) for row in alerts] == [
+            (low_ddos["prediction_id"], "HIGH", "ACTIVE"),
+            (low_portscan["prediction_id"], "MEDIUM", "ACTIVE"),
+        ]
+
+
+def test_database_constraint_prevents_duplicate_alert_for_prediction(client):
+    http, app = client
+    prediction_id = http.post("/api/predict", json=payload(10)).json()["prediction_id"]
+    with app.state.session_factory() as db:
+        db.add(
+            Alert(
+                prediction_id=prediction_id,
+                severity="HIGH",
+                title="Duplicate",
+                description="Must be rejected by the existing unique constraint.",
+                status="ACTIVE",
+            )
+        )
+        with pytest.raises(IntegrityError):
+            db.commit()
+        db.rollback()
+        assert db.scalar(
+            select(func.count(Alert.id)).where(Alert.prediction_id == prediction_id)
+        ) == 1
+
+
+def test_alert_filters_and_joined_detail(client):
+    http, _ = client
+    http.post(
+        "/api/predict",
+        json=payload(
+            10,
+            source_ip="192.0.2.10",
+            source_port=12345,
+            destination_ip="198.51.100.20",
+            destination_port=443,
+            protocol="TCP",
+            capture_time="2026-09-02T04:00:00Z",
+        ),
+    )
+    http.post(
+        "/api/predict",
+        json=payload(
+            20,
+            source_ip="192.0.2.30",
+            destination_ip="198.51.100.40",
+            protocol="UDP",
+        ),
+    )
+    assert len(http.get("/api/alerts", params={"predicted_label": "DDoS"}).json()) == 1
+    assert len(http.get("/api/alerts", params={"severity": "MEDIUM"}).json()) == 1
+    assert len(http.get("/api/alerts", params={"status": "ACTIVE"}).json()) == 2
+    assert len(http.get("/api/alerts", params={"source_ip": "192.0.2.10"}).json()) == 1
+    filtered = http.get(
+        "/api/alerts", params={"destination_ip": "198.51.100.20"}
+    ).json()
+    detail = http.get(f"/api/alerts/{filtered[0]['id']}").json()
+    assert detail["predicted_label"] == "DDoS"
+    assert detail["class_probabilities"]["DDoS"] == 0.95
+    assert detail["source_port"] == 12345
+    assert detail["destination_port"] == 443
+    assert detail["protocol"] == "TCP"
+    assert detail["capture_time"].startswith("2026-09-02T04:00:00")
+    assert detail["model_name"] == "Test RF"
+    assert detail["model_version"] == "test-v1"
+    assert detail["source_type"] == "RUNTIME"
+
+
+def test_acknowledge_requires_admin_and_is_repeat_safe(client):
+    http, app = client
+    http.post("/api/predict", json=payload(10))
+    alert_id = http.get("/api/alerts").json()[0]["id"]
+    assert http.patch(
+        f"/api/alerts/{alert_id}/acknowledge", headers={"Authorization": ""}
+    ).status_code == 401
+    headers, user_id = authenticated_admin(http, app)
+    first = http.patch(f"/api/alerts/{alert_id}/acknowledge", headers=headers)
+    assert first.status_code == 200
+    body = first.json()
+    assert body["status"] == "ACKNOWLEDGED"
+    assert body["acknowledged_at"] is not None
+    assert body["acknowledged_by_user_id"] == user_id
+    assert body["acknowledged_by_name"] == "Thesis Admin"
+    timestamp = body["acknowledged_at"]
+    second = http.patch(f"/api/alerts/{alert_id}/acknowledge", headers=headers).json()
+    assert second["acknowledged_at"] == timestamp
+    assert second["acknowledged_by_user_id"] == user_id
+
+
+def test_legacy_acknowledged_alert_without_user_remains_readable(client):
+    http, app = client
+    http.post("/api/predict", json=payload(20))
+    with app.state.session_factory() as db:
+        row = db.scalar(select(Alert))
+        row.status = "ACKNOWLEDGED"
+        row.acknowledged_at = row.created_at
+        row.acknowledged_by_user_id = None
+        db.commit()
+        alert_id = row.id
+    detail = http.get(f"/api/alerts/{alert_id}").json()
+    assert detail["status"] == "ACKNOWLEDGED"
+    assert detail["acknowledged_at"] is not None
+    assert detail["acknowledged_by_user_id"] is None
+    assert detail["acknowledged_by_name"] is None

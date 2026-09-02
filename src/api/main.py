@@ -8,7 +8,7 @@ import logging
 from typing import Annotated
 
 from fastapi import Depends, FastAPI, HTTPException, Query, Request, status
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, Response
 from sqlalchemy import case, func, or_, select, text
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
@@ -17,9 +17,9 @@ from src.api.database import Base, configure_database, get_db
 from src.api.auth import (
     INVALID_PASSWORD_HASH,
     create_session,
-    get_current_user,
     get_session_token,
     normalize_email,
+    require_admin,
     revoke_session,
     verify_password,
 )
@@ -60,13 +60,25 @@ from src.api.schemas import (
     UserInfo,
 )
 from src.api.service import metadata_metrics, persist_predictions, sync_active_model
+from src.api.exports import (
+    EVALUATION_FIELDS,
+    MAX_EXPORT_RECORDS,
+    alert_record,
+    confusion_matrix_rows,
+    csv_bytes,
+    dataset_record,
+    evaluation_record,
+    export_metadata,
+    json_bytes,
+    prediction_record,
+)
 from src.common.config import Settings
 from src.common.logging import configure_logging
 from src.inference import FeatureValidationError, InferenceEngine
 
 Db = Annotated[Session, Depends(get_db)]
 logger = logging.getLogger(__name__)
-CurrentUser = Annotated[User, Depends(get_current_user)]
+AdminUser = Annotated[User, Depends(require_admin)]
 SessionToken = Annotated[str, Depends(get_session_token)]
 
 
@@ -118,8 +130,44 @@ def _runtime_prediction_clause():
     return or_(Prediction.source_type.is_(None), Prediction.source_type == "RUNTIME")
 
 
+def _prediction_query(*, predicted_label=None, source_ip=None, destination_ip=None, protocol=None):
+    query = select(Prediction).join(Prediction.traffic_flow).where(_runtime_prediction_clause())
+    if predicted_label:
+        query = query.where(Prediction.predicted_label == getattr(predicted_label, "value", predicted_label))
+    if source_ip:
+        query = query.where(TrafficFlow.source_ip == source_ip)
+    if destination_ip:
+        query = query.where(TrafficFlow.destination_ip == destination_ip)
+    if protocol:
+        query = query.where(TrafficFlow.protocol == protocol)
+    return query
+
+
+def _alert_query(*, severity=None, alert_status=None, predicted_label=None, source_ip=None, destination_ip=None):
+    query = select(Alert).join(Alert.prediction).join(Prediction.traffic_flow).where(_runtime_prediction_clause())
+    for column, value in ((Alert.severity, severity), (Alert.status, alert_status),
+                          (Prediction.predicted_label, predicted_label)):
+        if value:
+            query = query.where(column == getattr(value, "value", value))
+    if source_ip:
+        query = query.where(TrafficFlow.source_ip == source_ip)
+    if destination_ip:
+        query = query.where(TrafficFlow.destination_ip == destination_ip)
+    return query
+
+
+def _download(content: bytes, filename: str, media_type: str, *, count: int) -> Response:
+    return Response(content=content, media_type=media_type, headers={
+        "Content-Disposition": f'attachment; filename="{filename}"',
+        "X-Export-Record-Count": str(count),
+        "X-Export-Maximum-Records": str(MAX_EXPORT_RECORDS),
+    })
+
+
 def _alert_detail(row: Alert) -> AlertDetail:
     prediction = row.prediction
+    flow = prediction.traffic_flow
+    user = row.acknowledged_by_user
     return AlertDetail(
         id=row.id,
         prediction_id=row.prediction_id,
@@ -128,11 +176,22 @@ def _alert_detail(row: Alert) -> AlertDetail:
         description=row.description,
         status=row.status,
         acknowledged_at=row.acknowledged_at,
+        acknowledged_by_user_id=row.acknowledged_by_user_id,
+        acknowledged_by_name=user.name if user else None,
+        acknowledged_by_email=user.email if user else None,
         created_at=row.created_at,
         predicted_label=prediction.predicted_label,
         confidence_score=prediction.confidence_score,
-        source_ip=prediction.traffic_flow.source_ip,
-        destination_ip=prediction.traffic_flow.destination_ip,
+        class_probabilities=prediction.class_probabilities,
+        source_ip=flow.source_ip,
+        source_port=flow.source_port,
+        destination_ip=flow.destination_ip,
+        destination_port=flow.destination_port,
+        protocol=flow.protocol,
+        capture_time=flow.capture_time,
+        model_name=prediction.model.model_name,
+        model_version=prediction.model.model_version,
+        source_type=prediction.source_type,
     )
 
 
@@ -224,6 +283,11 @@ def create_app(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="User account is inactive",
             )
+        if user.role != "ADMIN":
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Administrator access required",
+            )
         token, expires_at = create_session(request, user.id)
         return LoginResult(
             access_token=token,
@@ -234,18 +298,18 @@ def create_app(
     @application.post(
         "/api/auth/logout", response_model=LogoutResult, summary="End current session"
     )
-    def logout(request: Request, _: CurrentUser, token: SessionToken):
+    def logout(request: Request, _: AdminUser, token: SessionToken):
         revoke_session(request, token)
         return LogoutResult(status="logged_out")
 
     @application.get(
         "/api/auth/me", response_model=UserInfo, summary="Current authenticated user"
     )
-    def current_user(user: CurrentUser):
+    def current_user(user: AdminUser):
         return _user_info(user)
 
     @application.get("/api/model", response_model=ModelInfo, summary="Active model metadata")
-    def model_info(request: Request):
+    def model_info(request: Request, _: AdminUser):
         metadata = request.app.state.inference.metadata
         metrics = metadata_metrics(metadata)
         return ModelInfo(
@@ -265,7 +329,7 @@ def create_app(
         response_model=ModelPresentationInfo,
         summary="Active model presentation metadata",
     )
-    def active_model(request: Request, db: Db):
+    def active_model(request: Request, db: Db, _: AdminUser):
         row = db.scalar(
             select(ModelRecord)
             .where(ModelRecord.is_active.is_(True))
@@ -307,6 +371,7 @@ def create_app(
     )
     def list_evidence_sources(
         db: Db,
+        _: AdminUser,
         owner_type: str | None = None,
         owner_key: str | None = None,
     ):
@@ -320,13 +385,13 @@ def create_app(
     @application.get(
         "/api/datasets", response_model=list[DatasetInfo], summary="List imported datasets"
     )
-    def list_datasets(db: Db):
+    def list_datasets(db: Db, _: AdminUser):
         return db.scalars(select(Dataset).order_by(Dataset.id)).all()
 
     @application.get(
         "/api/datasets/{dataset_id}", response_model=DatasetInfo, summary="Get imported dataset"
     )
-    def get_dataset(dataset_id: int, db: Db):
+    def get_dataset(dataset_id: int, db: Db, _: AdminUser):
         row = db.get(Dataset, dataset_id)
         if row is None:
             raise HTTPException(404, "Dataset not found")
@@ -337,7 +402,7 @@ def create_app(
         response_model=list[ExperimentInfo],
         summary="List imported experiments",
     )
-    def list_experiments(db: Db):
+    def list_experiments(db: Db, _: AdminUser):
         return db.scalars(select(Experiment).order_by(Experiment.id)).all()
 
     @application.get(
@@ -345,7 +410,7 @@ def create_app(
         response_model=ExperimentInfo,
         summary="Get imported experiment",
     )
-    def get_experiment(experiment_id: int, db: Db):
+    def get_experiment(experiment_id: int, db: Db, _: AdminUser):
         row = db.get(Experiment, experiment_id)
         if row is None:
             raise HTTPException(404, "Experiment not found")
@@ -356,7 +421,7 @@ def create_app(
         response_model=list[EvaluationInfo],
         summary="List evaluation results for an experiment",
     )
-    def experiment_evaluation(experiment_id: int, db: Db):
+    def experiment_evaluation(experiment_id: int, db: Db, _: AdminUser):
         if db.get(Experiment, experiment_id) is None:
             raise HTTPException(404, "Experiment not found")
         return db.scalars(
@@ -370,7 +435,7 @@ def create_app(
         response_model=list[EvaluationInfo],
         summary="List imported evaluation results",
     )
-    def list_evaluations(db: Db):
+    def list_evaluations(db: Db, _: AdminUser):
         return db.scalars(select(EvaluationResult).order_by(EvaluationResult.id)).all()
 
     @application.get(
@@ -378,7 +443,7 @@ def create_app(
         response_model=EvaluationInfo,
         summary="Get imported evaluation result",
     )
-    def get_evaluation(evaluation_id: int, db: Db):
+    def get_evaluation(evaluation_id: int, db: Db, _: AdminUser):
         row = db.get(EvaluationResult, evaluation_id)
         if row is None:
             raise HTTPException(404, "Evaluation result not found")
@@ -397,7 +462,6 @@ def create_app(
             [payload],
             [output],
             request.app.state.model_record.id,
-            settings.alert_confidence_threshold,
         )[0]
 
     @application.post(
@@ -421,7 +485,6 @@ def create_app(
             payload.flows,
             outputs,
             request.app.state.model_record.id,
-            settings.alert_confidence_threshold,
         )
         return {"predictions": results}
 
@@ -430,6 +493,7 @@ def create_app(
     )
     def list_predictions(
         db: Db,
+        _: AdminUser,
         limit: int = Query(default_page_size, ge=1, le=settings.max_page_size),
         offset: int = Query(0, ge=0),
         predicted_label: PredictionLabel | None = None,
@@ -437,19 +501,10 @@ def create_app(
         destination_ip: str | None = None,
         protocol: str | None = None,
     ):
-        query = (
-            select(Prediction)
-            .join(Prediction.traffic_flow)
-            .where(_runtime_prediction_clause())
+        query = _prediction_query(
+            predicted_label=predicted_label, source_ip=source_ip,
+            destination_ip=destination_ip, protocol=protocol,
         )
-        if predicted_label:
-            query = query.where(Prediction.predicted_label == predicted_label.value)
-        if source_ip:
-            query = query.where(TrafficFlow.source_ip == source_ip)
-        if destination_ip:
-            query = query.where(TrafficFlow.destination_ip == destination_ip)
-        if protocol:
-            query = query.where(TrafficFlow.protocol == protocol)
         rows = db.scalars(
             query.order_by(Prediction.id.desc()).limit(limit).offset(offset)
         ).all()
@@ -462,6 +517,7 @@ def create_app(
     )
     def list_traffic_flows(
         db: Db,
+        _: AdminUser,
         limit: int = Query(default_page_size, ge=1, le=settings.max_page_size),
         offset: int = Query(0, ge=0),
         predicted_label: PredictionLabel | None = None,
@@ -510,7 +566,7 @@ def create_app(
         response_model=MonitoringSummary,
         summary="Aggregate runtime monitoring counters",
     )
-    def monitoring_summary(db: Db):
+    def monitoring_summary(db: Db, _: AdminUser):
         flow_counts = db.execute(
             select(
                 func.count(TrafficFlow.id),
@@ -523,11 +579,14 @@ def create_app(
             .outerjoin(TrafficFlow.prediction)
             .where(or_(Prediction.id.is_(None), _runtime_prediction_clause()))
         ).one()
-        alert_count = db.scalar(
-            select(func.count(Alert.id))
+        alert_counts = db.execute(
+            select(
+                func.count(Alert.id),
+                func.sum(case((Alert.status == "ACTIVE", 1), else_=0)),
+            )
             .join(Alert.prediction)
             .where(_runtime_prediction_clause())
-        )
+        ).one()
         active_model = db.scalar(
             select(ModelRecord.model_version)
             .where(ModelRecord.is_active.is_(True))
@@ -538,7 +597,8 @@ def create_app(
             total_normal=flow_counts[1] or 0,
             total_ddos=flow_counts[2] or 0,
             total_portscan=flow_counts[3] or 0,
-            total_alerts=alert_count or 0,
+            total_alerts=alert_counts[0] or 0,
+            active_alerts=alert_counts[1] or 0,
             latest_detection_timestamp=flow_counts[4],
             active_model=active_model,
         )
@@ -548,7 +608,7 @@ def create_app(
         response_model=PredictionDetail,
         summary="Get one prediction",
     )
-    def get_prediction(prediction_id: int, db: Db):
+    def get_prediction(prediction_id: int, db: Db, _: AdminUser):
         row = db.get(Prediction, prediction_id)
         if row is None:
             raise HTTPException(404, "Prediction not found")
@@ -557,23 +617,137 @@ def create_app(
     @application.get("/api/alerts", response_model=list[AlertDetail], summary="List alerts")
     def list_alerts(
         db: Db,
+        _: AdminUser,
         limit: int = Query(default_page_size, ge=1, le=settings.max_page_size),
         offset: int = Query(0, ge=0),
         severity: Severity | None = None,
         alert_status: AlertStatus | None = Query(None, alias="status"),
+        predicted_label: PredictionLabel | None = None,
+        source_ip: str | None = None,
+        destination_ip: str | None = None,
     ):
-        query = select(Alert)
-        if severity:
-            query = query.where(Alert.severity == severity.value)
-        if alert_status:
-            query = query.where(Alert.status == alert_status.value)
+        query = _alert_query(
+            severity=severity, alert_status=alert_status, predicted_label=predicted_label,
+            source_ip=source_ip, destination_ip=destination_ip,
+        )
         rows = db.scalars(query.order_by(Alert.id.desc()).limit(limit).offset(offset)).all()
         return [_alert_detail(row) for row in rows]
+
+    @application.get("/api/export/dataset", summary="Export verified dataset metadata")
+    def export_dataset(db: Db, user: AdminUser):
+        rows = db.scalars(select(Dataset).order_by(Dataset.id)).all()
+        records = [dataset_record(row) for row in rows]
+        payload = {
+            "metadata": export_metadata(user=user, filters={}, count=len(records)),
+            "datasets": records,
+        }
+        return _download(json_bytes(payload), "rf_nids_dataset.json", "application/json", count=len(records))
+
+    @application.get("/api/export/experiments/{experiment_id}", summary="Export evaluation data")
+    def export_experiment(
+        experiment_id: int, db: Db, user: AdminUser,
+        format: str = Query("json", pattern="^(json|csv)$"),
+    ):
+        experiment = db.get(Experiment, experiment_id)
+        if experiment is None:
+            raise HTTPException(404, "Experiment not found")
+        evaluations = db.scalars(
+            select(EvaluationResult).where(EvaluationResult.experiment_id == experiment_id)
+            .order_by(EvaluationResult.metric_key, EvaluationResult.id)
+        ).all()
+        records = [evaluation_record(row) for row in evaluations]
+        suffix = experiment.experiment_code.lower()
+        if format == "csv":
+            return _download(csv_bytes(EVALUATION_FIELDS, records), f"rf_nids_{suffix}_metrics.csv", "text/csv", count=len(records))
+        sources = db.scalars(
+            select(EvidenceSource).where(
+                EvidenceSource.owner_type == "EXPERIMENT",
+                EvidenceSource.owner_key == experiment.experiment_code,
+            ).order_by(EvidenceSource.evidence_role, EvidenceSource.id)
+        ).all()
+        payload = {
+            "metadata": export_metadata(user=user, filters={"experiment_id": experiment_id}, count=len(records)),
+            "experiment": {
+                "experiment_code": experiment.experiment_code,
+                "name": experiment.experiment_name,
+                "type": experiment.experiment_type,
+                "description": experiment.description,
+                "status": experiment.status,
+                "source_path": experiment.source_path,
+                "source_sha256": experiment.source_sha256,
+                "schema_version": experiment.schema_version,
+                "imported_at": experiment.imported_at,
+            },
+            "evaluations": records,
+            "provenance": [{
+                "role": source.evidence_role, "source_path": source.source_path,
+                "source_sha256": source.source_sha256, "schema_version": source.schema_version,
+                "imported_at": source.imported_at,
+            } for source in sources],
+        }
+        return _download(json_bytes(payload), f"rf_nids_{suffix}_evaluation.json", "application/json", count=len(records))
+
+    @application.get("/api/export/experiments/{experiment_id}/confusion-matrix", summary="Export confusion matrix")
+    def export_confusion_matrix(experiment_id: int, db: Db, _: AdminUser):
+        experiment = db.get(Experiment, experiment_id)
+        if experiment is None:
+            raise HTTPException(404, "Experiment not found")
+        overall = db.scalar(select(EvaluationResult).where(
+            EvaluationResult.experiment_id == experiment_id,
+            EvaluationResult.metric_key == "OVERALL",
+        ))
+        fields, rows = confusion_matrix_rows(overall.confusion_matrix if overall else None)
+        if not fields:
+            raise HTTPException(404, "Confusion matrix not available")
+        filename = f"rf_nids_{experiment.experiment_code.lower()}_confusion_matrix.csv"
+        return _download(csv_bytes(fields, rows), filename, "text/csv", count=len(rows))
+
+    @application.get("/api/export/predictions", summary="Export filtered runtime predictions")
+    def export_predictions(
+        db: Db, user: AdminUser,
+        format: str = Query("csv", pattern="^(json|csv)$"),
+        predicted_label: PredictionLabel | None = None, source_ip: str | None = None,
+        destination_ip: str | None = None, protocol: str | None = None,
+    ):
+        filters = {"predicted_label": predicted_label.value if predicted_label else None,
+                   "source_ip": source_ip, "destination_ip": destination_ip, "protocol": protocol}
+        filters = {key: value for key, value in filters.items() if value is not None and value != ""}
+        rows = db.scalars(_prediction_query(**filters).order_by(Prediction.id).limit(MAX_EXPORT_RECORDS)).all()
+        records = [prediction_record(row) for row in rows]
+        filename = f"rf_nids_predictions_{datetime.now(timezone.utc).date().isoformat()}.{format}"
+        if format == "json":
+            content = json_bytes({"metadata": export_metadata(user=user, filters=filters, count=len(records)), "predictions": records})
+            return _download(content, filename, "application/json", count=len(records))
+        fields = ["prediction_id", "prediction_time", "source_ip", "source_port", "destination_ip", "destination_port", "protocol", "predicted_label", "confidence", "class_probabilities", "model_name", "model_version", "source_type", "experiment_code", "alert_id", "alert_severity", "alert_status"]
+        return _download(csv_bytes(fields, records), filename, "text/csv", count=len(records))
+
+    @application.get("/api/export/alerts", summary="Export filtered runtime alerts")
+    def export_alerts(
+        db: Db, user: AdminUser,
+        format: str = Query("csv", pattern="^(json|csv)$"), severity: Severity | None = None,
+        alert_status: AlertStatus | None = Query(None, alias="status"),
+        predicted_label: PredictionLabel | None = None, source_ip: str | None = None,
+        destination_ip: str | None = None,
+    ):
+        filters = {"severity": severity.value if severity else None,
+                   "alert_status": alert_status.value if alert_status else None,
+                   "predicted_label": predicted_label.value if predicted_label else None,
+                   "source_ip": source_ip, "destination_ip": destination_ip}
+        query_filters = {key: value for key, value in filters.items() if value is not None and value != ""}
+        rows = db.scalars(_alert_query(**query_filters).order_by(Alert.id).limit(MAX_EXPORT_RECORDS)).all()
+        records = [alert_record(row) for row in rows]
+        public_filters = {("status" if key == "alert_status" else key): value for key, value in query_filters.items()}
+        filename = f"rf_nids_alerts_{datetime.now(timezone.utc).date().isoformat()}.{format}"
+        if format == "json":
+            content = json_bytes({"metadata": export_metadata(user=user, filters=public_filters, count=len(records)), "alerts": records})
+            return _download(content, filename, "application/json", count=len(records))
+        fields = ["alert_id", "created_at", "attack_type", "severity", "status", "confidence", "prediction_id", "source_ip", "source_port", "destination_ip", "destination_port", "protocol", "acknowledged_at", "acknowledged_by_name", "acknowledged_by_email"]
+        return _download(csv_bytes(fields, records), filename, "text/csv", count=len(records))
 
     @application.get(
         "/api/alerts/{alert_id}", response_model=AlertDetail, summary="Get one alert"
     )
-    def get_alert(alert_id: int, db: Db):
+    def get_alert(alert_id: int, db: Db, _: AdminUser):
         row = db.get(Alert, alert_id)
         if row is None:
             raise HTTPException(404, "Alert not found")
@@ -584,13 +758,14 @@ def create_app(
         response_model=AlertDetail,
         summary="Acknowledge an active alert",
     )
-    def acknowledge_alert(alert_id: int, db: Db):
+    def acknowledge_alert(alert_id: int, db: Db, user: AdminUser):
         row = db.get(Alert, alert_id)
         if row is None:
             raise HTTPException(404, "Alert not found")
         if row.status != "ACKNOWLEDGED":
             row.status = "ACKNOWLEDGED"
             row.acknowledged_at = datetime.now(timezone.utc)
+            row.acknowledged_by_user_id = user.id
             db.commit()
             db.refresh(row)
         return _alert_detail(row)
@@ -600,7 +775,7 @@ def create_app(
         response_model=DashboardSummary,
         summary="Aggregate dashboard counters",
     )
-    def dashboard_summary(db: Db):
+    def dashboard_summary(db: Db, _: AdminUser):
         prediction_counts = db.execute(
             select(
                 func.count(Prediction.id),
@@ -651,6 +826,7 @@ def create_app(
     )
     def dashboard_timeline(
         db: Db,
+        _: AdminUser,
         minutes: int = Query(60, ge=1, le=1440),
     ):
         since = datetime.now(timezone.utc) - timedelta(minutes=minutes)

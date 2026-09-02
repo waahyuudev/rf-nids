@@ -149,5 +149,15 @@ def get_current_user(
     return user
 
 
+def require_admin(user: User = Depends(get_current_user)) -> User:
+    """Require the single dashboard role supported by the local prototype."""
+    if user.role != "ADMIN":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Administrator access required",
+        )
+    return user
+
+
 def get_session_token(authorization: str | None = Header(default=None)) -> str:
     return _bearer_token(authorization)

@@ -227,9 +227,10 @@ Suggested module boundaries:
 
 ### Phase 5 — Alerts
 
-- Replace the confidence-threshold gate with the frozen deterministic rule: Normal → none, PortScan → MEDIUM, DDoS → HIGH.
-- Retain unique prediction-to-alert behavior and add acknowledging-user audit data.
-- Test repeated import and repeated acknowledge behavior.
+- **Completed 2026-09-02.** Replaced the confidence-threshold gate with the frozen deterministic rule: Normal → none, PortScan → MEDIUM, DDoS → HIGH.
+- Retained the unique prediction-to-alert database constraint and wired acknowledgment to the authenticated administrator, timestamp, and existing ACTIVE/ACKNOWLEDGED states.
+- Added runtime alert filters, joined detail, consistent Total/Active counter labels, repeat-safe acknowledgment, and legacy NULL-user compatibility tests.
+- Removed the obsolete `ALERT_CONFIDENCE_THRESHOLD` setting from application configuration, Compose, and the example environment.
 
 ### Phase 6 — complete administrator UX
 
@@ -308,3 +309,21 @@ Phase 3 is complete. Streamlit navigation now exposes Dashboard, Dataset, Models
 Evaluation supports Experiments A/B/C, preserves per-experiment semantics, renders actual-row/predicted-column confusion matrices, retains NULL metrics as unavailable, and transparently presents Experiment C's external-lab/no-refit generalization failure. Dataset and model pages expose inspectable provenance, real feature/model metadata, parameters, artifact identity, and Experiment A linkage. Predictions and Alerts remain functional.
 
 The full suite and final test count, manual browser verification record, frozen hashes, and exact changed-file list are recorded in `docs/phase_3_presentation_layer.md`. No Monitoring, alert-rule, full Login UX, or export work was started.
+
+## Phase 6 Progress Addendum — 2026-09-02
+
+This addendum preserves the original audit and all prior phase records as historical baselines.
+
+Phase 6 is complete. Streamlit now presents a dedicated administrator Login view, keeps the opaque bearer token and public user identity in session state, guards all application navigation, displays the current administrator, and performs backend revocation plus local clearing on Logout. Invalid, inactive, expired, revoked, and API-restart sessions are handled without exposing backend exceptions or replaying credentials.
+
+All human-facing model, evidence, dataset, experiment/evaluation, monitoring, prediction, alert, and dashboard endpoints require an active ADMIN session. Health remains public. Runtime single/batch inference remains intentionally unauthenticated for trusted local capture ingestion and is explicitly documented as an internal prototype boundary. Alert acknowledgment derives the administrator only from the authenticated bearer session.
+
+Automated tests cover the API and dashboard authentication boundary, dynamic token injection, page guarding, role enforcement, session clearing, logout revocation, and password-field non-exposure. Frozen scientific hashes remain unchanged. See `docs/phase_6_authentication_ux.md` for the endpoint matrix, implementation design, bootstrap command, verification record, and limitations. Phase 7 export/report work was not started.
+
+## Phase 7 Progress Addendum — 2026-09-02
+
+This addendum preserves the original audit and all prior phase records as historical baselines.
+
+Phase 7 is complete. Administrator-only in-memory FastAPI exports now cover verified dataset metadata, Experiment A/B/C evaluation JSON and metrics CSV, dedicated confusion-matrix CSV, filtered runtime predictions, and filtered alerts. Streamlit download actions consume those authenticated endpoints and never read scientific files directly.
+
+Evaluation exports preserve imported values and provenance without recomputation: Experiment C retains zero DDoS/PortScan recall, NULL macro metrics, its external-validation identity, and the exact actual-row/predicted-column matrix. Prediction and alert exports reuse the existing server-side filters, sort deterministically by ascending ID, omit authentication secrets, and are bounded to 10,000 rows. The full suite reports 156 passing tests. Frozen active-model, model-metadata, and final Experiment C hashes remain unchanged. See `docs/phase_7_export_reporting.md` for endpoint formats, filenames, metadata, tests, verification, and limitations. No Phase 8 work was started.

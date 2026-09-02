@@ -14,6 +14,11 @@ def render(client) -> None:
         st.info("No verified dataset evidence has been imported.")
         return
     row = rows[0]
+    download = client.export_dataset()
+    st.download_button(
+        "Download metadata (JSON)", data=download.content,
+        file_name=download.filename, mime=download.content_type,
+    )
     view = dataset_view(row)
     cols = st.columns(3)
     cols[0].metric("Total rows", f"{view['Total rows']:,}" if isinstance(view["Total rows"], int) else view["Total rows"])
