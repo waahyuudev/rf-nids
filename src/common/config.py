@@ -30,6 +30,7 @@ class Settings:
     alert_confidence_threshold: float = 0.70
     max_batch_size: int = 1000
     max_page_size: int = 100
+    auth_session_hours: int = 8
 
     @classmethod
     def from_env(cls) -> "Settings":
@@ -57,4 +58,5 @@ class Settings:
             ),
             max_batch_size=int(os.getenv("MAX_BATCH_SIZE", "1000")),
             max_page_size=int(os.getenv("MAX_PAGE_SIZE", "100")),
+            auth_session_hours=int(os.getenv("AUTH_SESSION_HOURS", "8")),
         )

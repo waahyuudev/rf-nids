@@ -14,20 +14,44 @@ from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
 from src.api.database import Base, configure_database, get_db
-from src.api.models import Alert, Prediction, TrafficFlow
+from src.api.auth import (
+    INVALID_PASSWORD_HASH,
+    create_session,
+    get_current_user,
+    get_session_token,
+    normalize_email,
+    revoke_session,
+    verify_password,
+)
+from src.api.models import (
+    Alert,
+    Dataset,
+    EvaluationResult,
+    Experiment,
+    Prediction,
+    TrafficFlow,
+    User,
+)
 from src.api.schemas import (
     AlertStatus,
     AlertDetail,
     BatchPredictionRequest,
     BatchPredictionResult,
     DashboardSummary,
+    DatasetInfo,
+    EvaluationInfo,
+    ExperimentInfo,
     ModelInfo,
+    LoginRequest,
+    LoginResult,
+    LogoutResult,
     PredictionDetail,
     PredictionRequest,
     PredictionResult,
     PredictionLabel,
     Severity,
     TimelinePoint,
+    UserInfo,
 )
 from src.api.service import metadata_metrics, persist_predictions, sync_active_model
 from src.common.config import Settings
@@ -36,6 +60,8 @@ from src.inference import FeatureValidationError, InferenceEngine
 
 Db = Annotated[Session, Depends(get_db)]
 logger = logging.getLogger(__name__)
+CurrentUser = Annotated[User, Depends(get_current_user)]
+SessionToken = Annotated[str, Depends(get_session_token)]
 
 
 def _parse_datetime(value) -> datetime | None:
@@ -86,6 +112,16 @@ def _alert_detail(row: Alert) -> AlertDetail:
     )
 
 
+def _user_info(user: User) -> UserInfo:
+    return UserInfo(
+        id=user.id,
+        name=user.name,
+        email=user.email,
+        role=user.role,
+        is_active=user.is_active,
+    )
+
+
 def create_app(
     settings: Settings | None = None,
     *,
@@ -98,6 +134,9 @@ def create_app(
     @asynccontextmanager
     async def lifespan(application: FastAPI):
         configure_logging(settings.log_level)
+        # Alembic's logging configuration can disable already-imported loggers in
+        # processes that run migrations and API tests together.
+        logger.disabled = False
         configure_database(application, settings)
         if create_tables:
             if application.state.engine.dialect.name != "sqlite":
@@ -123,6 +162,7 @@ def create_app(
         lifespan=lifespan,
     )
     application.state.settings = settings
+    application.state.auth_sessions = {}
 
     @application.exception_handler(FeatureValidationError)
     async def feature_error_handler(_: Request, exc: FeatureValidationError):
@@ -142,6 +182,44 @@ def create_app(
             "model_loaded": hasattr(request.app.state, "inference"),
         }
 
+    @application.post(
+        "/api/auth/login", response_model=LoginResult, summary="Administrator login"
+    )
+    def login(payload: LoginRequest, request: Request, db: Db):
+        user = db.scalar(select(User).where(User.email == normalize_email(payload.email)))
+        encoded = user.password_hash if user is not None else INVALID_PASSWORD_HASH
+        password_valid = verify_password(payload.password, encoded)
+        if user is None or not password_valid:
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid email or password",
+                headers={"WWW-Authenticate": "Bearer"},
+            )
+        if not user.is_active:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="User account is inactive",
+            )
+        token, expires_at = create_session(request, user.id)
+        return LoginResult(
+            access_token=token,
+            expires_at=expires_at,
+            user=_user_info(user),
+        )
+
+    @application.post(
+        "/api/auth/logout", response_model=LogoutResult, summary="End current session"
+    )
+    def logout(request: Request, _: CurrentUser, token: SessionToken):
+        revoke_session(request, token)
+        return LogoutResult(status="logged_out")
+
+    @application.get(
+        "/api/auth/me", response_model=UserInfo, summary="Current authenticated user"
+    )
+    def current_user(user: CurrentUser):
+        return _user_info(user)
+
     @application.get("/api/model", response_model=ModelInfo, summary="Active model metadata")
     def model_info(request: Request):
         metadata = request.app.state.inference.metadata
@@ -157,6 +235,73 @@ def create_app(
             ),
             **metrics,
         )
+
+    @application.get(
+        "/api/datasets", response_model=list[DatasetInfo], summary="List imported datasets"
+    )
+    def list_datasets(db: Db):
+        return db.scalars(select(Dataset).order_by(Dataset.id)).all()
+
+    @application.get(
+        "/api/datasets/{dataset_id}", response_model=DatasetInfo, summary="Get imported dataset"
+    )
+    def get_dataset(dataset_id: int, db: Db):
+        row = db.get(Dataset, dataset_id)
+        if row is None:
+            raise HTTPException(404, "Dataset not found")
+        return row
+
+    @application.get(
+        "/api/experiments",
+        response_model=list[ExperimentInfo],
+        summary="List imported experiments",
+    )
+    def list_experiments(db: Db):
+        return db.scalars(select(Experiment).order_by(Experiment.id)).all()
+
+    @application.get(
+        "/api/experiments/{experiment_id}",
+        response_model=ExperimentInfo,
+        summary="Get imported experiment",
+    )
+    def get_experiment(experiment_id: int, db: Db):
+        row = db.get(Experiment, experiment_id)
+        if row is None:
+            raise HTTPException(404, "Experiment not found")
+        return row
+
+    @application.get(
+        "/api/experiments/{experiment_id}/evaluation",
+        response_model=list[EvaluationInfo],
+        summary="List evaluation results for an experiment",
+    )
+    def experiment_evaluation(experiment_id: int, db: Db):
+        if db.get(Experiment, experiment_id) is None:
+            raise HTTPException(404, "Experiment not found")
+        return db.scalars(
+            select(EvaluationResult)
+            .where(EvaluationResult.experiment_id == experiment_id)
+            .order_by(EvaluationResult.id)
+        ).all()
+
+    @application.get(
+        "/api/evaluations",
+        response_model=list[EvaluationInfo],
+        summary="List imported evaluation results",
+    )
+    def list_evaluations(db: Db):
+        return db.scalars(select(EvaluationResult).order_by(EvaluationResult.id)).all()
+
+    @application.get(
+        "/api/evaluations/{evaluation_id}",
+        response_model=EvaluationInfo,
+        summary="Get imported evaluation result",
+    )
+    def get_evaluation(evaluation_id: int, db: Db):
+        row = db.get(EvaluationResult, evaluation_id)
+        if row is None:
+            raise HTTPException(404, "Evaluation result not found")
+        return row
 
     @application.post(
         "/api/predict",

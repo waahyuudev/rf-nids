@@ -122,3 +122,81 @@ class TimelinePoint(BaseModel):
     normal: int
     ddos: int
     portscan: int
+
+
+class LoginRequest(BaseModel):
+    email: str = Field(min_length=3, max_length=320)
+    password: str = Field(min_length=1, max_length=1024)
+
+
+class UserInfo(BaseModel):
+    id: int
+    name: str
+    email: str
+    role: str
+    is_active: bool
+
+
+class LoginResult(BaseModel):
+    access_token: str
+    token_type: str = "bearer"
+    expires_at: datetime
+    user: UserInfo
+
+
+class LogoutResult(BaseModel):
+    status: str
+
+
+class DatasetInfo(BaseModel):
+    id: int
+    name: str
+    source_path: str | None
+    source_sha256: str | None
+    total_rows: int | None
+    total_features: int | None
+    label_column: str | None
+    class_distribution: dict[str, int] | None
+    created_by_user_id: int | None
+    created_at: datetime
+    updated_at: datetime
+
+
+class ExperimentInfo(BaseModel):
+    id: int
+    experiment_code: str
+    experiment_name: str
+    experiment_type: str
+    dataset_id: int | None
+    description: str | None
+    status: str
+    source_path: str | None
+    source_sha256: str | None
+    schema_version: str | None
+    imported_at: datetime | None
+    created_at: datetime
+    updated_at: datetime
+
+
+class EvaluationInfo(BaseModel):
+    id: int
+    experiment_id: int
+    metric_key: str | None
+    class_name: str | None
+    accuracy: float | None
+    precision_score: float | None
+    recall_score: float | None
+    f1_score: float | None
+    macro_precision: float | None
+    macro_recall: float | None
+    macro_f1: float | None
+    false_positive_rate: float | None
+    true_positive: int | None
+    true_negative: int | None
+    false_positive: int | None
+    false_negative: int | None
+    confusion_matrix: dict | list | None
+    notes: str | None
+    source_path: str | None
+    source_sha256: str | None
+    created_at: datetime

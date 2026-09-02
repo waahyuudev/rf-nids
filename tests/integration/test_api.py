@@ -8,6 +8,8 @@ from sqlalchemy.exc import SQLAlchemyError
 from src.api import main as api_main
 from src.api.main import create_app
 from src.api.models import Alert, Prediction, TrafficFlow
+from src.api.auth import hash_password
+from src.api.models import Dataset, EvaluationResult, Experiment, User
 from src.api.schemas import PredictionRequest
 from src.api.service import persist_predictions
 from src.common.config import Settings
@@ -236,3 +238,107 @@ def test_database_error_is_logged_but_response_is_sanitized(client, monkeypatch,
     assert response.json() == {"detail": "Database unavailable"}
     assert sensitive_message not in response.text
     assert sensitive_message in caplog.text
+
+
+def test_authentication_login_me_logout_and_failures(client):
+    http, app = client
+    with app.state.session_factory() as db:
+        admin = User(
+            name="Thesis Admin",
+            email="admin@example.test",
+            password_hash=hash_password("correct-horse-battery"),
+            role="ADMIN",
+            is_active=True,
+        )
+        db.add(admin)
+        db.commit()
+
+    assert http.get("/api/auth/me").status_code == 401
+    assert http.post(
+        "/api/auth/login",
+        json={"email": "admin@example.test", "password": "wrong-password"},
+    ).status_code == 401
+    login = http.post(
+        "/api/auth/login",
+        json={"email": " ADMIN@example.test ", "password": "correct-horse-battery"},
+    )
+    assert login.status_code == 200
+    body = login.json()
+    assert body["token_type"] == "bearer"
+    assert body["user"]["role"] == "ADMIN"
+    headers = {"Authorization": f"Bearer {body['access_token']}"}
+    assert http.get("/api/auth/me", headers=headers).json()["email"] == "admin@example.test"
+    assert http.post("/api/auth/logout", headers=headers).json() == {"status": "logged_out"}
+    assert http.get("/api/auth/me", headers=headers).status_code == 401
+
+
+def test_inactive_user_cannot_login(client):
+    http, app = client
+    with app.state.session_factory() as db:
+        db.add(
+            User(
+                name="Inactive Admin",
+                email="inactive@example.test",
+                password_hash=hash_password("correct-horse-battery"),
+                role="ADMIN",
+                is_active=False,
+            )
+        )
+        db.commit()
+    response = http.post(
+        "/api/auth/login",
+        json={"email": "inactive@example.test", "password": "correct-horse-battery"},
+    )
+    assert response.status_code == 403
+
+
+def test_evidence_read_endpoints(client):
+    http, app = client
+    with app.state.session_factory() as db:
+        dataset = Dataset(
+            name="Presentation dataset",
+            source_path="reports/metrics/data_understanding.json",
+            source_sha256="a" * 64,
+            total_rows=None,
+            total_features=78,
+            label_column="label",
+            class_distribution=None,
+        )
+        experiment = Experiment(
+            experiment_code="EXPERIMENT_C",
+            experiment_name="External validation",
+            experiment_type="EXTERNAL_VALIDATION",
+            dataset=dataset,
+            status="COMPLETED",
+            source_path="reports/metrics/experiment_c_v3_final.json",
+            source_sha256="b" * 64,
+        )
+        evaluation = EvaluationResult(
+            experiment=experiment,
+            metric_key="OVERALL",
+            accuracy=0.005404447594577833,
+            macro_f1=None,
+            source_path="reports/metrics/experiment_c_v3_final.json",
+            source_sha256="b" * 64,
+        )
+        db.add(evaluation)
+        db.commit()
+        dataset_id, experiment_id, evaluation_id = dataset.id, experiment.id, evaluation.id
+
+    datasets = http.get("/api/datasets")
+    assert datasets.status_code == 200
+    assert datasets.json()[0]["total_rows"] is None
+    assert http.get(f"/api/datasets/{dataset_id}").json()["total_features"] == 78
+    assert http.get("/api/datasets/999").status_code == 404
+
+    experiments = http.get("/api/experiments")
+    assert experiments.status_code == 200
+    assert experiments.json()[0]["experiment_code"] == "EXPERIMENT_C"
+    assert http.get(f"/api/experiments/{experiment_id}").status_code == 200
+    evaluations = http.get(f"/api/experiments/{experiment_id}/evaluation").json()
+    assert evaluations[0]["accuracy"] == 0.005404447594577833
+    assert evaluations[0]["macro_f1"] is None
+    assert http.get("/api/experiments/999/evaluation").status_code == 404
+    assert http.get("/api/evaluations").status_code == 200
+    assert http.get(f"/api/evaluations/{evaluation_id}").status_code == 200
+    assert http.get("/api/evaluations/999").status_code == 404

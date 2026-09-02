@@ -26,6 +26,12 @@ def sync_active_model(db: Session, metadata: dict) -> ModelRecord:
     version = metadata["model_version"]
     record = db.scalar(select(ModelRecord).where(ModelRecord.model_version == version))
     values = metadata_metrics(metadata)
+    provenance = {
+        "artifact_path": metadata.get("model_path"),
+        "artifact_sha256": metadata.get("model_sha256"),
+        "parameters": metadata.get("parameters"),
+        "feature_count": len(metadata.get("feature_names", [])) or None,
+    }
     db.execute(
         update(ModelRecord)
         .where(ModelRecord.model_version != version)
@@ -38,6 +44,7 @@ def sync_active_model(db: Session, metadata: dict) -> ModelRecord:
             algorithm="Random Forest",
             is_active=True,
             **values,
+            **provenance,
         )
         db.add(record)
     else:
@@ -45,6 +52,8 @@ def sync_active_model(db: Session, metadata: dict) -> ModelRecord:
         record.model_name = metadata.get("model_name", "RF-NIDS Random Forest")
         record.algorithm = "Random Forest"
         for field, value in values.items():
+            setattr(record, field, value)
+        for field, value in provenance.items():
             setattr(record, field, value)
     db.commit()
     db.refresh(record)

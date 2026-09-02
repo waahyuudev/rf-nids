@@ -1,0 +1,1807 @@
+{
+  "status": "completed",
+  "generated_at_utc": "2026-08-21T18:08:30.512281+00:00",
+  "scope": "Read-only V3 78-feature compatibility validation; no inference, retraining, raw-output modification, or active-model modification.",
+  "validation_warnings": [
+    "During this run SciPy's KS probability calculation emitted divide-by-zero/overflow RuntimeWarnings for very large released-data samples. All recorded KS statistics were finite and no p-values were requested or stored. The reproducibility script now calculates only the empirical-CDF KS statistic directly, avoiding probability computation."
+  ],
+  "pinned_v3": {
+    "repository": "https://github.com/ahlashkari/CICFlowMeter",
+    "commit": "a26aae27f21d165ff30b4b28e75124a5f9b4b2c4",
+    "docker_image": "sha256:0227c7280e586d54144b9bb11b2a6b5d4b1c4ba9bc7c44199fa312a6b829caab",
+    "source_hash_report": "reports/metrics/cicflowmeter_v3_build.json"
+  },
+  "raw_schema_audit": {
+    "normal-http-test": {
+      "path": "data/lab/flows/cicflowmeter-v3/normal-http-test.pcap_ISCX.csv",
+      "row_count": 61,
+      "column_count": 84,
+      "ordered_headers": [
+        "Flow ID",
+        "Src IP",
+        "Src Port",
+        "Dst IP",
+        "Dst Port",
+        "Protocol",
+        "Timestamp",
+        "Flow Duration",
+        "Tot Fwd Pkts",
+        "Tot Bwd Pkts",
+        "TotLen Fwd Pkts",
+        "TotLen Bwd Pkts",
+        "Fwd Pkt Len Max",
+        "Fwd Pkt Len Min",
+        "Fwd Pkt Len Mean",
+        "Fwd Pkt Len Std",
+        "Bwd Pkt Len Max",
+        "Bwd Pkt Len Min",
+        "Bwd Pkt Len Mean",
+        "Bwd Pkt Len Std",
+        "Flow Byts/s",
+        "Flow Pkts/s",
+        "Flow IAT Mean",
+        "Flow IAT Std",
+        "Flow IAT Max",
+        "Flow IAT Min",
+        "Fwd IAT Tot",
+        "Fwd IAT Mean",
+        "Fwd IAT Std",
+        "Fwd IAT Max",
+        "Fwd IAT Min",
+        "Bwd IAT Tot",
+        "Bwd IAT Mean",
+        "Bwd IAT Std",
+        "Bwd IAT Max",
+        "Bwd IAT Min",
+        "Fwd PSH Flags",
+        "Bwd PSH Flags",
+        "Fwd URG Flags",
+        "Bwd URG Flags",
+        "Fwd Header Len",
+        "Bwd Header Len",
+        "Fwd Pkts/s",
+        "Bwd Pkts/s",
+        "Pkt Len Min",
+        "Pkt Len Max",
+        "Pkt Len Mean",
+        "Pkt Len Std",
+        "Pkt Len Var",
+        "FIN Flag Cnt",
+        "SYN Flag Cnt",
+        "RST Flag Cnt",
+        "PSH Flag Cnt",
+        "ACK Flag Cnt",
+        "URG Flag Cnt",
+        "CWE Flag Count",
+        "ECE Flag Cnt",
+        "Down/Up Ratio",
+        "Pkt Size Avg",
+        "Fwd Seg Size Avg",
+        "Bwd Seg Size Avg",
+        "Fwd Byts/b Avg",
+        "Fwd Pkts/b Avg",
+        "Fwd Blk Rate Avg",
+        "Bwd Byts/b Avg",
+        "Bwd Pkts/b Avg",
+        "Bwd Blk Rate Avg",
+        "Subflow Fwd Pkts",
+        "Subflow Fwd Byts",
+        "Subflow Bwd Pkts",
+        "Subflow Bwd Byts",
+        "Init Fwd Win Byts",
+        "Init Bwd Win Byts",
+        "Fwd Act Data Pkts",
+        "Fwd Seg Size Min",
+        "Active Mean",
+        "Active Std",
+        "Active Max",
+        "Active Min",
+        "Idle Mean",
+        "Idle Std",
+        "Idle Max",
+        "Idle Min",
+        "Label"
+      ],
+      "duplicate_headers": [],
+      "identifier_columns": [
+        "Flow ID",
+        "Src IP",
+        "Src Port",
+        "Dst IP",
+        "Dst Port",
+        "Protocol",
+        "Timestamp"
+      ],
+      "numeric_feature_columns": [
+        "Flow Duration",
+        "Tot Fwd Pkts",
+        "Tot Bwd Pkts",
+        "TotLen Fwd Pkts",
+        "TotLen Bwd Pkts",
+        "Fwd Pkt Len Max",
+        "Fwd Pkt Len Min",
+        "Fwd Pkt Len Mean",
+        "Fwd Pkt Len Std",
+        "Bwd Pkt Len Max",
+        "Bwd Pkt Len Min",
+        "Bwd Pkt Len Mean",
+        "Bwd Pkt Len Std",
+        "Flow Byts/s",
+        "Flow Pkts/s",
+        "Flow IAT Mean",
+        "Flow IAT Std",
+        "Flow IAT Max",
+        "Flow IAT Min",
+        "Fwd IAT Tot",
+        "Fwd IAT Mean",
+        "Fwd IAT Std",
+        "Fwd IAT Max",
+        "Fwd IAT Min",
+        "Bwd IAT Tot",
+        "Bwd IAT Mean",
+        "Bwd IAT Std",
+        "Bwd IAT Max",
+        "Bwd IAT Min",
+        "Fwd PSH Flags",
+        "Bwd PSH Flags",
+        "Fwd URG Flags",
+        "Bwd URG Flags",
+        "Fwd Header Len",
+        "Bwd Header Len",
+        "Fwd Pkts/s",
+        "Bwd Pkts/s",
+        "Pkt Len Min",
+        "Pkt Len Max",
+        "Pkt Len Mean",
+        "Pkt Len Std",
+        "Pkt Len Var",
+        "FIN Flag Cnt",
+        "SYN Flag Cnt",
+        "RST Flag Cnt",
+        "PSH Flag Cnt",
+        "ACK Flag Cnt",
+        "URG Flag Cnt",
+        "CWE Flag Count",
+        "ECE Flag Cnt",
+        "Down/Up Ratio",
+        "Pkt Size Avg",
+        "Fwd Seg Size Avg",
+        "Bwd Seg Size Avg",
+        "Fwd Byts/b Avg",
+        "Fwd Pkts/b Avg",
+        "Fwd Blk Rate Avg",
+        "Bwd Byts/b Avg",
+        "Bwd Pkts/b Avg",
+        "Bwd Blk Rate Avg",
+        "Subflow Fwd Pkts",
+        "Subflow Fwd Byts",
+        "Subflow Bwd Pkts",
+        "Subflow Bwd Byts",
+        "Init Fwd Win Byts",
+        "Init Bwd Win Byts",
+        "Fwd Act Data Pkts",
+        "Fwd Seg Size Min",
+        "Active Mean",
+        "Active Std",
+        "Active Max",
+        "Active Min",
+        "Idle Mean",
+        "Idle Std",
+        "Idle Max",
+        "Idle Min"
+      ],
+      "numeric_feature_column_count": 76,
+      "label_column": "Label",
+      "nan_or_numeric_parse_failures": 5,
+      "positive_infinity": 5,
+      "negative_infinity": 0,
+      "duplicate_rows": 0,
+      "parseability": {
+        "Flow Duration": {
+          "parseable_count": 61,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "Tot Fwd Pkts": {
+          "parseable_count": 61,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "Tot Bwd Pkts": {
+          "parseable_count": 61,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "TotLen Fwd Pkts": {
+          "parseable_count": 61,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "TotLen Bwd Pkts": {
+          "parseable_count": 61,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "Fwd Pkt Len Max": {
+          "parseable_count": 61,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "Fwd Pkt Len Min": {
+          "parseable_count": 61,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "Fwd Pkt Len Mean": {
+          "parseable_count": 61,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "Fwd Pkt Len Std": {
+          "parseable_count": 61,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "Bwd Pkt Len Max": {
+          "parseable_count": 61,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "Bwd Pkt Len Min": {
+          "parseable_count": 61,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "Bwd Pkt Len Mean": {
+          "parseable_count": 61,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "Bwd Pkt Len Std": {
+          "parseable_count": 61,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "Flow Byts/s": {
+          "parseable_count": 56,
+          "numeric_parse_failures_or_nan": 5,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "Flow Pkts/s": {
+          "parseable_count": 61,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 5,
+          "negative_infinity": 0
+        },
+        "Flow IAT Mean": {
+          "parseable_count": 61,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "Flow IAT Std": {
+          "parseable_count": 61,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "Flow IAT Max": {
+          "parseable_count": 61,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "Flow IAT Min": {
+          "parseable_count": 61,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "Fwd IAT Tot": {
+          "parseable_count": 61,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "Fwd IAT Mean": {
+          "parseable_count": 61,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "Fwd IAT Std": {
+          "parseable_count": 61,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "Fwd IAT Max": {
+          "parseable_count": 61,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "Fwd IAT Min": {
+          "parseable_count": 61,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "Bwd IAT Tot": {
+          "parseable_count": 61,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "Bwd IAT Mean": {
+          "parseable_count": 61,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "Bwd IAT Std": {
+          "parseable_count": 61,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "Bwd IAT Max": {
+          "parseable_count": 61,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "Bwd IAT Min": {
+          "parseable_count": 61,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "Fwd PSH Flags": {
+          "parseable_count": 61,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "Bwd PSH Flags": {
+          "parseable_count": 61,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "Fwd URG Flags": {
+          "parseable_count": 61,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "Bwd URG Flags": {
+          "parseable_count": 61,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "Fwd Header Len": {
+          "parseable_count": 61,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "Bwd Header Len": {
+          "parseable_count": 61,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "Fwd Pkts/s": {
+          "parseable_count": 61,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "Bwd Pkts/s": {
+          "parseable_count": 61,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "Pkt Len Min": {
+          "parseable_count": 61,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "Pkt Len Max": {
+          "parseable_count": 61,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "Pkt Len Mean": {
+          "parseable_count": 61,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "Pkt Len Std": {
+          "parseable_count": 61,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "Pkt Len Var": {
+          "parseable_count": 61,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "FIN Flag Cnt": {
+          "parseable_count": 61,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "SYN Flag Cnt": {
+          "parseable_count": 61,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "RST Flag Cnt": {
+          "parseable_count": 61,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "PSH Flag Cnt": {
+          "parseable_count": 61,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "ACK Flag Cnt": {
+          "parseable_count": 61,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "URG Flag Cnt": {
+          "parseable_count": 61,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "CWE Flag Count": {
+          "parseable_count": 61,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "ECE Flag Cnt": {
+          "parseable_count": 61,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "Down/Up Ratio": {
+          "parseable_count": 61,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "Pkt Size Avg": {
+          "parseable_count": 61,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "Fwd Seg Size Avg": {
+          "parseable_count": 61,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "Bwd Seg Size Avg": {
+          "parseable_count": 61,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "Fwd Byts/b Avg": {
+          "parseable_count": 61,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "Fwd Pkts/b Avg": {
+          "parseable_count": 61,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "Fwd Blk Rate Avg": {
+          "parseable_count": 61,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "Bwd Byts/b Avg": {
+          "parseable_count": 61,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "Bwd Pkts/b Avg": {
+          "parseable_count": 61,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "Bwd Blk Rate Avg": {
+          "parseable_count": 61,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "Subflow Fwd Pkts": {
+          "parseable_count": 61,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "Subflow Fwd Byts": {
+          "parseable_count": 61,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "Subflow Bwd Pkts": {
+          "parseable_count": 61,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "Subflow Bwd Byts": {
+          "parseable_count": 61,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "Init Fwd Win Byts": {
+          "parseable_count": 61,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "Init Bwd Win Byts": {
+          "parseable_count": 61,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "Fwd Act Data Pkts": {
+          "parseable_count": 61,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "Fwd Seg Size Min": {
+          "parseable_count": 61,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "Active Mean": {
+          "parseable_count": 61,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "Active Std": {
+          "parseable_count": 61,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "Active Max": {
+          "parseable_count": 61,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "Active Min": {
+          "parseable_count": 61,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "Idle Mean": {
+          "parseable_count": 61,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "Idle Std": {
+          "parseable_count": 61,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "Idle Max": {
+          "parseable_count": 61,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "Idle Min": {
+          "parseable_count": 61,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        }
+      }
+    },
+    "portscan-test": {
+      "path": "data/lab/flows/cicflowmeter-v3/portscan-test.pcap_ISCX.csv",
+      "row_count": 1000,
+      "column_count": 84,
+      "ordered_headers": [
+        "Flow ID",
+        "Src IP",
+        "Src Port",
+        "Dst IP",
+        "Dst Port",
+        "Protocol",
+        "Timestamp",
+        "Flow Duration",
+        "Tot Fwd Pkts",
+        "Tot Bwd Pkts",
+        "TotLen Fwd Pkts",
+        "TotLen Bwd Pkts",
+        "Fwd Pkt Len Max",
+        "Fwd Pkt Len Min",
+        "Fwd Pkt Len Mean",
+        "Fwd Pkt Len Std",
+        "Bwd Pkt Len Max",
+        "Bwd Pkt Len Min",
+        "Bwd Pkt Len Mean",
+        "Bwd Pkt Len Std",
+        "Flow Byts/s",
+        "Flow Pkts/s",
+        "Flow IAT Mean",
+        "Flow IAT Std",
+        "Flow IAT Max",
+        "Flow IAT Min",
+        "Fwd IAT Tot",
+        "Fwd IAT Mean",
+        "Fwd IAT Std",
+        "Fwd IAT Max",
+        "Fwd IAT Min",
+        "Bwd IAT Tot",
+        "Bwd IAT Mean",
+        "Bwd IAT Std",
+        "Bwd IAT Max",
+        "Bwd IAT Min",
+        "Fwd PSH Flags",
+        "Bwd PSH Flags",
+        "Fwd URG Flags",
+        "Bwd URG Flags",
+        "Fwd Header Len",
+        "Bwd Header Len",
+        "Fwd Pkts/s",
+        "Bwd Pkts/s",
+        "Pkt Len Min",
+        "Pkt Len Max",
+        "Pkt Len Mean",
+        "Pkt Len Std",
+        "Pkt Len Var",
+        "FIN Flag Cnt",
+        "SYN Flag Cnt",
+        "RST Flag Cnt",
+        "PSH Flag Cnt",
+        "ACK Flag Cnt",
+        "URG Flag Cnt",
+        "CWE Flag Count",
+        "ECE Flag Cnt",
+        "Down/Up Ratio",
+        "Pkt Size Avg",
+        "Fwd Seg Size Avg",
+        "Bwd Seg Size Avg",
+        "Fwd Byts/b Avg",
+        "Fwd Pkts/b Avg",
+        "Fwd Blk Rate Avg",
+        "Bwd Byts/b Avg",
+        "Bwd Pkts/b Avg",
+        "Bwd Blk Rate Avg",
+        "Subflow Fwd Pkts",
+        "Subflow Fwd Byts",
+        "Subflow Bwd Pkts",
+        "Subflow Bwd Byts",
+        "Init Fwd Win Byts",
+        "Init Bwd Win Byts",
+        "Fwd Act Data Pkts",
+        "Fwd Seg Size Min",
+        "Active Mean",
+        "Active Std",
+        "Active Max",
+        "Active Min",
+        "Idle Mean",
+        "Idle Std",
+        "Idle Max",
+        "Idle Min",
+        "Label"
+      ],
+      "duplicate_headers": [],
+      "identifier_columns": [
+        "Flow ID",
+        "Src IP",
+        "Src Port",
+        "Dst IP",
+        "Dst Port",
+        "Protocol",
+        "Timestamp"
+      ],
+      "numeric_feature_columns": [
+        "Flow Duration",
+        "Tot Fwd Pkts",
+        "Tot Bwd Pkts",
+        "TotLen Fwd Pkts",
+        "TotLen Bwd Pkts",
+        "Fwd Pkt Len Max",
+        "Fwd Pkt Len Min",
+        "Fwd Pkt Len Mean",
+        "Fwd Pkt Len Std",
+        "Bwd Pkt Len Max",
+        "Bwd Pkt Len Min",
+        "Bwd Pkt Len Mean",
+        "Bwd Pkt Len Std",
+        "Flow Byts/s",
+        "Flow Pkts/s",
+        "Flow IAT Mean",
+        "Flow IAT Std",
+        "Flow IAT Max",
+        "Flow IAT Min",
+        "Fwd IAT Tot",
+        "Fwd IAT Mean",
+        "Fwd IAT Std",
+        "Fwd IAT Max",
+        "Fwd IAT Min",
+        "Bwd IAT Tot",
+        "Bwd IAT Mean",
+        "Bwd IAT Std",
+        "Bwd IAT Max",
+        "Bwd IAT Min",
+        "Fwd PSH Flags",
+        "Bwd PSH Flags",
+        "Fwd URG Flags",
+        "Bwd URG Flags",
+        "Fwd Header Len",
+        "Bwd Header Len",
+        "Fwd Pkts/s",
+        "Bwd Pkts/s",
+        "Pkt Len Min",
+        "Pkt Len Max",
+        "Pkt Len Mean",
+        "Pkt Len Std",
+        "Pkt Len Var",
+        "FIN Flag Cnt",
+        "SYN Flag Cnt",
+        "RST Flag Cnt",
+        "PSH Flag Cnt",
+        "ACK Flag Cnt",
+        "URG Flag Cnt",
+        "CWE Flag Count",
+        "ECE Flag Cnt",
+        "Down/Up Ratio",
+        "Pkt Size Avg",
+        "Fwd Seg Size Avg",
+        "Bwd Seg Size Avg",
+        "Fwd Byts/b Avg",
+        "Fwd Pkts/b Avg",
+        "Fwd Blk Rate Avg",
+        "Bwd Byts/b Avg",
+        "Bwd Pkts/b Avg",
+        "Bwd Blk Rate Avg",
+        "Subflow Fwd Pkts",
+        "Subflow Fwd Byts",
+        "Subflow Bwd Pkts",
+        "Subflow Bwd Byts",
+        "Init Fwd Win Byts",
+        "Init Bwd Win Byts",
+        "Fwd Act Data Pkts",
+        "Fwd Seg Size Min",
+        "Active Mean",
+        "Active Std",
+        "Active Max",
+        "Active Min",
+        "Idle Mean",
+        "Idle Std",
+        "Idle Max",
+        "Idle Min"
+      ],
+      "numeric_feature_column_count": 76,
+      "label_column": "Label",
+      "nan_or_numeric_parse_failures": 7,
+      "positive_infinity": 7,
+      "negative_infinity": 0,
+      "duplicate_rows": 0,
+      "parseability": {
+        "Flow Duration": {
+          "parseable_count": 1000,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "Tot Fwd Pkts": {
+          "parseable_count": 1000,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "Tot Bwd Pkts": {
+          "parseable_count": 1000,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "TotLen Fwd Pkts": {
+          "parseable_count": 1000,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "TotLen Bwd Pkts": {
+          "parseable_count": 1000,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "Fwd Pkt Len Max": {
+          "parseable_count": 1000,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "Fwd Pkt Len Min": {
+          "parseable_count": 1000,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "Fwd Pkt Len Mean": {
+          "parseable_count": 1000,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "Fwd Pkt Len Std": {
+          "parseable_count": 1000,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "Bwd Pkt Len Max": {
+          "parseable_count": 1000,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "Bwd Pkt Len Min": {
+          "parseable_count": 1000,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "Bwd Pkt Len Mean": {
+          "parseable_count": 1000,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "Bwd Pkt Len Std": {
+          "parseable_count": 1000,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "Flow Byts/s": {
+          "parseable_count": 993,
+          "numeric_parse_failures_or_nan": 7,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "Flow Pkts/s": {
+          "parseable_count": 1000,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 7,
+          "negative_infinity": 0
+        },
+        "Flow IAT Mean": {
+          "parseable_count": 1000,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "Flow IAT Std": {
+          "parseable_count": 1000,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "Flow IAT Max": {
+          "parseable_count": 1000,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "Flow IAT Min": {
+          "parseable_count": 1000,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "Fwd IAT Tot": {
+          "parseable_count": 1000,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "Fwd IAT Mean": {
+          "parseable_count": 1000,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "Fwd IAT Std": {
+          "parseable_count": 1000,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "Fwd IAT Max": {
+          "parseable_count": 1000,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "Fwd IAT Min": {
+          "parseable_count": 1000,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "Bwd IAT Tot": {
+          "parseable_count": 1000,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "Bwd IAT Mean": {
+          "parseable_count": 1000,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "Bwd IAT Std": {
+          "parseable_count": 1000,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "Bwd IAT Max": {
+          "parseable_count": 1000,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "Bwd IAT Min": {
+          "parseable_count": 1000,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "Fwd PSH Flags": {
+          "parseable_count": 1000,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "Bwd PSH Flags": {
+          "parseable_count": 1000,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "Fwd URG Flags": {
+          "parseable_count": 1000,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "Bwd URG Flags": {
+          "parseable_count": 1000,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "Fwd Header Len": {
+          "parseable_count": 1000,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "Bwd Header Len": {
+          "parseable_count": 1000,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "Fwd Pkts/s": {
+          "parseable_count": 1000,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "Bwd Pkts/s": {
+          "parseable_count": 1000,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "Pkt Len Min": {
+          "parseable_count": 1000,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "Pkt Len Max": {
+          "parseable_count": 1000,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "Pkt Len Mean": {
+          "parseable_count": 1000,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "Pkt Len Std": {
+          "parseable_count": 1000,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "Pkt Len Var": {
+          "parseable_count": 1000,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "FIN Flag Cnt": {
+          "parseable_count": 1000,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "SYN Flag Cnt": {
+          "parseable_count": 1000,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "RST Flag Cnt": {
+          "parseable_count": 1000,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "PSH Flag Cnt": {
+          "parseable_count": 1000,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "ACK Flag Cnt": {
+          "parseable_count": 1000,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "URG Flag Cnt": {
+          "parseable_count": 1000,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "CWE Flag Count": {
+          "parseable_count": 1000,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "ECE Flag Cnt": {
+          "parseable_count": 1000,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "Down/Up Ratio": {
+          "parseable_count": 1000,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "Pkt Size Avg": {
+          "parseable_count": 1000,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "Fwd Seg Size Avg": {
+          "parseable_count": 1000,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "Bwd Seg Size Avg": {
+          "parseable_count": 1000,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "Fwd Byts/b Avg": {
+          "parseable_count": 1000,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "Fwd Pkts/b Avg": {
+          "parseable_count": 1000,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "Fwd Blk Rate Avg": {
+          "parseable_count": 1000,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "Bwd Byts/b Avg": {
+          "parseable_count": 1000,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "Bwd Pkts/b Avg": {
+          "parseable_count": 1000,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "Bwd Blk Rate Avg": {
+          "parseable_count": 1000,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "Subflow Fwd Pkts": {
+          "parseable_count": 1000,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "Subflow Fwd Byts": {
+          "parseable_count": 1000,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "Subflow Bwd Pkts": {
+          "parseable_count": 1000,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "Subflow Bwd Byts": {
+          "parseable_count": 1000,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "Init Fwd Win Byts": {
+          "parseable_count": 1000,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "Init Bwd Win Byts": {
+          "parseable_count": 1000,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "Fwd Act Data Pkts": {
+          "parseable_count": 1000,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "Fwd Seg Size Min": {
+          "parseable_count": 1000,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "Active Mean": {
+          "parseable_count": 1000,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "Active Std": {
+          "parseable_count": 1000,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "Active Max": {
+          "parseable_count": 1000,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "Active Min": {
+          "parseable_count": 1000,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "Idle Mean": {
+          "parseable_count": 1000,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "Idle Std": {
+          "parseable_count": 1000,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "Idle Max": {
+          "parseable_count": 1000,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        },
+        "Idle Min": {
+          "parseable_count": 1000,
+          "numeric_parse_failures_or_nan": 0,
+          "positive_infinity": 0,
+          "negative_infinity": 0
+        }
+      }
+    }
+  },
+  "released_schema": {
+    "column_count": 79,
+    "exact_ordered_raw_headers": [
+      " Destination Port",
+      " Flow Duration",
+      " Total Fwd Packets",
+      " Total Backward Packets",
+      "Total Length of Fwd Packets",
+      " Total Length of Bwd Packets",
+      " Fwd Packet Length Max",
+      " Fwd Packet Length Min",
+      " Fwd Packet Length Mean",
+      " Fwd Packet Length Std",
+      "Bwd Packet Length Max",
+      " Bwd Packet Length Min",
+      " Bwd Packet Length Mean",
+      " Bwd Packet Length Std",
+      "Flow Bytes/s",
+      " Flow Packets/s",
+      " Flow IAT Mean",
+      " Flow IAT Std",
+      " Flow IAT Max",
+      " Flow IAT Min",
+      "Fwd IAT Total",
+      " Fwd IAT Mean",
+      " Fwd IAT Std",
+      " Fwd IAT Max",
+      " Fwd IAT Min",
+      "Bwd IAT Total",
+      " Bwd IAT Mean",
+      " Bwd IAT Std",
+      " Bwd IAT Max",
+      " Bwd IAT Min",
+      "Fwd PSH Flags",
+      " Bwd PSH Flags",
+      " Fwd URG Flags",
+      " Bwd URG Flags",
+      " Fwd Header Length",
+      " Bwd Header Length",
+      "Fwd Packets/s",
+      " Bwd Packets/s",
+      " Min Packet Length",
+      " Max Packet Length",
+      " Packet Length Mean",
+      " Packet Length Std",
+      " Packet Length Variance",
+      "FIN Flag Count",
+      " SYN Flag Count",
+      " RST Flag Count",
+      " PSH Flag Count",
+      " ACK Flag Count",
+      " URG Flag Count",
+      " CWE Flag Count",
+      " ECE Flag Count",
+      " Down/Up Ratio",
+      " Average Packet Size",
+      " Avg Fwd Segment Size",
+      " Avg Bwd Segment Size",
+      " Fwd Header Length",
+      "Fwd Avg Bytes/Bulk",
+      " Fwd Avg Packets/Bulk",
+      " Fwd Avg Bulk Rate",
+      " Bwd Avg Bytes/Bulk",
+      " Bwd Avg Packets/Bulk",
+      "Bwd Avg Bulk Rate",
+      "Subflow Fwd Packets",
+      " Subflow Fwd Bytes",
+      " Subflow Bwd Packets",
+      " Subflow Bwd Bytes",
+      "Init_Win_bytes_forward",
+      " Init_Win_bytes_backward",
+      " act_data_pkt_fwd",
+      " min_seg_size_forward",
+      "Active Mean",
+      " Active Std",
+      " Active Max",
+      " Active Min",
+      "Idle Mean",
+      " Idle Std",
+      " Idle Max",
+      " Idle Min",
+      " Label"
+    ],
+    "duplicate_raw_headers": [
+      " Fwd Header Length"
+    ],
+    "pandas_disambiguated_headers": [
+      " Destination Port",
+      " Flow Duration",
+      " Total Fwd Packets",
+      " Total Backward Packets",
+      "Total Length of Fwd Packets",
+      " Total Length of Bwd Packets",
+      " Fwd Packet Length Max",
+      " Fwd Packet Length Min",
+      " Fwd Packet Length Mean",
+      " Fwd Packet Length Std",
+      "Bwd Packet Length Max",
+      " Bwd Packet Length Min",
+      " Bwd Packet Length Mean",
+      " Bwd Packet Length Std",
+      "Flow Bytes/s",
+      " Flow Packets/s",
+      " Flow IAT Mean",
+      " Flow IAT Std",
+      " Flow IAT Max",
+      " Flow IAT Min",
+      "Fwd IAT Total",
+      " Fwd IAT Mean",
+      " Fwd IAT Std",
+      " Fwd IAT Max",
+      " Fwd IAT Min",
+      "Bwd IAT Total",
+      " Bwd IAT Mean",
+      " Bwd IAT Std",
+      " Bwd IAT Max",
+      " Bwd IAT Min",
+      "Fwd PSH Flags",
+      " Bwd PSH Flags",
+      " Fwd URG Flags",
+      " Bwd URG Flags",
+      " Fwd Header Length",
+      " Bwd Header Length",
+      "Fwd Packets/s",
+      " Bwd Packets/s",
+      " Min Packet Length",
+      " Max Packet Length",
+      " Packet Length Mean",
+      " Packet Length Std",
+      " Packet Length Variance",
+      "FIN Flag Count",
+      " SYN Flag Count",
+      " RST Flag Count",
+      " PSH Flag Count",
+      " ACK Flag Count",
+      " URG Flag Count",
+      " CWE Flag Count",
+      " ECE Flag Count",
+      " Down/Up Ratio",
+      " Average Packet Size",
+      " Avg Fwd Segment Size",
+      " Avg Bwd Segment Size",
+      " Fwd Header Length.1",
+      "Fwd Avg Bytes/Bulk",
+      " Fwd Avg Packets/Bulk",
+      " Fwd Avg Bulk Rate",
+      " Bwd Avg Bytes/Bulk",
+      " Bwd Avg Packets/Bulk",
+      "Bwd Avg Bulk Rate",
+      "Subflow Fwd Packets",
+      " Subflow Fwd Bytes",
+      " Subflow Bwd Packets",
+      " Subflow Bwd Bytes",
+      "Init_Win_bytes_forward",
+      " Init_Win_bytes_backward",
+      " act_data_pkt_fwd",
+      " min_seg_size_forward",
+      "Active Mean",
+      " Active Std",
+      " Active Max",
+      " Active Min",
+      "Idle Mean",
+      " Idle Std",
+      " Idle Max",
+      " Idle Min",
+      " Label"
+    ],
+    "active_model_features": [
+      "destination_port",
+      "flow_duration",
+      "total_fwd_packets",
+      "total_backward_packets",
+      "total_length_of_fwd_packets",
+      "total_length_of_bwd_packets",
+      "fwd_packet_length_max",
+      "fwd_packet_length_min",
+      "fwd_packet_length_mean",
+      "fwd_packet_length_std",
+      "bwd_packet_length_max",
+      "bwd_packet_length_min",
+      "bwd_packet_length_mean",
+      "bwd_packet_length_std",
+      "flow_bytes_s",
+      "flow_packets_s",
+      "flow_iat_mean",
+      "flow_iat_std",
+      "flow_iat_max",
+      "flow_iat_min",
+      "fwd_iat_total",
+      "fwd_iat_mean",
+      "fwd_iat_std",
+      "fwd_iat_max",
+      "fwd_iat_min",
+      "bwd_iat_total",
+      "bwd_iat_mean",
+      "bwd_iat_std",
+      "bwd_iat_max",
+      "bwd_iat_min",
+      "fwd_psh_flags",
+      "bwd_psh_flags",
+      "fwd_urg_flags",
+      "bwd_urg_flags",
+      "fwd_header_length",
+      "bwd_header_length",
+      "fwd_packets_s",
+      "bwd_packets_s",
+      "min_packet_length",
+      "max_packet_length",
+      "packet_length_mean",
+      "packet_length_std",
+      "packet_length_variance",
+      "fin_flag_count",
+      "syn_flag_count",
+      "rst_flag_count",
+      "psh_flag_count",
+      "ack_flag_count",
+      "urg_flag_count",
+      "cwe_flag_count",
+      "ece_flag_count",
+      "down_up_ratio",
+      "average_packet_size",
+      "avg_fwd_segment_size",
+      "avg_bwd_segment_size",
+      "fwd_header_length.1",
+      "fwd_avg_bytes_bulk",
+      "fwd_avg_packets_bulk",
+      "fwd_avg_bulk_rate",
+      "bwd_avg_bytes_bulk",
+      "bwd_avg_packets_bulk",
+      "bwd_avg_bulk_rate",
+      "subflow_fwd_packets",
+      "subflow_fwd_bytes",
+      "subflow_bwd_packets",
+      "subflow_bwd_bytes",
+      "init_win_bytes_forward",
+      "init_win_bytes_backward",
+      "act_data_pkt_fwd",
+      "min_seg_size_forward",
+      "active_mean",
+      "active_std",
+      "active_max",
+      "active_min",
+      "idle_mean",
+      "idle_std",
+      "idle_max",
+      "idle_min"
+    ]
+  },
+  "crosswalk": {
+    "path": "reports/tables/cicflowmeter_v3_78_feature_crosswalk.csv",
+    "feature_count": 78,
+    "category_counts": {
+      "EXACT": 69,
+      "SOURCE_SUPPORTED_UNIT_CONVERSION": 0,
+      "DATASET_ARTIFACT_REPRODUCTION": 9,
+      "SEMANTIC_MISMATCH": 0,
+      "UNCERTAIN": 0,
+      "MISSING": 0
+    },
+    "exact_training_order_producible": true
+  },
+  "v3_vs_v4": {
+    "path": "reports/tables/cicflowmeter_v3_vs_v4.csv",
+    "flow_summaries": {
+      "normal-http-test": {
+        "v3_flow_count": 61,
+        "v4_flow_count": 61,
+        "reliably_matched_flows": 61,
+        "unmatched_v3": 0,
+        "unmatched_v4": 0,
+        "orientation_differences": 0,
+        "segmentation_boundary_differences": 30,
+        "start_timestamp_difference_seconds": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0
+        },
+        "matching": "Protocol and canonical bidirectional five-tuple; Hungarian one-to-one assignment within identity minimizes start-time then duration difference; orientation checked separately."
+      },
+      "portscan-test": {
+        "v3_flow_count": 1000,
+        "v4_flow_count": 1000,
+        "reliably_matched_flows": 1000,
+        "unmatched_v3": 0,
+        "unmatched_v4": 0,
+        "orientation_differences": 0,
+        "segmentation_boundary_differences": 0,
+        "start_timestamp_difference_seconds": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0
+        },
+        "matching": "Protocol and canonical bidirectional five-tuple; Hungarian one-to-one assignment within identity minimizes start-time then duration difference; orientation checked separately."
+      }
+    },
+    "common_numeric_feature_scenario_rows": 152,
+    "numerically_identical_feature_scenario_rows": 126,
+    "largest_differences": [
+      {
+        "record_type": "feature_comparison",
+        "scenario": "portscan-test",
+        "v3_header": "SYN Flag Cnt",
+        "v4_header": "SYN Flag Count",
+        "matched_finite_count": 1000,
+        "exact_equality_percentage": 0.0,
+        "mean_absolute_difference": 1.001,
+        "max_absolute_difference": 2.0,
+        "mean_symmetric_relative_difference": 1.0,
+        "correlation": null
+      },
+      {
+        "record_type": "feature_comparison",
+        "scenario": "portscan-test",
+        "v3_header": "RST Flag Cnt",
+        "v4_header": "RST Flag Count",
+        "matched_finite_count": 1000,
+        "exact_equality_percentage": 0.0,
+        "mean_absolute_difference": 1.0,
+        "max_absolute_difference": 1.0,
+        "mean_symmetric_relative_difference": 1.0,
+        "correlation": null
+      },
+      {
+        "record_type": "feature_comparison",
+        "scenario": "portscan-test",
+        "v3_header": "PSH Flag Cnt",
+        "v4_header": "PSH Flag Count",
+        "matched_finite_count": 1000,
+        "exact_equality_percentage": 0.0,
+        "mean_absolute_difference": 1.0,
+        "max_absolute_difference": 1.0,
+        "mean_symmetric_relative_difference": 1.0,
+        "correlation": null
+      },
+      {
+        "record_type": "feature_comparison",
+        "scenario": "portscan-test",
+        "v3_header": "ACK Flag Cnt",
+        "v4_header": "ACK Flag Count",
+        "matched_finite_count": 1000,
+        "exact_equality_percentage": 0.0,
+        "mean_absolute_difference": 1.0,
+        "max_absolute_difference": 1.0,
+        "mean_symmetric_relative_difference": 1.0,
+        "correlation": null
+      },
+      {
+        "record_type": "feature_comparison",
+        "scenario": "portscan-test",
+        "v3_header": "Subflow Fwd Pkts",
+        "v4_header": "Subflow Fwd Packets",
+        "matched_finite_count": 1000,
+        "exact_equality_percentage": 0.0,
+        "mean_absolute_difference": 1.001,
+        "max_absolute_difference": 2.0,
+        "mean_symmetric_relative_difference": 1.0,
+        "correlation": null
+      },
+      {
+        "record_type": "feature_comparison",
+        "scenario": "portscan-test",
+        "v3_header": "Subflow Bwd Pkts",
+        "v4_header": "Subflow Bwd Packets",
+        "matched_finite_count": 1000,
+        "exact_equality_percentage": 0.0,
+        "mean_absolute_difference": 1.0,
+        "max_absolute_difference": 1.0,
+        "mean_symmetric_relative_difference": 1.0,
+        "correlation": null
+      },
+      {
+        "record_type": "feature_comparison",
+        "scenario": "normal-http-test",
+        "v3_header": "FIN Flag Cnt",
+        "v4_header": "FIN Flag Count",
+        "matched_finite_count": 61,
+        "exact_equality_percentage": 1.639344262295082,
+        "mean_absolute_difference": 0.9836065573770492,
+        "max_absolute_difference": 1.0,
+        "mean_symmetric_relative_difference": 0.9836065573770492,
+        "correlation": null
+      },
+      {
+        "record_type": "feature_comparison",
+        "scenario": "normal-http-test",
+        "v3_header": "Subflow Fwd Pkts",
+        "v4_header": "Subflow Fwd Packets",
+        "matched_finite_count": 61,
+        "exact_equality_percentage": 1.639344262295082,
+        "mean_absolute_difference": 2.4754098360655736,
+        "max_absolute_difference": 4.0,
+        "mean_symmetric_relative_difference": 0.9836065573770492,
+        "correlation": -0.12338949839561683
+      },
+      {
+        "record_type": "feature_comparison",
+        "scenario": "normal-http-test",
+        "v3_header": "ACK Flag Cnt",
+        "v4_header": "ACK Flag Count",
+        "matched_finite_count": 61,
+        "exact_equality_percentage": 1.639344262295082,
+        "mean_absolute_difference": 3.9672131147540983,
+        "max_absolute_difference": 8.0,
+        "mean_symmetric_relative_difference": 0.8196721311475409,
+        "correlation": -0.8723059078556464
+      },
+      {
+        "record_type": "feature_comparison",
+        "scenario": "normal-http-test",
+        "v3_header": "Init Bwd Win Byts",
+        "v4_header": "Bwd Init Win Bytes",
+        "matched_finite_count": 61,
+        "exact_equality_percentage": 49.18032786885246,
+        "mean_absolute_difference": 125.91803278688525,
+        "max_absolute_difference": 256.0,
+        "mean_symmetric_relative_difference": 0.5101253616200578,
+        "correlation": 0.12700012700019056
+      }
+    ],
+    "source_explanation": [
+      "V3 and V4 retain the same matched flow identities/boundaries for these PCAPs despite materially different FIN/RST source branches.",
+      "V3 calls bulk/subflow/global checkFlags only for firstPacket; V4 enables those calls for every packet.",
+      "V3 emits global flag HashMap iteration order; V4 emits explicit FIN,SYN,RST,PSH,ACK,URG,CWR,ECE order.",
+      "Initial-window defaults and first-packet byte-array equality logic differ."
+    ]
+  },
+  "v3_vs_cicids2017": {
+    "path": "reports/tables/cicflowmeter_v3_vs_cicids2017_distribution.csv",
+    "max_ks": {
+      "normal-http-test": 0.7960637468414671,
+      "portscan-test": 0.996533064871327
+    },
+    "conclusion": "Large KS values are external-distribution shift diagnostics for synthetic lab traffic, not semantic incompatibility by themselves. Compatibility is decided from source and released-artifact semantics."
+  },
+  "non_finite_and_preprocessing": {
+    "v3_raw_counts": {
+      "normal-http-test": {
+        "positive_infinity": 5,
+        "negative_infinity": 0,
+        "nan_or_parse_failures": 5
+      },
+      "portscan-test": {
+        "positive_infinity": 7,
+        "negative_infinity": 0,
+        "nan_or_parse_failures": 7
+      }
+    },
+    "v3_source_behavior": "Zero-duration byte/packet rates use Java floating-point division and can emit Infinity/NaN; empty backward statistics are mostly guarded to zero; unavailable initial windows default to -1 in V3.",
+    "training_pipeline": "prepare_dataset replaces +Inf/-Inf with NaN, casts numeric features to float32, then the fitted sklearn pipeline median-imputes from the training partition.",
+    "required_model_facing_preprocessing": "Preserve raw V3 values; during a future authorized adapter/inference phase, reproduce training behavior exactly: explicit artifact transforms, exact feature order, replace +/-Infinity with NaN, float32 conversion, and the already-fitted pipeline imputer. Do not convert -1 initial windows to missing.",
+    "compatibility": "PASS"
+  },
+  "flow_construction_finding": {
+    "v3_v4": {
+      "normal-http-test": {
+        "v3_flow_count": 61,
+        "v4_flow_count": 61,
+        "reliably_matched_flows": 61,
+        "unmatched_v3": 0,
+        "unmatched_v4": 0,
+        "orientation_differences": 0,
+        "segmentation_boundary_differences": 30,
+        "start_timestamp_difference_seconds": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0
+        },
+        "matching": "Protocol and canonical bidirectional five-tuple; Hungarian one-to-one assignment within identity minimizes start-time then duration difference; orientation checked separately."
+      },
+      "portscan-test": {
+        "v3_flow_count": 1000,
+        "v4_flow_count": 1000,
+        "reliably_matched_flows": 1000,
+        "unmatched_v3": 0,
+        "unmatched_v4": 0,
+        "orientation_differences": 0,
+        "segmentation_boundary_differences": 0,
+        "start_timestamp_difference_seconds": {
+          "min": 0.0,
+          "median": 0.0,
+          "max": 0.0
+        },
+        "matching": "Protocol and canonical bidirectional five-tuple; Hungarian one-to-one assignment within identity minimizes start-time then duration difference; orientation checked separately."
+      }
+    },
+    "hieulw": "Existing audit found 32 Normal flows versus Java's 61, with 30 reliable one-to-one matches; Python flow lifecycle/termination merges or suppresses Java teardown segments. PortScan remains 1000/1000. This is an implementation difference, not a PCAP defect."
+  },
+  "artifact_reproduction": {
+    "cwe_flag_count": "cwe_flag_count = fwd_urg_flags; DATASET_ARTIFACT_REPRODUCTION; never substitute V3 aggregate CWR/CWE slot as genuine CWE.",
+    "fwd_header_length.1": "fwd_header_length.1 = fwd_header_length; DATASET_ARTIFACT_REPRODUCTION.",
+    "aggregate_tcp_flags": {
+      "fin_flag_count": "V3 header FIN receives HashMap key RST",
+      "syn_flag_count": "V3 header SYN receives HashMap key PSH",
+      "rst_flag_count": "V3 header RST receives HashMap key ECE",
+      "psh_flag_count": "V3 header PSH receives HashMap key SYN",
+      "ack_flag_count": "V3 header ACK receives HashMap key ACK",
+      "urg_flag_count": "V3 header URG receives HashMap key FIN",
+      "cwe_flag_count": "released CWE is reproduced from directional Fwd URG by explicit policy",
+      "ece_flag_count": "V3 header ECE receives HashMap key CWR"
+    }
+  },
+  "compatibility_gate": "V3_COMPATIBILITY_GATE_PASS",
+  "gate_reason": "All 78 ordered inputs are justified with no missing, uncertain, or semantic-mismatch statuses. Sixty-nine are direct V3 source mappings and nine explicitly reproduce released CICIDS2017 artifacts. Non-finite handling matches the recorded training path. PASS does not authorize inference.",
+  "inference_run": false,
+  "next_step": "Archive this gate and implement a separately reviewed V3 model-facing adapter before any inference authorization."
+}

@@ -1,0 +1,73 @@
+{
+  "status": "success",
+  "generated_at_utc": "2026-09-01T03:48:32.838696+00:00",
+  "platform": "linux/amd64",
+  "image": {
+    "tag": "rf-nids-cicflowmeter-v3:a26aae27",
+    "id": "sha256:0227c7280e586d54144b9bb11b2a6b5d4b1c4ba9bc7c44199fa312a6b829caab"
+  },
+  "build_report": "reports/metrics/cicflowmeter_v3_build.json",
+  "jni_load_success": true,
+  "cli_success": true,
+  "offline_pcap_reading_success": true,
+  "extractions": [
+    {
+      "input_path": "data/lab/pcap/normal-http-test.pcap",
+      "input_sha256": "04fe7f461feb9974557341dd2620da5d9ad476b52604f691472984be8fe9e9b4",
+      "output_path": "data/lab/flows/cicflowmeter-v3/normal-http-test.pcap_ISCX.csv",
+      "output_sha256": "5fced18068b91e1955206a3f07833f5533d68f706b45c36eca9e6d6e3eec477a",
+      "generated_filename": "normal-http-test.pcap_ISCX.csv",
+      "row_flow_count": 61,
+      "output_column_count": 84,
+      "packet_accounting": {
+        "total": 314,
+        "valid": 306,
+        "ignored": 8
+      },
+      "exit_code": 0,
+      "runtime_seconds": 1.033,
+      "stdout": "cic.cs.unb.ca.ifm.CICFlowMeter \ncic.cs.unb.ca.ifm.CICFlowMeter CICFlowMeterV2 found: 1 Files.\ncic.cs.unb.ca.ifm.CICFlowMeter \ncic.cs.unb.ca.ifm.CICFlowMeter \ncic.cs.unb.ca.ifm.CICFlowMeter Working on... normal-http-test.pcap \ncic.cs.unb.ca.ifm.CICFlowMeter Done! in 0 seconds\ncic.cs.unb.ca.ifm.CICFlowMeter \t Total packets: 314\ncic.cs.unb.ca.ifm.CICFlowMeter \t Valid packets: 306\ncic.cs.unb.ca.ifm.CICFlowMeter \t Ignored packets:8 8 \ncic.cs.unb.ca.ifm.CICFlowMeter PCAP duration 67 seconds\ncic.cs.unb.ca.ifm.CICFlowMeter ----------------------------------------------------------------------------\ncic.cs.unb.ca.ifm.CICFlowMeter \n\n----------------------------------------------------------------------------\n TOTAL FLOWS GENERATED: 61\ncic.cs.unb.ca.ifm.CICFlowMeter ----------------------------------------------------------------------------\n\n",
+      "stderr": "",
+      "parser_warnings_errors": [],
+      "csv_inspection_error": null,
+      "success": true
+    },
+    {
+      "input_path": "data/lab/pcap/portscan-test.pcap",
+      "input_sha256": "653dc8e8f7593aa811958374b0d95414f42e799b845c8bcaeb262e4baf01f102",
+      "output_path": "data/lab/flows/cicflowmeter-v3/portscan-test.pcap_ISCX.csv",
+      "output_sha256": "e10519fe09819247eecd45260740380f5bb037f5e320432634e7905e9f4c43c8",
+      "generated_filename": "portscan-test.pcap_ISCX.csv",
+      "row_flow_count": 1000,
+      "output_column_count": 84,
+      "packet_accounting": {
+        "total": 2005,
+        "valid": 2001,
+        "ignored": 4
+      },
+      "exit_code": 0,
+      "runtime_seconds": 1.201,
+      "stdout": "cic.cs.unb.ca.ifm.CICFlowMeter \ncic.cs.unb.ca.ifm.CICFlowMeter CICFlowMeterV2 found: 1 Files.\ncic.cs.unb.ca.ifm.CICFlowMeter \ncic.cs.unb.ca.ifm.CICFlowMeter \ncic.cs.unb.ca.ifm.CICFlowMeter Working on... portscan-test.pcap \ncic.cs.unb.ca.ifm.CICFlowMeter Done! in 0 seconds\ncic.cs.unb.ca.ifm.CICFlowMeter \t Total packets: 2005\ncic.cs.unb.ca.ifm.CICFlowMeter \t Valid packets: 2001\ncic.cs.unb.ca.ifm.CICFlowMeter \t Ignored packets:4 4 \ncic.cs.unb.ca.ifm.CICFlowMeter PCAP duration 0 seconds\ncic.cs.unb.ca.ifm.CICFlowMeter ----------------------------------------------------------------------------\ncic.cs.unb.ca.ifm.CICFlowMeter \n\n----------------------------------------------------------------------------\n TOTAL FLOWS GENERATED: 1000\ncic.cs.unb.ca.ifm.CICFlowMeter ----------------------------------------------------------------------------\n\n",
+      "stderr": "",
+      "parser_warnings_errors": [],
+      "csv_inspection_error": null,
+      "success": true
+    }
+  ],
+  "flow_count_comparison": {
+    "normal-http-test": {
+      "hieulw": 32,
+      "v4_candidate": 61,
+      "v3": 61
+    },
+    "portscan-test": {
+      "hieulw": 1000,
+      "v4_candidate": 1000,
+      "v3": 1000
+    }
+  },
+  "raw_output_policy": "Raw V3 CSV bytes are preserved unchanged and existing outputs are never overwritten.",
+  "scientific_warning": "Extraction feasibility is not 78-feature compatibility. No feature adaptation, model inference, or retraining was performed.",
+  "inference_run": false,
+  "next_required_phase": "V3_78_FEATURE_COMPATIBILITY_VALIDATION"
+}

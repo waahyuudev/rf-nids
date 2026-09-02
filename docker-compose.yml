@@ -29,6 +29,7 @@ services:
       ALERT_CONFIDENCE_THRESHOLD: "0.70"
       MAX_BATCH_SIZE: "1000"
       MAX_PAGE_SIZE: "100"
+      AUTH_SESSION_HOURS: "8"
       LOG_LEVEL: INFO
       LEAKAGE_COLUMNS_CONFIG: config/leakage_columns.json
     depends_on:
