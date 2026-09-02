@@ -9,7 +9,7 @@ from typing import Annotated
 
 from fastapi import Depends, FastAPI, HTTPException, Query, Request, status
 from fastapi.responses import JSONResponse
-from sqlalchemy import case, func, select, text
+from sqlalchemy import case, func, or_, select, text
 from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
@@ -26,8 +26,10 @@ from src.api.auth import (
 from src.api.models import (
     Alert,
     Dataset,
+    EvidenceSource,
     EvaluationResult,
     Experiment,
+    ModelRecord,
     Prediction,
     TrafficFlow,
     User,
@@ -39,9 +41,13 @@ from src.api.schemas import (
     BatchPredictionResult,
     DashboardSummary,
     DatasetInfo,
+    EvidenceSourceInfo,
     EvaluationInfo,
     ExperimentInfo,
     ModelInfo,
+    ModelPresentationInfo,
+    MonitoringRecord,
+    MonitoringSummary,
     LoginRequest,
     LoginResult,
     LogoutResult,
@@ -74,6 +80,8 @@ def _parse_datetime(value) -> datetime | None:
 
 
 def _prediction_detail(row: Prediction) -> PredictionDetail:
+    alert = row.alert
+    experiment = row.experiment
     return PredictionDetail(
         id=row.id,
         traffic_flow_id=row.traffic_flow_id,
@@ -81,6 +89,10 @@ def _prediction_detail(row: Prediction) -> PredictionDetail:
         confidence_score=row.confidence_score,
         class_probabilities=row.class_probabilities,
         prediction_time=row.prediction_time,
+        source_type=row.source_type,
+        external_key=row.external_key,
+        experiment_id=row.experiment_id,
+        experiment_code=experiment.experiment_code if experiment else None,
         source_ip=row.traffic_flow.source_ip,
         source_port=row.traffic_flow.source_port,
         destination_ip=row.traffic_flow.destination_ip,
@@ -89,9 +101,21 @@ def _prediction_detail(row: Prediction) -> PredictionDetail:
         capture_session_id=row.traffic_flow.capture_session_id,
         capture_interface=row.traffic_flow.capture_interface,
         pcap_segment=row.traffic_flow.pcap_segment,
+        capture_time=row.traffic_flow.capture_time,
+        flow_created_at=row.traffic_flow.created_at,
+        model_id=row.model_id,
+        model_name=row.model.model_name,
         model_version=row.model.model_version,
         flow_features=row.traffic_flow.raw_features,
+        alert_id=alert.id if alert else None,
+        alert_severity=alert.severity if alert else None,
+        alert_status=alert.status if alert else None,
     )
+
+
+def _runtime_prediction_clause():
+    """Include new runtime rows and legacy runtime rows created before provenance."""
+    return or_(Prediction.source_type.is_(None), Prediction.source_type == "RUNTIME")
 
 
 def _alert_detail(row: Alert) -> AlertDetail:
@@ -237,6 +261,63 @@ def create_app(
         )
 
     @application.get(
+        "/api/models/active",
+        response_model=ModelPresentationInfo,
+        summary="Active model presentation metadata",
+    )
+    def active_model(request: Request, db: Db):
+        row = db.scalar(
+            select(ModelRecord)
+            .where(ModelRecord.is_active.is_(True))
+            .order_by(ModelRecord.id.desc())
+        )
+        if row is None:
+            raise HTTPException(404, "No active model")
+        metadata = request.app.state.inference.metadata
+        experiment = row.experiment
+        return ModelPresentationInfo(
+            id=row.id,
+            model_name=row.model_name,
+            model_version=row.model_version,
+            algorithm=row.algorithm,
+            feature_count=row.feature_count or len(metadata.get("feature_names", [])),
+            class_labels=metadata.get(
+                "class_names", list(metadata.get("label_mapping", {}))
+            ),
+            accuracy=row.accuracy,
+            macro_f1=row.macro_f1,
+            ddos_recall=row.ddos_recall,
+            portscan_recall=row.portscan_recall,
+            trained_at=_parse_datetime(
+                metadata.get("trained_at") or metadata.get("created_at_utc")
+            ),
+            is_active=row.is_active,
+            artifact_path=row.artifact_path,
+            artifact_sha256=row.artifact_sha256,
+            parameters=row.parameters,
+            experiment_id=row.experiment_id,
+            experiment_code=experiment.experiment_code if experiment else None,
+            experiment_name=experiment.experiment_name if experiment else None,
+        )
+
+    @application.get(
+        "/api/evidence-sources",
+        response_model=list[EvidenceSourceInfo],
+        summary="List imported evidence provenance",
+    )
+    def list_evidence_sources(
+        db: Db,
+        owner_type: str | None = None,
+        owner_key: str | None = None,
+    ):
+        query = select(EvidenceSource)
+        if owner_type:
+            query = query.where(EvidenceSource.owner_type == owner_type)
+        if owner_key:
+            query = query.where(EvidenceSource.owner_key == owner_key)
+        return db.scalars(query.order_by(EvidenceSource.id)).all()
+
+    @application.get(
         "/api/datasets", response_model=list[DatasetInfo], summary="List imported datasets"
     )
     def list_datasets(db: Db):
@@ -354,18 +435,113 @@ def create_app(
         predicted_label: PredictionLabel | None = None,
         source_ip: str | None = None,
         destination_ip: str | None = None,
+        protocol: str | None = None,
     ):
-        query = select(Prediction).join(Prediction.traffic_flow)
+        query = (
+            select(Prediction)
+            .join(Prediction.traffic_flow)
+            .where(_runtime_prediction_clause())
+        )
         if predicted_label:
             query = query.where(Prediction.predicted_label == predicted_label.value)
         if source_ip:
             query = query.where(TrafficFlow.source_ip == source_ip)
         if destination_ip:
             query = query.where(TrafficFlow.destination_ip == destination_ip)
+        if protocol:
+            query = query.where(TrafficFlow.protocol == protocol)
         rows = db.scalars(
             query.order_by(Prediction.id.desc()).limit(limit).offset(offset)
         ).all()
         return [_prediction_detail(row) for row in rows]
+
+    @application.get(
+        "/api/traffic-flows",
+        response_model=list[MonitoringRecord],
+        summary="List runtime traffic flows for monitoring",
+    )
+    def list_traffic_flows(
+        db: Db,
+        limit: int = Query(default_page_size, ge=1, le=settings.max_page_size),
+        offset: int = Query(0, ge=0),
+        predicted_label: PredictionLabel | None = None,
+        protocol: str | None = None,
+        source_ip: str | None = None,
+        destination_ip: str | None = None,
+    ):
+        query = (
+            select(TrafficFlow)
+            .outerjoin(TrafficFlow.prediction)
+            .where(or_(Prediction.id.is_(None), _runtime_prediction_clause()))
+        )
+        if predicted_label:
+            query = query.where(Prediction.predicted_label == predicted_label.value)
+        if protocol:
+            query = query.where(TrafficFlow.protocol == protocol)
+        if source_ip:
+            query = query.where(TrafficFlow.source_ip == source_ip)
+        if destination_ip:
+            query = query.where(TrafficFlow.destination_ip == destination_ip)
+        rows = db.scalars(
+            query.order_by(TrafficFlow.id.desc()).limit(limit).offset(offset)
+        ).all()
+        return [
+            MonitoringRecord(
+                flow_id=row.id,
+                flow_timestamp=row.capture_time or row.created_at,
+                capture_time=row.capture_time,
+                source_ip=row.source_ip,
+                source_port=row.source_port,
+                destination_ip=row.destination_ip,
+                destination_port=row.destination_port,
+                protocol=row.protocol,
+                prediction_id=row.prediction.id if row.prediction else None,
+                prediction_time=(row.prediction.prediction_time if row.prediction else None),
+                predicted_label=(row.prediction.predicted_label if row.prediction else None),
+                confidence_score=(row.prediction.confidence_score if row.prediction else None),
+                alert_id=(row.prediction.alert.id if row.prediction and row.prediction.alert else None),
+                alert_status=(row.prediction.alert.status if row.prediction and row.prediction.alert else None),
+            )
+            for row in rows
+        ]
+
+    @application.get(
+        "/api/monitoring/summary",
+        response_model=MonitoringSummary,
+        summary="Aggregate runtime monitoring counters",
+    )
+    def monitoring_summary(db: Db):
+        flow_counts = db.execute(
+            select(
+                func.count(TrafficFlow.id),
+                func.sum(case((Prediction.predicted_label == "Normal", 1), else_=0)),
+                func.sum(case((Prediction.predicted_label == "DDoS", 1), else_=0)),
+                func.sum(case((Prediction.predicted_label == "PortScan", 1), else_=0)),
+                func.max(Prediction.prediction_time),
+            )
+            .select_from(TrafficFlow)
+            .outerjoin(TrafficFlow.prediction)
+            .where(or_(Prediction.id.is_(None), _runtime_prediction_clause()))
+        ).one()
+        alert_count = db.scalar(
+            select(func.count(Alert.id))
+            .join(Alert.prediction)
+            .where(_runtime_prediction_clause())
+        )
+        active_model = db.scalar(
+            select(ModelRecord.model_version)
+            .where(ModelRecord.is_active.is_(True))
+            .order_by(ModelRecord.id.desc())
+        )
+        return MonitoringSummary(
+            total_flows=flow_counts[0] or 0,
+            total_normal=flow_counts[1] or 0,
+            total_ddos=flow_counts[2] or 0,
+            total_portscan=flow_counts[3] or 0,
+            total_alerts=alert_count or 0,
+            latest_detection_timestamp=flow_counts[4],
+            active_model=active_model,
+        )
 
     @application.get(
         "/api/predictions/{prediction_id}",
@@ -432,7 +608,7 @@ def create_app(
                 func.sum(case((Prediction.predicted_label == "DDoS", 1), else_=0)),
                 func.sum(case((Prediction.predicted_label == "PortScan", 1), else_=0)),
                 func.max(Prediction.prediction_time),
-            )
+            ).where(_runtime_prediction_clause())
         ).one()
         alert_counts = db.execute(
             select(
@@ -450,6 +626,10 @@ def create_app(
                     )
                 ),
                 func.sum(case((Alert.status == "ACKNOWLEDGED", 1), else_=0)),
+            ).where(
+                Alert.prediction_id.in_(
+                    select(Prediction.id).where(_runtime_prediction_clause())
+                )
             )
         ).one()
         return DashboardSummary(
@@ -487,6 +667,7 @@ def create_app(
                 func.sum(case((Prediction.predicted_label == "PortScan", 1), else_=0)),
             )
             .where(Prediction.prediction_time >= since)
+            .where(_runtime_prediction_clause())
             .group_by(bucket)
             .order_by(bucket)
         ).all()

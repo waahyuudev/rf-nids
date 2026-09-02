@@ -50,6 +50,24 @@ class RFNIDSClient:
     def model_info(self):
         return self._request("GET", "/api/model")
 
+    def active_model(self):
+        return self._request("GET", "/api/models/active")
+
+    def datasets(self):
+        return self._request("GET", "/api/datasets")
+
+    def experiments(self):
+        return self._request("GET", "/api/experiments")
+
+    def experiment_evaluation(self, experiment_id: int):
+        return self._request("GET", f"/api/experiments/{experiment_id}/evaluation")
+
+    def evidence_sources(self, *, owner_type=None, owner_key=None):
+        params = {"owner_type": owner_type, "owner_key": owner_key}
+        return self._request(
+            "GET", "/api/evidence-sources", params={k: v for k, v in params.items() if v}
+        )
+
     def summary(self):
         return self._request("GET", "/api/dashboard/summary")
 
@@ -58,10 +76,21 @@ class RFNIDSClient:
 
     def predictions(self, *, limit=20, offset=0, **filters):
         params = {"limit": limit, "offset": offset, **filters}
-        return self._request("GET", "/api/predictions", params={k: v for k, v in params.items() if v})
+        return self._request("GET", "/api/predictions", params={k: v for k, v in params.items() if v is not None and v != ""})
 
     def prediction(self, prediction_id: int):
         return self._request("GET", f"/api/predictions/{prediction_id}")
+
+    def traffic_flows(self, *, limit=20, offset=0, **filters):
+        params = {"limit": limit, "offset": offset, **filters}
+        return self._request(
+            "GET",
+            "/api/traffic-flows",
+            params={k: v for k, v in params.items() if v is not None and v != ""},
+        )
+
+    def monitoring_summary(self):
+        return self._request("GET", "/api/monitoring/summary")
 
     def alerts(self, *, limit=20, offset=0, **filters):
         params = {"limit": limit, "offset": offset, **filters}

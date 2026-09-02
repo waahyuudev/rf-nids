@@ -11,7 +11,7 @@ from dashboard.api_client import APIError, RFNIDSClient
 from dashboard.config import DashboardConfig
 from dashboard.components.sidebar import render_sidebar
 from dashboard.components.styles import apply_styles, render_header
-from dashboard.pages import alerts, model_info, overview, predictions
+from dashboard.pages import alerts, dataset, evaluation, model_info, monitoring, overview, predictions
 
 st.set_page_config(page_title="RF-NIDS Monitoring Dashboard", page_icon="🛡️", layout="wide")
 apply_styles()
@@ -36,7 +36,9 @@ if not online:
 @st.fragment(run_every=config.refresh_seconds if auto_refresh else None)
 def page_content():
     try:
-        {"Overview": overview, "Predictions": predictions, "Alerts": alerts, "Model": model_info}[page].render(client)
+        {"Dashboard": overview, "Dataset": dataset, "Models": model_info,
+         "Evaluation": evaluation, "Monitoring": monitoring, "Predictions": predictions,
+         "Alerts": alerts}[page].render(client)
     except APIError as exc:
         st.error(str(exc))
 

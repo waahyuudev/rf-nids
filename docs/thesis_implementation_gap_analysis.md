@@ -67,9 +67,9 @@ Additional scientific observations:
 | Dataset | **MISSING** UI/domain; evidence exists | `src/data/inspect_dataset.py`, `reports/metrics/data_understanding.json`, dataset identity in `models/model_metadata.json` | `datasets` table/model, importer, API, and page | Import verified metadata/hashes/counts from immutable reports; never recompute or invent values in the UI. |
 | Models / Training | **PARTIAL** | `dashboard/pages/model_info.py`, `/api/model`, training scripts and real model metadata | Page omits parameters, artifact identity/hash, related experiment, richer evaluation summary, and controlled training-action policy | Make this a read-mostly model registry/detail page. Show real metadata and link the model to imported Experiment A; keep training in scripts unless a safe controlled wrapper is justified. |
 | Evaluation | **MISSING** UI/domain; evidence exists | A/B/C JSON/CSV/PNG reports under `reports/metrics`, `reports/tables`, and `reports/figures`; only brief A/B text in `model_info.py` | `evaluation_results`/experiment persistence, importer, API, A/B/C selector, metrics, per-class recall, confusion matrix, notes | Build a read-only evidence importer and dedicated page. Show Experiment C's negative metrics and external-validation explanation without transformation. |
-| Monitoring | **PARTIAL** | Overview recent predictions, prediction list, timeline, traffic metadata columns in DB/API | No distinct Monitoring page, capture/session filtering, or explicit processed-flow view | Reuse prediction/traffic-flow APIs and add a Monitoring page focused on timestamp/network metadata/class/confidence. Display unavailable metadata as unavailable, never synthetic. |
-| Predictions | **DONE** for runtime data | `dashboard/pages/predictions.py`, `dashboard/components/tables.py`, `/api/predictions` | No imported Experiment C presentation copy or source/experiment context | Preserve runtime list. Extend records with provenance/idempotency fields before importing evidence. |
-| Prediction Detail | **PARTIAL** | Inline detail in `dashboard/pages/predictions.py`, `/api/predictions/{id}`, `PredictionDetail` | No dedicated route/page and no experiment/source context; feature provenance is only raw JSON | A dedicated page is optional in Streamlit, but the detail view must add model, source/experiment context, available metadata, probabilities, and relevant features. |
+| Monitoring | **DONE** for runtime data | `dashboard/pages/monitoring.py`, `/api/traffic-flows`, `/api/monitoring/summary` | Optional date/time filtering is not implemented | Runtime-only summary, server-side class/protocol/IP filters, bounded pagination, and correct empty/unpredicted-flow states are implemented. |
+| Predictions | **DONE** for runtime data | `dashboard/pages/predictions.py`, `dashboard/components/tables.py`, `/api/predictions` | No imported Experiment C presentation copy by design in Phase 4 | The classifier-focused list is bounded and includes model/alert context; runtime and imported evidence remain separated. |
+| Prediction Detail | **DONE** for stored runtime fields | `dashboard/pages/predictions.py`, `/api/predictions/{id}`, `PredictionDetail` | Legacy records can only display fields that were originally stored | The detail view presents prediction, actual stored probabilities, flow/features, model, provenance/context, and associated alert metadata without reconstruction. |
 | Alerts | **PARTIAL** | `src/api/service.py`, `src/api/models.py`, alert API, `dashboard/pages/alerts.py`; unique `prediction_id` prevents two alerts for one stored prediction | Current creation has a configurable confidence threshold, contradicting the frozen unconditional rule; no acknowledging user FK; no import idempotency key | Change application rule in a later approved phase to every non-Normal prediction: DDoS/HIGH, PortScan/MEDIUM. Preserve one-to-one constraint and add importer provenance/idempotency. Record acknowledging administrator. |
 | Report / Export | **MISSING** application function | Scientific scripts already emit JSON/CSV reports | No API/UI export for experiment/evaluation/prediction summaries | Add deterministic CSV/JSON downloads generated from persisted presentation data, with source evidence hash/path and export timestamp. PDF is unnecessary. |
 | Database | **PARTIAL** | `src/api/database.py`, `src/api/models.py`, two Alembic revisions | Missing `users`, `datasets`, `experiments`, and `evaluation_results`; missing thesis relationships and import provenance | Extend the existing SQLAlchemy/Alembic schema additively. Do not duplicate the four existing entities. |
@@ -218,11 +218,12 @@ Suggested module boundaries:
 - Add Experiment A/B/C evaluation selection, metrics, confusion matrices, per-class recall, sources, and limitations.
 - Complete dashboard active-model/alert semantics while preserving runtime/evidence separation.
 
-### Phase 4 — Monitoring and Predictions
+### Phase 4 — Monitoring and Predictions (completed 2026-09-02)
 
-- Add a Monitoring page using existing traffic-flow/prediction storage.
-- Add source/experiment filters and complete prediction-detail context.
-- Optionally import Experiment C per-flow presentation records with deterministic external identities.
+- Added a runtime-only Monitoring page using existing traffic-flow/prediction storage.
+- Added server-side class/protocol/IP filtering and bounded limit/offset reads.
+- Completed prediction-detail model, flow, feature, provenance, probability, and alert context.
+- Experiment C per-flow records were deliberately not imported into runtime monitoring.
 
 ### Phase 5 — Alerts
 
@@ -297,3 +298,13 @@ Phase 2 is complete. A fail-closed application-side synchronizer now reads an ex
 The imported Experiment C snapshot retains the negative external-validation result exactly: Normal recall `1.0`, DDoS recall `0.0`, PortScan recall `0.0`, overall accuracy `0.005404447594577833`, and matrix `[[61,0,0],[10226,0,0],[1000,0,0]]`. Per-flow prediction tables are not imported. Read-only dataset/experiment/evaluation APIs are available, but Phase 3 UI work has not begun.
 
 The complete suite reports 127 passing tests. Frozen active-model, model-metadata, and final Experiment C hashes still match their pre-Phase 2 values. See `docs/phase_2_evidence_ingestion.md` for the full allowlist/hashes, mappings, CLI, operational idempotency proof, API surface, limitations, and acceptance record.
+
+## Phase 3 Progress Addendum — 2026-09-02
+
+This addendum preserves the original audit and prior phase records as historical baselines.
+
+Phase 3 is complete. Streamlit navigation now exposes Dashboard, Dataset, Models, Evaluation, Predictions, and Alerts with consistent labels. Dashboard remains strictly runtime/application scoped and shows the active model in the main content. Dataset, Models, and Evaluation consume verified database snapshots exclusively through FastAPI; they do not read scientific files directly. Read-only active-model presentation and provenance-list endpoints expose the database fields required by the thesis pages.
+
+Evaluation supports Experiments A/B/C, preserves per-experiment semantics, renders actual-row/predicted-column confusion matrices, retains NULL metrics as unavailable, and transparently presents Experiment C's external-lab/no-refit generalization failure. Dataset and model pages expose inspectable provenance, real feature/model metadata, parameters, artifact identity, and Experiment A linkage. Predictions and Alerts remain functional.
+
+The full suite and final test count, manual browser verification record, frozen hashes, and exact changed-file list are recorded in `docs/phase_3_presentation_layer.md`. No Monitoring, alert-rule, full Login UX, or export work was started.

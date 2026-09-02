@@ -9,7 +9,7 @@ from src.api import main as api_main
 from src.api.main import create_app
 from src.api.models import Alert, Prediction, TrafficFlow
 from src.api.auth import hash_password
-from src.api.models import Dataset, EvaluationResult, Experiment, User
+from src.api.models import Dataset, EvidenceSource, EvaluationResult, Experiment, User
 from src.api.schemas import PredictionRequest
 from src.api.service import persist_predictions
 from src.common.config import Settings
@@ -321,7 +321,11 @@ def test_evidence_read_endpoints(client):
             source_path="reports/metrics/experiment_c_v3_final.json",
             source_sha256="b" * 64,
         )
-        db.add(evaluation)
+        source = EvidenceSource(
+            owner_type="EXPERIMENT", owner_key="EXPERIMENT_C", evidence_role="FINAL_REPORT",
+            source_path="reports/metrics/experiment_c_v3_final.json", source_sha256="b" * 64,
+        )
+        db.add_all([evaluation, source])
         db.commit()
         dataset_id, experiment_id, evaluation_id = dataset.id, experiment.id, evaluation.id
 
@@ -342,3 +346,139 @@ def test_evidence_read_endpoints(client):
     assert http.get("/api/evaluations").status_code == 200
     assert http.get(f"/api/evaluations/{evaluation_id}").status_code == 200
     assert http.get("/api/evaluations/999").status_code == 404
+    provenance = http.get("/api/evidence-sources", params={"owner_key": "EXPERIMENT_C"})
+    assert provenance.status_code == 200
+    assert provenance.json()[0]["source_sha256"] == "b" * 64
+
+
+def test_active_model_presentation_endpoint(client):
+    http, _ = client
+    response = http.get("/api/models/active")
+    assert response.status_code == 200
+    body = response.json()
+    assert body["model_name"] == "Test RF"
+    assert body["algorithm"] == "Random Forest"
+    assert body["feature_count"] == 2
+    assert body["is_active"] is True
+    assert body["parameters"] is None
+
+
+def test_monitoring_empty_state_and_unpredicted_legacy_flow(client):
+    http, app = client
+    assert http.get("/api/traffic-flows").json() == []
+    assert http.get("/api/monitoring/summary").json() == {
+        "total_flows": 0,
+        "total_normal": 0,
+        "total_ddos": 0,
+        "total_portscan": 0,
+        "total_alerts": 0,
+        "latest_detection_timestamp": None,
+        "active_model": "test-v1",
+    }
+    with app.state.session_factory() as db:
+        db.add(TrafficFlow(raw_features={}, source_ip=None, protocol=None))
+        db.commit()
+
+    rows = http.get("/api/traffic-flows").json()
+    assert len(rows) == 1
+    assert rows[0]["prediction_id"] is None
+    assert rows[0]["predicted_label"] is None
+    assert rows[0]["confidence_score"] is None
+    assert http.get("/api/monitoring/summary").json()["total_flows"] == 1
+
+
+def test_monitoring_server_side_filters_and_pagination(client):
+    http, _ = client
+    records = [
+        payload(1, source_ip="10.0.0.1", destination_ip="10.0.1.1", protocol="TCP"),
+        payload(10, source_ip="10.0.0.2", destination_ip="10.0.1.2", protocol="UDP"),
+        payload(20, source_ip="10.0.0.3", destination_ip="10.0.1.3", protocol="TCP"),
+    ]
+    for record in records:
+        assert http.post("/api/predict", json=record).status_code == 201
+
+    first = http.get("/api/traffic-flows", params={"limit": 1, "offset": 0}).json()
+    second = http.get("/api/traffic-flows", params={"limit": 1, "offset": 1}).json()
+    assert len(first) == len(second) == 1
+    assert first[0]["flow_id"] != second[0]["flow_id"]
+    assert http.get(
+        "/api/traffic-flows", params={"predicted_label": "DDoS"}
+    ).json()[0]["source_ip"] == "10.0.0.2"
+    assert len(http.get("/api/traffic-flows", params={"protocol": "TCP"}).json()) == 2
+    assert http.get(
+        "/api/traffic-flows", params={"source_ip": "10.0.0.3"}
+    ).json()[0]["predicted_label"] == "PortScan"
+    assert http.get(
+        "/api/traffic-flows", params={"destination_ip": "10.0.1.1"}
+    ).json()[0]["predicted_label"] == "Normal"
+    summary = http.get("/api/monitoring/summary").json()
+    assert summary["total_flows"] == 3
+    assert summary["total_alerts"] == 2
+    assert summary["latest_detection_timestamp"] is not None
+
+
+def test_prediction_pagination_filters_and_enriched_detail(client):
+    http, _ = client
+    normal = http.post(
+        "/api/predict",
+        json=payload(
+            1,
+            source_ip="192.0.2.1",
+            source_port=1234,
+            destination_ip="198.51.100.1",
+            destination_port=443,
+            protocol="TCP",
+            capture_session_id="runtime-session",
+            capture_interface="eth0",
+        ),
+    ).json()
+    attack = http.post("/api/predict", json=payload(10, protocol="UDP")).json()
+
+    page_one = http.get("/api/predictions", params={"limit": 1, "offset": 0}).json()
+    page_two = http.get("/api/predictions", params={"limit": 1, "offset": 1}).json()
+    assert page_one[0]["id"] != page_two[0]["id"]
+    assert len(http.get(
+        "/api/predictions", params={"predicted_label": "Normal"}
+    ).json()) == 1
+    assert http.get("/api/predictions", params={"protocol": "TCP"}).json()[0]["id"] == normal["prediction_id"]
+
+    detail = http.get(f"/api/predictions/{normal['prediction_id']}").json()
+    assert detail["model_name"] == "Test RF"
+    assert detail["model_version"] == "test-v1"
+    assert detail["source_type"] == "RUNTIME"
+    assert detail["experiment_code"] is None
+    assert detail["external_key"] is None
+    assert detail["flow_features"] == {"feature_a": 1, "feature_b": 1}
+    assert detail["class_probabilities"]["Normal"] == 0.99
+    assert detail["alert_id"] is None
+    attack_detail = http.get(f"/api/predictions/{attack['prediction_id']}").json()
+    assert attack_detail["alert_id"] is not None
+    assert attack_detail["alert_severity"] == "HIGH"
+    assert attack_detail["alert_status"] == "ACTIVE"
+
+
+def test_runtime_views_exclude_imported_scientific_prediction_context(client):
+    http, app = client
+    assert http.post("/api/predict", json=payload(1)).status_code == 201
+    with app.state.session_factory() as db:
+        imported = Prediction(
+            traffic_flow=TrafficFlow(raw_features={"evidence": 1}),
+            model_id=app.state.model_record.id,
+            source_type="EXPERIMENT_IMPORT",
+            external_key="experiment-c-row-1",
+            predicted_label="Normal",
+            confidence_score=1.0,
+            class_probabilities={"Normal": 1.0},
+        )
+        db.add(imported)
+        db.commit()
+        imported_id = imported.id
+
+    assert [row["id"] for row in http.get("/api/predictions").json()] != [imported_id]
+    assert len(http.get("/api/predictions").json()) == 1
+    assert len(http.get("/api/traffic-flows").json()) == 1
+    assert http.get("/api/monitoring/summary").json()["total_flows"] == 1
+    assert http.get("/api/dashboard/summary").json()["total_flows"] == 1
+    # Direct detail remains available for provenance-aware read-only inspection.
+    detail = http.get(f"/api/predictions/{imported_id}").json()
+    assert detail["source_type"] == "EXPERIMENT_IMPORT"

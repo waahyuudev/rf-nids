@@ -63,6 +63,38 @@ def test_acknowledge_uses_patch_request():
     assert session.calls[0][0:2] == ("PATCH", "http://api.test/api/alerts/4/acknowledge")
 
 
+def test_phase_3_read_clients_map_paths_and_filters():
+    session = Session([
+        Response({"model_version": "rf-v1.0"}), Response([{"id": 1}]),
+        Response([{"experiment_code": "EXPERIMENT_C"}]), Response([{"metric_key": "OVERALL"}]),
+        Response([{"evidence_role": "FINAL_REPORT"}]),
+    ])
+    api = RFNIDSClient("http://api.test", session=session)
+    assert api.active_model()["model_version"] == "rf-v1.0"
+    assert api.datasets() == [{"id": 1}]
+    assert api.experiments()[0]["experiment_code"] == "EXPERIMENT_C"
+    assert api.experiment_evaluation(7)[0]["metric_key"] == "OVERALL"
+    assert api.evidence_sources(owner_type="EXPERIMENT", owner_key="EXPERIMENT_C")
+    assert [call[1] for call in session.calls] == [
+        "http://api.test/api/models/active", "http://api.test/api/datasets",
+        "http://api.test/api/experiments", "http://api.test/api/experiments/7/evaluation",
+        "http://api.test/api/evidence-sources",
+    ]
+    assert session.calls[-1][2]["params"] == {
+        "owner_type": "EXPERIMENT", "owner_key": "EXPERIMENT_C"
+    }
+
+
+def test_phase_4_monitoring_clients_preserve_zero_offset_and_filters():
+    session = Session([Response({"total_flows": 0}), Response([])])
+    api = RFNIDSClient("http://api.test", session=session)
+    assert api.monitoring_summary() == {"total_flows": 0}
+    assert api.traffic_flows(limit=20, offset=0, protocol="TCP", source_ip=None) == []
+    assert session.calls[0][1] == "http://api.test/api/monitoring/summary"
+    assert session.calls[1][1] == "http://api.test/api/traffic-flows"
+    assert session.calls[1][2]["params"] == {"limit": 20, "offset": 0, "protocol": "TCP"}
+
+
 @pytest.mark.parametrize(
     "response, message",
     [

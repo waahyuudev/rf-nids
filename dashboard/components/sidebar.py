@@ -4,11 +4,10 @@ import streamlit as st
 def render_sidebar(online: bool, model_version: str | None, refresh_seconds: int) -> tuple[str, bool]:
     with st.sidebar:
         st.title("RF-NIDS")
-        st.caption("Monitoring dashboard")
+        st.caption("Thesis application")
         page = st.radio(
             "Navigation",
-            ["Overview", "Predictions", "Alerts", "Model"],
-            format_func={"Overview": "Overview", "Predictions": "Predictions", "Alerts": "Alerts", "Model": "Model"}.get,
+            ["Dashboard", "Dataset", "Models", "Evaluation", "Monitoring", "Predictions", "Alerts"],
             label_visibility="collapsed",
         )
         st.divider()

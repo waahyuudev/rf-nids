@@ -69,14 +69,40 @@ class ModelInfo(BaseModel):
     trained_at: datetime | None
 
 
+class ModelPresentationInfo(ModelInfo):
+    id: int
+    is_active: bool
+    artifact_path: str | None
+    artifact_sha256: str | None
+    parameters: dict[str, Any] | None
+    experiment_id: int | None
+    experiment_code: str | None
+    experiment_name: str | None
+
+
+class EvidenceSourceInfo(BaseModel):
+    id: int
+    owner_type: str
+    owner_key: str
+    evidence_role: str
+    source_path: str
+    source_sha256: str
+    schema_version: str | None
+    imported_at: datetime
+
+
 class PredictionDetail(BaseModel):
     model_config = ConfigDict(from_attributes=True)
     id: int
     traffic_flow_id: int
     predicted_label: PredictionLabel
-    confidence_score: float
-    class_probabilities: dict[str, float]
+    confidence_score: float | None
+    class_probabilities: dict[str, float] | None
     prediction_time: datetime
+    source_type: str | None = None
+    external_key: str | None = None
+    experiment_id: int | None = None
+    experiment_code: str | None = None
     source_ip: str | None = None
     source_port: int | None = None
     destination_ip: str | None = None
@@ -85,8 +111,42 @@ class PredictionDetail(BaseModel):
     capture_session_id: str | None = None
     capture_interface: str | None = None
     pcap_segment: str | None = None
+    capture_time: datetime | None = None
+    flow_created_at: datetime | None = None
+    model_id: int
+    model_name: str | None = None
     model_version: str
     flow_features: dict[str, Any] | None = None
+    alert_id: int | None = None
+    alert_severity: Severity | None = None
+    alert_status: AlertStatus | None = None
+
+
+class MonitoringRecord(BaseModel):
+    flow_id: int
+    flow_timestamp: datetime
+    capture_time: datetime | None = None
+    source_ip: str | None = None
+    source_port: int | None = None
+    destination_ip: str | None = None
+    destination_port: int | None = None
+    protocol: str | None = None
+    prediction_id: int | None = None
+    prediction_time: datetime | None = None
+    predicted_label: PredictionLabel | None = None
+    confidence_score: float | None = None
+    alert_id: int | None = None
+    alert_status: AlertStatus | None = None
+
+
+class MonitoringSummary(BaseModel):
+    total_flows: int
+    total_normal: int
+    total_ddos: int
+    total_portscan: int
+    total_alerts: int
+    latest_detection_timestamp: datetime | None
+    active_model: str | None
 
 
 class AlertDetail(BaseModel):

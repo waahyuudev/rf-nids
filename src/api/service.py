@@ -69,6 +69,7 @@ def persist_predictions(db: Session, requests, outputs, model_id: int, threshold
             prediction = Prediction(
                 traffic_flow=flow,
                 model_id=model_id,
+                source_type="RUNTIME",
                 predicted_label=output["prediction"],
                 confidence_score=output["confidence"],
                 class_probabilities=output["probabilities"],
