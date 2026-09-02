@@ -1,0 +1,118 @@
+{
+  "adapter": {
+    "crosswalk_sha256": "66e517cdcea217f19de4d0a2cd45302ede999388393f539fb8ca4a2c68b74cf4",
+    "identity": "CICFLOWMETER_V3_CICIDS2017_MODEL_ADAPTER",
+    "version": "1.0.0"
+  },
+  "cicflowmeter_v3": {
+    "commit": "a26aae27f21d165ff30b4b28e75124a5f9b4b2c4",
+    "image_digest": "sha256:0227c7280e586d54144b9bb11b2a6b5d4b1c4ba9bc7c44199fa312a6b829caab",
+    "image_tag": "rf-nids-cicflowmeter-v3:a26aae27",
+    "repository": "https://github.com/ahlashkari/CICFlowMeter",
+    "source_archive_sha256": "78f13b2d474e5a669a367aef610d597cf86bc338088ffdd72228671bdca364c7"
+  },
+  "entries": [
+    {
+      "expected_sha256": "77376a3e6c6707435e709adef437610c3f0434f9ec8361dfdd3031ea5f1cf045",
+      "logical_path": "data/lab/flows/cicflowmeter-v3/ddos-test.pcap_ISCX.csv",
+      "matches": true,
+      "sha256": "77376a3e6c6707435e709adef437610c3f0434f9ec8361dfdd3031ea5f1cf045",
+      "size_bytes": 4925667
+    },
+    {
+      "expected_sha256": "5fced18068b91e1955206a3f07833f5533d68f706b45c36eca9e6d6e3eec477a",
+      "logical_path": "data/lab/flows/cicflowmeter-v3/normal-http-test.pcap_ISCX.csv",
+      "matches": true,
+      "sha256": "5fced18068b91e1955206a3f07833f5533d68f706b45c36eca9e6d6e3eec477a",
+      "size_bytes": 30682
+    },
+    {
+      "expected_sha256": "e10519fe09819247eecd45260740380f5bb037f5e320432634e7905e9f4c43c8",
+      "logical_path": "data/lab/flows/cicflowmeter-v3/portscan-test.pcap_ISCX.csv",
+      "matches": true,
+      "sha256": "e10519fe09819247eecd45260740380f5bb037f5e320432634e7905e9f4c43c8",
+      "size_bytes": 352297
+    },
+    {
+      "expected_sha256": "cac5ec5fcaeef11eb1e055933329b30fe431acf6a5a69b615d99c2def25860cd",
+      "logical_path": "data/lab/pcap/ddos-test.pcap",
+      "matches": true,
+      "sha256": "cac5ec5fcaeef11eb1e055933329b30fe431acf6a5a69b615d99c2def25860cd",
+      "size_bytes": 9125049
+    },
+    {
+      "expected_sha256": "04fe7f461feb9974557341dd2620da5d9ad476b52604f691472984be8fe9e9b4",
+      "logical_path": "data/lab/pcap/normal-http-test.pcap",
+      "matches": true,
+      "sha256": "04fe7f461feb9974557341dd2620da5d9ad476b52604f691472984be8fe9e9b4",
+      "size_bytes": 35550
+    },
+    {
+      "expected_sha256": "653dc8e8f7593aa811958374b0d95414f42e799b845c8bcaeb262e4baf01f102",
+      "logical_path": "data/lab/pcap/portscan-test.pcap",
+      "matches": true,
+      "sha256": "653dc8e8f7593aa811958374b0d95414f42e799b845c8bcaeb262e4baf01f102",
+      "size_bytes": 144330
+    },
+    {
+      "expected_sha256": "c632b16d30efb8f5a642070520c43cc1caaf36cbead33bddf9b5359b0fb531f2",
+      "logical_path": "models/model_metadata.json",
+      "matches": true,
+      "sha256": "c632b16d30efb8f5a642070520c43cc1caaf36cbead33bddf9b5359b0fb531f2",
+      "size_bytes": 7482
+    },
+    {
+      "expected_sha256": "73d86cb98f35c228d6e619e0f746a2b659d94deabe86d57e801c58bcf935f647",
+      "logical_path": "models/random_forest_active.joblib",
+      "matches": true,
+      "sha256": "73d86cb98f35c228d6e619e0f746a2b659d94deabe86d57e801c58bcf935f647",
+      "size_bytes": 67743722
+    },
+    {
+      "expected_sha256": "0ac3031724bb1168553ba81aeb48dafc80036ec942af8181dd84dea49228190c",
+      "logical_path": "models/random_forest_baseline.joblib",
+      "matches": true,
+      "sha256": "0ac3031724bb1168553ba81aeb48dafc80036ec942af8181dd84dea49228190c",
+      "size_bytes": 29880698
+    },
+    {
+      "expected_sha256": "73d86cb98f35c228d6e619e0f746a2b659d94deabe86d57e801c58bcf935f647",
+      "logical_path": "models/random_forest_tuned.joblib",
+      "matches": true,
+      "sha256": "73d86cb98f35c228d6e619e0f746a2b659d94deabe86d57e801c58bcf935f647",
+      "size_bytes": 67743722
+    },
+    {
+      "expected_sha256": "6e091fdc1f0113fd34403d60dafdea83e6aa6ee957bf4a77632da31c6478f02b",
+      "logical_path": "reports/metrics/experiment_c_v3_final.json",
+      "matches": true,
+      "sha256": "6e091fdc1f0113fd34403d60dafdea83e6aa6ee957bf4a77632da31c6478f02b",
+      "size_bytes": 23716
+    },
+    {
+      "expected_sha256": "66e517cdcea217f19de4d0a2cd45302ede999388393f539fb8ca4a2c68b74cf4",
+      "logical_path": "reports/tables/cicflowmeter_v3_78_feature_crosswalk.csv",
+      "matches": true,
+      "sha256": "66e517cdcea217f19de4d0a2cd45302ede999388393f539fb8ca4a2c68b74cf4",
+      "size_bytes": 66022
+    },
+    {
+      "expected_sha256": "1f5d67a772258ed2120033c706ad0aeba989dd656eac56cfe50f2756e30aad8e",
+      "logical_path": "reports/tables/experiment_c_final_class_metrics.csv",
+      "matches": true,
+      "sha256": "1f5d67a772258ed2120033c706ad0aeba989dd656eac56cfe50f2756e30aad8e",
+      "size_bytes": 138
+    },
+    {
+      "expected_sha256": "7e269d96d4fd266d6937f69d2b7e9c70e1c000d1ad9f255acf9645bbcbeb2a31",
+      "logical_path": "reports/tables/experiment_c_final_confusion_matrix.csv",
+      "matches": true,
+      "sha256": "7e269d96d4fd266d6937f69d2b7e9c70e1c000d1ad9f255acf9645bbcbeb2a31",
+      "size_bytes": 132
+    }
+  ],
+  "experiment_code": "EXPERIMENT_D",
+  "identity_algorithm": "sha256",
+  "path_independent_scientific_identity": "907ad890f4a7e830cc9ca4d38ee6b99075bab5a06ee6cdda0725db52cc0f7e70",
+  "status": "PASS"
+}

@@ -1,0 +1,43 @@
+experiment_code: EXPERIMENT_D
+experiment_name: External Adaptation and Revalidation
+roles: [adaptation, final_test]
+classes: [Normal, DDoS, PortScan]
+feature_count: 78
+adapter:
+  identity: CICFLOWMETER_V3_CICIDS2017_MODEL_ADAPTER
+  version: 1.0.0
+  crosswalk_sha256: 66e517cdcea217f19de4d0a2cd45302ede999388393f539fb8ca4a2c68b74cf4
+cicflowmeter_v3:
+  repository: https://github.com/ahlashkari/CICFlowMeter
+  commit: a26aae27f21d165ff30b4b28e75124a5f9b4b2c4
+  source_archive_sha256: 78f13b2d474e5a669a367aef610d597cf86bc338088ffdd72228671bdca364c7
+  image_tag: rf-nids-cicflowmeter-v3:a26aae27
+  image_digest: sha256:0227c7280e586d54144b9bb11b2a6b5d4b1c4ba9bc7c44199fa312a6b829caab
+model:
+  rf_v1_artifact: models/random_forest_active.joblib
+  rf_v1_metadata: models/model_metadata.json
+  rf_v2_output: models/experiment_d/random_forest_rf_v2.joblib
+  rf_v2_metadata_output: models/experiment_d/random_forest_rf_v2_metadata.json
+seeds:
+  split: 42
+  tuning: 42
+  sampling: 42
+prohibited_sources:
+  - data/lab/pcap
+  - data/lab/flows/cicflowmeter-v3
+  - data/pcap/experiment-c
+  - data/lab/experiment_c
+  - reports/experiment_c
+  - reports/archive/experiment_c_v3_final_20260901
+  - reports/metrics/experiment_c_final.json
+  - reports/metrics/experiment_c_v3_final.json
+  - reports/tables/experiment_c_v3_normal_predictions_final.csv
+  - reports/tables/experiment_c_v3_ddos_predictions.csv
+  - reports/tables/experiment_c_v3_portscan_predictions_final.csv
+final_test_prohibited_operations:
+  - fitting
+  - tuning
+  - preprocessing_fit
+  - feature_selection
+  - threshold_selection
+  - model_selection
