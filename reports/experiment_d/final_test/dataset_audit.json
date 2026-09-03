@@ -1,0 +1,37 @@
+{
+  "adapter_schema_status": "PASS",
+  "exact_duplicate_rows": 0,
+  "feature_count": 78,
+  "flow_counts": {
+    "DDoS": 15482,
+    "Normal": 30,
+    "PortScan": 437
+  },
+  "ground_truth_distribution": {
+    "DDoS": 15482,
+    "Normal": 30,
+    "PortScan": 437
+  },
+  "invalid_sessions": {
+    "Normal": 1
+  },
+  "missing_values": 50,
+  "model_blind": true,
+  "negative_infinity": 0,
+  "pcap_counts": {
+    "DDoS": 3,
+    "Normal": 3,
+    "PortScan": 3
+  },
+  "positive_infinity": 50,
+  "raw_column_count": 84,
+  "raw_schema_status": "PASS",
+  "schema": "experiment_d_final_test_dataset_audit",
+  "status": "PASS",
+  "total_flows": 15949,
+  "valid_sessions": {
+    "DDoS": 3,
+    "Normal": 3,
+    "PortScan": 3
+  }
+}

@@ -1,0 +1,10 @@
+class,session_id,capture_id,scenario_id,flow_count,correct_count,predicted_Normal,predicted_DDoS,predicted_PortScan,ground_truth_recall
+Normal,expd-final-normal-session-02,expd-final-normal-capture-02,final-normal-mixed-small-download,6,4,4,2,0,0.6666666666666666
+Normal,expd-final-normal-session-03,expd-final-normal-capture-03,final-normal-modest-pair,12,12,12,0,0,1.0
+PortScan,expd-final-portscan-session-01,expd-final-portscan-capture-01,final-portscan-connect-low-range,200,200,0,0,200,1.0
+PortScan,expd-final-portscan-session-02,expd-final-portscan-capture-02,final-portscan-connect-mid-range,221,218,3,0,218,0.9864253393665159
+PortScan,expd-final-portscan-session-03,expd-final-portscan-capture-03,final-portscan-connect-selected,16,5,11,0,5,0.3125
+DDoS,expd-final-ddos-session-01,expd-final-ddos-capture-01,final-ddos-like-http-c4,1200,1,1199,1,0,0.0008333333333333334
+DDoS,expd-final-ddos-session-02,expd-final-ddos-capture-02,final-ddos-like-http-c8-small,2400,1189,1211,1189,0,0.49541666666666667
+DDoS,expd-final-ddos-session-03,expd-final-ddos-capture-03,final-ddos-like-http-c12-timed,11882,1,11881,1,0,8.41609156707625e-05
+Normal,expd-final-normal-session-04,expd-final-normal-capture-04,final-normal-sequential-idle-replacement,12,12,12,0,0,1.0

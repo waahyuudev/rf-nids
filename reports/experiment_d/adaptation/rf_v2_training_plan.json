@@ -1,0 +1,140 @@
+{
+  "candidate_strategies": {
+    "D3-A": {
+      "adaptation_class_counts": {
+        "DDoS": 3606,
+        "Normal": 13,
+        "PortScan": 1173
+      },
+      "membership_sha256": "15dc099f3515eccb8825fc0ffe928f2d83ebaf59bf588e2ba288a796c019a146",
+      "policy": "all leakage-clean unique adaptation-training rows",
+      "row_count": 4792
+    },
+    "D3-B": {
+      "adaptation_class_counts": {
+        "DDoS": 1173,
+        "Normal": 13,
+        "PortScan": 1173
+      },
+      "membership_sha256": "bfc00226f4c9045f2dbe4e82967ad5b88b98e6c39c64353654169691a224afef",
+      "policy": "per-class cap=1173; Normal retained as-is",
+      "row_count": 2359
+    },
+    "D3-C": {
+      "adaptation_class_counts": {
+        "DDoS": 1200,
+        "Normal": 13,
+        "PortScan": 1113
+      },
+      "membership_sha256": "63bb389f4b8003cd9eec7a6498adf1d9e4b24e4bc75510c55d01003bf6a166e5",
+      "policy": "per-session cap=600; Normal retained as-is",
+      "row_count": 2326
+    },
+    "D3-D": {
+      "adaptation_class_counts": {
+        "DDoS": 13,
+        "Normal": 13,
+        "PortScan": 13
+      },
+      "membership_sha256": "a1c1200e0c546b286fef777ebf7ce15df813d54dd4fa364e0eff195b0e7aeb1c",
+      "policy": "class-balanced cap=13",
+      "row_count": 39
+    }
+  },
+  "create_new_only": true,
+  "future_final_test_isolation_rule": "D4 must neither enumerate, read, summarize, preprocess, nor select against final_test; it remains sealed for later one-shot D5 evaluation.",
+  "hyperparameter_policy": "Start D4 with fixed RF-v1 parameters; no RandomizedSearchCV for the first comparison.",
+  "metrics": {
+    "also_record": [
+      "per_class_precision",
+      "per_class_f1",
+      "confusion_matrix",
+      "Normal_false_positive_rate"
+    ],
+    "primary": [
+      "macro_f1",
+      "DDoS_recall",
+      "PortScan_recall",
+      "Normal_recall"
+    ]
+  },
+  "model_selection_rules": {
+    "gates": [
+      "DDoS recall > 0",
+      "PortScan recall > 0",
+      "Normal recall >= 0.50",
+      "adaptation macro F1 >= RF-v1 adaptation-validation macro F1"
+    ],
+    "ranking": [
+      "higher adaptation-validation macro F1",
+      "higher minimum per-class recall",
+      "lower Normal false-positive rate",
+      "higher CICIDS2017 internal-control macro F1"
+    ],
+    "rationale": "The Normal gate is deliberately conservative because its independent lab validation support is only 23; improvement is comparative to RF-v1 rather than tuned to future data."
+  },
+  "normal_limitation": {
+    "decision": "additional capture not required before D4",
+    "observed_rows": 44,
+    "reason": "CICIDS2017 supplies broad Normal coverage; all leakage-clean lab Normal training rows are retained without duplication and an independent Normal session is held out. More diverse Normal capture remains advisable before broad deployment claims."
+  },
+  "outputs": [
+    "models/experiment_d/random_forest_rf_v2.joblib",
+    "models/experiment_d/random_forest_rf_v2_metadata.json",
+    "models/experiment_d/training_manifest.json"
+  ],
+  "phase": "D3_PRE_TRAINING_ONLY",
+  "planned_combined_training_class_counts": {
+    "DDoS": 103613,
+    "Normal": 1677198,
+    "PortScan": 73768
+  },
+  "preprocessing": {
+    "feature_selection": null,
+    "imputer_fit_scope": "combined D4 training partition only",
+    "infinity_handling": "replace +/- infinity with NaN before split consumption",
+    "pipeline": [
+      "SimpleImputer(strategy='median')",
+      "RandomForestClassifier(fixed RF-v1 parameters)"
+    ],
+    "provenance_columns_are_features": false,
+    "scaling": null
+  },
+  "prohibited_data": [
+    "Experiment C artifacts",
+    "Experiment D final_test data",
+    "future final-test metrics for selection"
+  ],
+  "random_seeds": {
+    "classifier": 42,
+    "sampling": 42,
+    "split": 42
+  },
+  "randomized_search_cv_allowed": false,
+  "recommendation_rationale": "A 600-row per-session cap preserves both training scenarios per class, retains scarce Normal rows without duplication, and limits DDoS domination.",
+  "recommended_first_strategy": "D3-C",
+  "rf_parameters": {
+    "bootstrap": false,
+    "ccp_alpha": 0.0,
+    "class_weight": "balanced",
+    "criterion": "gini",
+    "max_depth": null,
+    "max_features": "log2",
+    "min_samples_leaf": 4,
+    "min_samples_split": 5,
+    "n_estimators": 200,
+    "n_jobs": -1,
+    "random_state": 42
+  },
+  "schema": "experiment_d_rf_v2_training_plan",
+  "schema_version": 1,
+  "training_enabled": false,
+  "training_inputs": {
+    "adaptation_role": "D3-C row identities",
+    "cicids2017_role": "training_membership"
+  },
+  "validation_inputs": {
+    "adaptation": "whole held-out sessions; primary model selection evidence",
+    "cicids2017": "internal_control_membership; report separately"
+  }
+}

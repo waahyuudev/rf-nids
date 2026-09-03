@@ -1,0 +1,4 @@
+ground_truth,Normal,DDoS,PortScan
+Normal,15,8,0
+DDoS,3630,3486,0
+PortScan,2,0,14

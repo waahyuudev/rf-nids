@@ -67,6 +67,7 @@ class ScientificManifest(BaseModel):
     entries: list[ManifestEntry]
     sealed: bool = False
     scientific_identity: str | None = None
+    metadata: dict[str, object] | None = None
 
     @model_validator(mode="after")
     def validate_role_and_identity(self) -> "ScientificManifest":

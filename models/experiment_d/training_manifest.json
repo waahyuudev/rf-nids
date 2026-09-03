@@ -1,0 +1,84 @@
+{
+  "cicids_control_membership_sha256": "9af1f37d79fc277f1818d6c4e054ab2b40b288270d014e74c67175321aca23ab",
+  "cicids_training_membership_sha256": "312f2941f8884f8aaee4eea064fbee853b72feae70ba9b3f6876ae1dd6a3a566",
+  "evidence": {
+    "comparison_csv": {
+      "logical_path": "reports/experiment_d/adaptation/rf_v1_vs_rf_v2_internal_comparison.csv",
+      "sha256": "19d316b3471eb80d7156bf5700cd4a67ea85e3d35b9cf396936a19ae99e5049e",
+      "size_bytes": 1309
+    },
+    "rf_v1_adaptation": {
+      "logical_path": "reports/experiment_d/adaptation/rf_v1_adaptation_validation_metrics.json",
+      "sha256": "c7507784f1e57ced62055af4abb2ad4773c8baf72fc2fc566fb2b2160695d4dd",
+      "size_bytes": 2256
+    },
+    "rf_v1_adaptation_cm": {
+      "logical_path": "reports/experiment_d/adaptation/rf_v1_adaptation_confusion_matrix.csv",
+      "sha256": "f616d8ebc967802ead0b76ef6ca6894f3fc231f59e7577eeb6fea5668c5e161e",
+      "size_bytes": 82
+    },
+    "rf_v1_adaptation_predictions": {
+      "logical_path": "reports/experiment_d/adaptation/rf_v1_adaptation_validation_predictions.csv",
+      "sha256": "38b1a082bdac7662e065aea9f4f67b8c4006889c289e59346defeb374c093141",
+      "size_bytes": 2525169
+    },
+    "rf_v1_control": {
+      "logical_path": "reports/experiment_d/adaptation/rf_v1_cicids2017_control_metrics.json",
+      "sha256": "53ba33c3940d52da6219971939cc20e5021bb2a8ef0cf3abfb1c64f8173df16f",
+      "size_bytes": 2412
+    },
+    "rf_v1_control_cm": {
+      "logical_path": "reports/experiment_d/adaptation/rf_v1_cicids2017_control_confusion_matrix.csv",
+      "sha256": "597a848a650ca0329bc85df60dc394532d8fb2673596b165ce448d3cdf71eb73",
+      "size_bytes": 92
+    },
+    "rf_v1_control_predictions": {
+      "logical_path": "reports/experiment_d/adaptation/rf_v1_cicids2017_control_predictions.csv",
+      "sha256": "4827ff50bc9c97c58954512821600f6a1b42975f30fe485d3e587fe3882b1dbb",
+      "size_bytes": 85075145
+    },
+    "rf_v2_adaptation": {
+      "logical_path": "reports/experiment_d/adaptation/rf_v2_adaptation_validation_metrics.json",
+      "sha256": "ad2db8871bc71b654e67f7524faeb6b413c9fdbe671277980c48ee02ed097b0d",
+      "size_bytes": 2333
+    },
+    "rf_v2_adaptation_cm": {
+      "logical_path": "reports/experiment_d/adaptation/rf_v2_adaptation_confusion_matrix.csv",
+      "sha256": "4b6aedd4b6285154f56c86847b1c240f9ae0917579812156fa2aa33defdac722",
+      "size_bytes": 85
+    },
+    "rf_v2_adaptation_predictions": {
+      "logical_path": "reports/experiment_d/adaptation/rf_v2_adaptation_validation_predictions.csv",
+      "sha256": "b0bb3b9399ff8676171314c8a177c5bc2b891110b15391e1ae628a6378b26812",
+      "size_bytes": 2580672
+    },
+    "rf_v2_control": {
+      "logical_path": "reports/experiment_d/adaptation/rf_v2_cicids2017_control_metrics.json",
+      "sha256": "2216be500719a189d9b310ea31e9311999ce4e03e080f05405f42569c010794a",
+      "size_bytes": 2409
+    },
+    "rf_v2_control_cm": {
+      "logical_path": "reports/experiment_d/adaptation/rf_v2_cicids2017_control_confusion_matrix.csv",
+      "sha256": "1d5f7a53b1aa0e4809c74bd0ddb31b6192d3847490862d7e4531c688d024b1c4",
+      "size_bytes": 92
+    },
+    "rf_v2_control_predictions": {
+      "logical_path": "reports/experiment_d/adaptation/rf_v2_cicids2017_control_predictions.csv",
+      "sha256": "fd69d19016dedcb01f87c7eccf3550d0b5344ff33a9d61dc9318cd3aa51b25fc",
+      "size_bytes": 85728491
+    },
+    "training_metrics": {
+      "logical_path": "reports/experiment_d/adaptation/rf_v2_training_metrics.json",
+      "sha256": "0a6cb7be256581c5f90b8b39cd9db7df32f2489acd3306d2cfdc25d4cb41cf1a",
+      "size_bytes": 979
+    }
+  },
+  "metadata_sha256": "0bef82122fbebede27cd14f9dae925f4f48f3f1700c4b6c46ae29f238731e2c2",
+  "model_sha256": "fb13a71a0287054d2630bf07529f113a153ba08d8f6835a605b04493408b8a31",
+  "schema": "experiment_d_d4_training_manifest",
+  "schema_version": 1,
+  "split_manifest_sha256": "293108f19ceeeae59b82175042842c24972da9332bb0083f22999e398c885686",
+  "training_fit_count": 1,
+  "training_membership_identity": "63bb389f4b8003cd9eec7a6498adf1d9e4b24e4bc75510c55d01003bf6a166e5",
+  "training_plan_sha256": "5b99e8c97e49b093b9b9035f6d4982ea749103dee81ace7e107e079fbef32139"
+}

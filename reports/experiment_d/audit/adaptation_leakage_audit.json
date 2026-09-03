@@ -1,0 +1,20 @@
+{
+  "checks": {
+    "adaptation_role_only": true,
+    "no_cross_role_collisions": true,
+    "no_duplicate_capture_or_session_ids": true,
+    "no_experiment_c_capture_or_session_identity_reused": true,
+    "no_experiment_c_content_hash": true,
+    "no_final_test_path_in_adaptation_manifest": true,
+    "no_future_final_test_data_used": true
+  },
+  "experiment_c_hash_overlap": [],
+  "experiment_code": "EXPERIMENT_D",
+  "frozen_baseline_verification": {
+    "baseline_identity": "907ad890f4a7e830cc9ca4d38ee6b99075bab5a06ee6cdda0725db52cc0f7e70",
+    "failures": [],
+    "status": "PASS"
+  },
+  "role": "adaptation",
+  "status": "PASS"
+}

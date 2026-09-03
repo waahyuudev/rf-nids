@@ -1,0 +1,91 @@
+{
+  "metrics": {
+    "accuracy": 0.4912648497554158,
+    "average_inference_time_seconds_per_row": 7.931923968719083e-06,
+    "classification_report": {
+      "DDoS": {
+        "f1-score": 0.6571159283694628,
+        "precision": 0.9977103606182026,
+        "recall": 0.48988195615514335,
+        "support": 7116.0
+      },
+      "Normal": {
+        "f1-score": 0.008174386920980926,
+        "precision": 0.004112969564025226,
+        "recall": 0.6521739130434783,
+        "support": 23.0
+      },
+      "PortScan": {
+        "f1-score": 0.9333333333333333,
+        "precision": 1.0,
+        "recall": 0.875,
+        "support": 16.0
+      },
+      "accuracy": 0.4912648497554158,
+      "macro avg": {
+        "f1-score": 0.532874549541259,
+        "precision": 0.667274443394076,
+        "recall": 0.6723519563995405,
+        "support": 7155.0
+      },
+      "weighted avg": {
+        "f1-score": 0.6556475598196524,
+        "precision": 0.9945215268286656,
+        "recall": 0.4912648497554158,
+        "support": 7155.0
+      }
+    },
+    "confusion_matrix": [
+      [
+        15,
+        8,
+        0
+      ],
+      [
+        3630,
+        3486,
+        0
+      ],
+      [
+        2,
+        0,
+        14
+      ]
+    ],
+    "confusion_matrix_labels": [
+      "Normal",
+      "DDoS",
+      "PortScan"
+    ],
+    "false_positive_rate_one_vs_rest": {
+      "DDoS": 0.20512820512820512,
+      "Normal": 0.5092540661805945,
+      "PortScan": 0.0
+    },
+    "ids_error_counts": {
+      "ddos_predicted_as_normal": 3630,
+      "normal_predicted_as_attack": 8,
+      "portscan_predicted_as_normal": 2
+    },
+    "macro_f1": 0.532874549541259,
+    "macro_precision": 0.667274443394076,
+    "macro_recall": 0.6723519563995405,
+    "prediction_count_per_class": {
+      "DDoS": 3494,
+      "Normal": 3647,
+      "PortScan": 14
+    },
+    "support_per_class": {
+      "DDoS": 7116,
+      "Normal": 23,
+      "PortScan": 16
+    },
+    "total_prediction_time_seconds": 0.05675291599618504,
+    "weighted_f1": 0.6556475598196524,
+    "weighted_precision": 0.9945215268286656,
+    "weighted_recall": 0.4912648497554158
+  },
+  "model": "rf_v2_adaptation",
+  "split_manifest_sha256": "293108f19ceeeae59b82175042842c24972da9332bb0083f22999e398c885686",
+  "training_plan_sha256": "5b99e8c97e49b093b9b9035f6d4982ea749103dee81ace7e107e079fbef32139"
+}

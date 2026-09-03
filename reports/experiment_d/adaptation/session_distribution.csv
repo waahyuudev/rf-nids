@@ -1,0 +1,10 @@
+record_type,class,session_id,capture_id,scenario_id,source_ip,target_ip,flow_count,feature_count,missing_values,non_finite_values,exact_duplicate_rows,unique_flow_rows
+observed,Normal,expd-adapt-normal-session-01,expd-adapt-normal-capture-01,normal-http-api-download-ping,172.29.0.20,172.29.0.10,9,78,0,0,1,8
+observed,Normal,expd-adapt-normal-session-02,expd-adapt-normal-capture-02,normal-repeated-pages-download,172.29.0.20,172.29.0.10,12,78,0,0,2,10
+observed,Normal,expd-adapt-normal-session-03,expd-adapt-normal-capture-03,normal-modest-concurrency,172.29.0.20,172.29.0.10,23,78,0,0,4,19
+observed,PortScan,expd-adapt-portscan-session-01,expd-adapt-portscan-capture-01,portscan-syn-moderate,172.29.0.20,172.29.0.10,513,78,60,0,0,513
+observed,PortScan,expd-adapt-portscan-session-02,expd-adapt-portscan-capture-02,portscan-syn-wide-fast,172.29.0.20,172.29.0.10,1025,78,272,0,0,1025
+observed,PortScan,expd-adapt-portscan-session-03,expd-adapt-portscan-capture-03,portscan-syn-subset-slow,172.29.0.20,172.29.0.10,16,78,0,0,0,16
+observed,DDoS,expd-adapt-ddos-session-01,expd-adapt-ddos-capture-01,ddos-like-http-c8,172.29.0.20,172.29.0.10,2400,78,2,0,1166,1234
+observed,DDoS,expd-adapt-ddos-session-02,expd-adapt-ddos-capture-02,ddos-like-http-c16,172.29.0.20,172.29.0.10,4800,78,6,0,2362,2438
+observed,DDoS,expd-adapt-ddos-session-04,expd-adapt-ddos-capture-04,ddos-like-http-c24-replacement,172.29.0.20,172.29.0.10,7116,78,16,0,3445,3671

@@ -1,0 +1,101 @@
+{
+  "schema": "experiment_d_d5a_lab_environment",
+  "schema_version": 1,
+  "status": "PASS",
+  "created_at": "2026-09-03T07:08:48Z",
+  "code_commit": "c251665d9371f7aa4c07a6defc92394ed0a6d361",
+  "virtualization": {
+    "method": "Docker containers on Docker Desktop",
+    "docker_engine_version": "29.7.2",
+    "docker_client_version": "29.7.2",
+    "docker_compose_version": "5.5.0",
+    "host_cpu_count": 10,
+    "host_memory_bytes": 17179869184,
+    "compose_logical_path": "docker/experiment-d/docker-compose.yml",
+    "compose_sha256": "f985ab61d7df8cd2b36507c631b25f312323aae8b5275179b7fe147c495fe53d"
+  },
+  "network": {
+    "name": "experiment-d-final-net",
+    "id": "bda447502e8b1b5dc6509472f21beb9252e4678962efcbb86260cb64a3c1eed8",
+    "driver": "bridge",
+    "internal": true,
+    "attachable": false,
+    "subnet": "172.30.50.0/24",
+    "gateway_address_reserved_by_docker": "172.30.50.1",
+    "host_route_conflict": false,
+    "published_ports": [],
+    "unrelated_network_attachments": []
+  },
+  "source": {
+    "hostname": "experiment-d-source",
+    "container_id": "d99f99c799bd86cde5e626aa03d38e86e6e3749437c8846ab3430e5ba58c01c2",
+    "image_id": "sha256:1a6da94752be9353889a9cb1c99bf222c841f42eefa6fe5b0c844f5a0ea045b3",
+    "ip": "172.30.50.20",
+    "prefix_length": 24,
+    "mac": "e2:c1:ca:81:fb:4b",
+    "interface": "eth0",
+    "routes": ["172.30.50.0/24 dev eth0 scope link src 172.30.50.20"],
+    "default_gateway": null,
+    "dns": "Docker embedded DNS 127.0.0.11",
+    "tools_present_for_later_separately_authorized_work": {
+      "curl": "8.22.0",
+      "nmap": "7.99",
+      "apachebench": "2.3"
+    }
+  },
+  "target": {
+    "hostname": "experiment-d-target",
+    "container_id": "fbb20801a53d101c1f37d7ba7d785859b7b97728917061ab27db1a805a002f8b",
+    "image_id": "sha256:1a6da94752be9353889a9cb1c99bf222c841f42eefa6fe5b0c844f5a0ea045b3",
+    "ip": "172.30.50.10",
+    "prefix_length": 24,
+    "mac": "5a:48:36:81:c4:3f",
+    "interface": "eth0",
+    "routes": ["172.30.50.0/24 dev eth0 scope link src 172.30.50.10"],
+    "default_gateway": null,
+    "dns": "Docker embedded DNS 127.0.0.11",
+    "http_service": "Python 3.14.7 http.server",
+    "http_bind": "172.30.50.10",
+    "http_port": 8080
+  },
+  "capture_point": {
+    "method": "dedicated observer container sharing the target network namespace",
+    "container_name": "experiment-d-observer",
+    "container_id": "4d74bb48038cd443495cc0eb1ff11ea00b13a4ea2d56828725e788867461559d",
+    "interface": "eth0",
+    "interface_type": "target container network namespace veth",
+    "associated_network": "experiment-d-final-net",
+    "associated_subnet": "172.30.50.0/24",
+    "tcpdump_version": "4.99.6",
+    "future_capture_command_template": "docker exec experiment-d-observer tcpdump -i eth0 -n -s 0 -w <new-final-test-path> host 172.30.50.20 and host 172.30.50.10",
+    "capture_started_during_d5a": false
+  },
+  "isolation_findings": {
+    "source_has_default_route": false,
+    "target_has_default_route": false,
+    "docker_network_internal": true,
+    "host_ports_published": false,
+    "attached_only_to_dedicated_network": true,
+    "public_or_bridged_experiment_route": false,
+    "finding": "Experiment endpoints have only an on-link route for 172.30.50.0/24. Docker marks the dedicated bridge internal and exposes no host ports."
+  },
+  "benign_connectivity": {
+    "performed": true,
+    "attack_traffic_performed": false,
+    "source_ip": "172.30.50.20",
+    "target_ip": "172.30.50.10",
+    "target_port": 8080,
+    "direct_ip_http_status": 200,
+    "hostname_resolution": "experiment-d-target -> 172.30.50.10",
+    "hostname_http_status": 200,
+    "target_log_observed_source_ip": "172.30.50.20",
+    "request_count": 2
+  },
+  "scientific_boundaries": {
+    "final_test_capture_created": false,
+    "final_test_manifest_created": false,
+    "cicflowmeter_run": false,
+    "model_loaded": false,
+    "inference_run": false
+  }
+}

@@ -1,0 +1,187 @@
+{
+  "entries": [
+    {
+      "logical_path": "data/lab/experiment_d/adaptation/flows/cicflowmeter-v3/ddos/ddos-like-d2-s01.pcap_ISCX.csv",
+      "sha256": "3c19e07d4365d1532d5ff72b0e97feab0bdc9883047d71c22763aa45043bc017",
+      "size_bytes": 1080953
+    },
+    {
+      "logical_path": "data/lab/experiment_d/adaptation/flows/cicflowmeter-v3/ddos/ddos-like-d2-s02.pcap_ISCX.csv",
+      "sha256": "5f9b415183633af092af785c06caeb7258b15467491f91140e61841840b385d8",
+      "size_bytes": 2163085
+    },
+    {
+      "logical_path": "data/lab/experiment_d/adaptation/flows/cicflowmeter-v3/ddos/ddos-like-d2-s04-replacement.pcap_ISCX.csv",
+      "sha256": "e7adaa0ed70c6a8c0be6634c85203e0229675d03a3aef12f2533aded4d0752f1",
+      "size_bytes": 3227242
+    },
+    {
+      "logical_path": "data/lab/experiment_d/adaptation/flows/cicflowmeter-v3/normal/normal-d2-s01.pcap_ISCX.csv",
+      "sha256": "a75d02bcc954c98cff052ed333d6da04cfcf069b7a28e8fd90ef89393da400df",
+      "size_bytes": 5343
+    },
+    {
+      "logical_path": "data/lab/experiment_d/adaptation/flows/cicflowmeter-v3/normal/normal-d2-s02.pcap_ISCX.csv",
+      "sha256": "c22a5f23299064bdbf0a649df9b2591832ec903df1b236b7ed6fa46157dc9ec9",
+      "size_bytes": 6577
+    },
+    {
+      "logical_path": "data/lab/experiment_d/adaptation/flows/cicflowmeter-v3/normal/normal-d2-s03.pcap_ISCX.csv",
+      "sha256": "548c1a3192cc1310edc923c9923ed7b79366ad048e8f82d23a1c5edb3a67681b",
+      "size_bytes": 11780
+    },
+    {
+      "logical_path": "data/lab/experiment_d/adaptation/flows/cicflowmeter-v3/portscan/portscan-d2-s01.pcap_ISCX.csv",
+      "sha256": "b6b37ca630e4a17ea256f1c0ac32c105eaddc5d22721f95d60406c265955b04a",
+      "size_bytes": 170638
+    },
+    {
+      "logical_path": "data/lab/experiment_d/adaptation/flows/cicflowmeter-v3/portscan/portscan-d2-s02.pcap_ISCX.csv",
+      "sha256": "76642114974d6317506f951d824f32ceee09f6333e3bef50ee4ce2c298f96e9f",
+      "size_bytes": 338453
+    },
+    {
+      "logical_path": "data/lab/experiment_d/adaptation/flows/cicflowmeter-v3/portscan/portscan-d2-s03.pcap_ISCX.csv",
+      "sha256": "6c8c195b743ea8453347b1d91513f4eb5cf03ea53a9acad78811bee3ee1d49c4",
+      "size_bytes": 6809
+    },
+    {
+      "logical_path": "data/lab/experiment_d/adaptation/manifests/capture_manifest.json",
+      "sha256": "fc4b38863e8ebeb759ccef4e95b3daa3c9e2c96ef26cad9dd1aee863ed1f6d79",
+      "size_bytes": 12708
+    },
+    {
+      "logical_path": "data/lab/experiment_d/adaptation/manifests/ddos-like-d2-s01.pcap.extraction.json",
+      "sha256": "5f71d43edc20be3b9e2c9cbf53f9dea45cdd3532e2e74bf52c45b548bd4ac4ed",
+      "size_bytes": 1080
+    },
+    {
+      "logical_path": "data/lab/experiment_d/adaptation/manifests/ddos-like-d2-s02.pcap.extraction.json",
+      "sha256": "bca73a2b8c5aa908db0e043bb2113d77a05c5c4eed73161b7613b76116b094e0",
+      "size_bytes": 1080
+    },
+    {
+      "logical_path": "data/lab/experiment_d/adaptation/manifests/ddos-like-d2-s04-replacement.pcap.extraction.json",
+      "sha256": "2f0ada6cbd693145feee228507da43c75a15ee639b05cdc6771302a176d41507",
+      "size_bytes": 1104
+    },
+    {
+      "logical_path": "data/lab/experiment_d/adaptation/manifests/labeled_flow_manifest.json",
+      "sha256": "9acafc46f8d67ee9b8fe99de7198161c0bce9fdf375ea7887320e3cfdcafc4b7",
+      "size_bytes": 11764
+    },
+    {
+      "logical_path": "data/lab/experiment_d/adaptation/manifests/normal-d2-s01.pcap.extraction.json",
+      "sha256": "b4fe34041a5f1dfb66d53b34b6cd8d9d93f5730c5b4093c227817d55c93ebcc6",
+      "size_bytes": 1077
+    },
+    {
+      "logical_path": "data/lab/experiment_d/adaptation/manifests/normal-d2-s02.pcap.extraction.json",
+      "sha256": "f821a441f0841cf890616eeb6e650eb283c623d0de97c626dc18f9da3ffb150b",
+      "size_bytes": 1078
+    },
+    {
+      "logical_path": "data/lab/experiment_d/adaptation/manifests/normal-d2-s03.pcap.extraction.json",
+      "sha256": "ba54c321bc16086976c72aa0c22e0600a47deda73a12ba4df3c3378e0ba661c4",
+      "size_bytes": 1078
+    },
+    {
+      "logical_path": "data/lab/experiment_d/adaptation/manifests/portscan-d2-s01.pcap.extraction.json",
+      "sha256": "b063e9a15a6cc0b253edfb0b9003cfb20ffa2154d28c8180ac3f1170219bc38f",
+      "size_bytes": 1089
+    },
+    {
+      "logical_path": "data/lab/experiment_d/adaptation/manifests/portscan-d2-s02.pcap.extraction.json",
+      "sha256": "7cf1937cda1ba0d61ae9c35e82715fc5811d755957e42f301338ebd64c771466",
+      "size_bytes": 1090
+    },
+    {
+      "logical_path": "data/lab/experiment_d/adaptation/manifests/portscan-d2-s03.pcap.extraction.json",
+      "sha256": "6ec234bfab3fc14e616499a29ea597901c653f99af71280cf155bbc3d389a705",
+      "size_bytes": 1088
+    },
+    {
+      "logical_path": "data/lab/experiment_d/adaptation/pcap/ddos/ddos-like-d2-s01.pcap",
+      "sha256": "947688212201f470ccafb0264d58bf0c3dc740f128f297eb4b545d6801235ee2",
+      "size_bytes": 1553004
+    },
+    {
+      "logical_path": "data/lab/experiment_d/adaptation/pcap/ddos/ddos-like-d2-s02.pcap",
+      "sha256": "45c41cb2b8754a1446797309d9f3ebea216c7ca160f0d77e29005a3378d20141",
+      "size_bytes": 3179970
+    },
+    {
+      "logical_path": "data/lab/experiment_d/adaptation/pcap/ddos/ddos-like-d2-s03.pcap",
+      "sha256": "e5f196d97cb69d5a564a835eb3c0c7b437bb08db377071886181d1ab51c1f5a4",
+      "size_bytes": 492789042
+    },
+    {
+      "logical_path": "data/lab/experiment_d/adaptation/pcap/ddos/ddos-like-d2-s04-replacement.pcap",
+      "sha256": "faebad39c67b483b6a94f6a85c644d53106d56c181417d3ea878d5f6099e63cc",
+      "size_bytes": 4671590
+    },
+    {
+      "logical_path": "data/lab/experiment_d/adaptation/pcap/normal/normal-d2-s01.pcap",
+      "sha256": "8a5598517284b64044319d03a1a7a996df036a5011b51787f4a6009d15f9738b",
+      "size_bytes": 72267
+    },
+    {
+      "logical_path": "data/lab/experiment_d/adaptation/pcap/normal/normal-d2-s02.pcap",
+      "sha256": "ee6bf4a0b6fc6c6a1d291e11a36dfb6ef1fc77bfc772786f641f3b47f997663d",
+      "size_bytes": 74191
+    },
+    {
+      "logical_path": "data/lab/experiment_d/adaptation/pcap/normal/normal-d2-s03.pcap",
+      "sha256": "cbdb30b627b190f13ef62aef80b4ab1bd19cb4625302132c5b18f359a42ddb70",
+      "size_bytes": 214057
+    },
+    {
+      "logical_path": "data/lab/experiment_d/adaptation/pcap/portscan/portscan-d2-s01.pcap",
+      "sha256": "31310d1c95a67ba6649c22ee48cbd0d5d6d967f238215f6a662d10aa7a324f1e",
+      "size_bytes": 73984
+    },
+    {
+      "logical_path": "data/lab/experiment_d/adaptation/pcap/portscan/portscan-d2-s02.pcap",
+      "sha256": "3f682f685ba4fd0d0280c83aed5c09fb4c90a4eeaad5951e930aadef4ad00214",
+      "size_bytes": 147596
+    },
+    {
+      "logical_path": "data/lab/experiment_d/adaptation/pcap/portscan/portscan-d2-s03.pcap",
+      "sha256": "294c863353e0b526d3e0161b2056fbc31d680d95ab116b2c4b7fe69053c59a97",
+      "size_bytes": 2374
+    },
+    {
+      "logical_path": "docs/experiment_d_phase_d2_adaptation_capture.md",
+      "sha256": "839b57fdb8b3e6c823fc4bf919097c295107641179485e04586384dd1b19b978",
+      "size_bytes": 5828
+    },
+    {
+      "logical_path": "reports/experiment_d/adaptation/class_distribution.csv",
+      "sha256": "91a48d34a152f7a0e66221710a52e239ee23f94b3638d64330816836c7ef5798",
+      "size_bytes": 94
+    },
+    {
+      "logical_path": "reports/experiment_d/adaptation/dataset_audit.json",
+      "sha256": "d23d443fd46f89b8cbeb891266829ebcd296c5902fb1e3b44a8acae14177a7d2",
+      "size_bytes": 5112
+    },
+    {
+      "logical_path": "reports/experiment_d/audit/adaptation_leakage_audit.json",
+      "sha256": "df56aec8fb690cfb34040fdd00a74b697f766657a0c4c61f2752ccf1800190bb",
+      "size_bytes": 638
+    },
+    {
+      "logical_path": "scripts/audit_experiment_d_adaptation.py",
+      "sha256": "a5af48387c6c85e8f58df91cd2129e6a0788b669e46376e39485b461370085d8",
+      "size_bytes": 14869
+    },
+    {
+      "logical_path": "tests/unit/test_experiment_d_adaptation_audit.py",
+      "sha256": "574578054d39352630f975ce181a89d5165c874bc5b56aa0151ac12e6f177cea",
+      "size_bytes": 906
+    }
+  ],
+  "experiment_code": "EXPERIMENT_D",
+  "phase": "D2",
+  "scope": "new D2 artifacts only"
+}

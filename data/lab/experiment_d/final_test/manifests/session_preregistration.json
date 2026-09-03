@@ -1,0 +1,21 @@
+{
+  "experiment_code": "EXPERIMENT_D",
+  "role": "final_test",
+  "preregistered_at": "2026-09-03T07:15:00Z",
+  "model_blind": true,
+  "source": {"hostname": "experiment-d-source", "ip": "172.30.50.20"},
+  "target": {"hostname": "experiment-d-target", "ip": "172.30.50.10", "http_port": 8080},
+  "capture": {"container": "experiment-d-observer", "interface": "eth0"},
+  "sessions": [
+    {"class": "Normal", "session_id": "expd-final-normal-session-01", "capture_id": "expd-final-normal-capture-01", "scenario_id": "final-normal-sequential-idle", "generator": "curl 8.22.0", "command_config": "five sequential GET / requests with 0.7 second idle intervals"},
+    {"class": "Normal", "session_id": "expd-final-normal-session-02", "capture_id": "expd-final-normal-capture-02", "scenario_id": "final-normal-mixed-small-download", "generator": "curl 8.22.0", "command_config": "GET /, /etc/os-release, and /proc/version with 0.4 and 1.0 second idle intervals"},
+    {"class": "Normal", "session_id": "expd-final-normal-session-03", "capture_id": "expd-final-normal-capture-03", "scenario_id": "final-normal-modest-pair", "generator": "curl 8.22.0", "command_config": "three pairs of two concurrent GET / requests with 1 second idle intervals"},
+    {"class": "PortScan", "session_id": "expd-final-portscan-session-01", "capture_id": "expd-final-portscan-capture-01", "scenario_id": "final-portscan-connect-low-range", "generator": "Nmap 7.99", "command_config": "nmap -n -Pn -sT -T3 -p 1-200 172.30.50.10"},
+    {"class": "PortScan", "session_id": "expd-final-portscan-session-02", "capture_id": "expd-final-portscan-capture-02", "scenario_id": "final-portscan-connect-mid-range", "generator": "Nmap 7.99", "command_config": "nmap -n -Pn -sT -T4 -p 300-520 172.30.50.10"},
+    {"class": "PortScan", "session_id": "expd-final-portscan-session-03", "capture_id": "expd-final-portscan-capture-03", "scenario_id": "final-portscan-connect-selected", "generator": "Nmap 7.99", "command_config": "nmap -n -Pn -sT -T2 -p 21,22,25,53,80,110,143,443,445,8000-8010,8080,8443 172.30.50.10"},
+    {"class": "DDoS", "session_id": "expd-final-ddos-session-01", "capture_id": "expd-final-ddos-capture-01", "scenario_id": "final-ddos-like-http-c4", "generator": "ApacheBench 2.3", "command_config": "ab -q -n 600 -c 4 http://172.30.50.10:8080/"},
+    {"class": "DDoS", "session_id": "expd-final-ddos-session-02", "capture_id": "expd-final-ddos-capture-02", "scenario_id": "final-ddos-like-http-c8-small", "generator": "ApacheBench 2.3", "command_config": "ab -q -n 1200 -c 8 http://172.30.50.10:8080/etc/os-release"},
+    {"class": "DDoS", "session_id": "expd-final-ddos-session-03", "capture_id": "expd-final-ddos-capture-03", "scenario_id": "final-ddos-like-http-c12-timed", "generator": "ApacheBench 2.3", "command_config": "ab -q -t 5 -c 12 http://172.30.50.10:8080/"},
+    {"class": "Normal", "session_id": "expd-final-normal-session-04", "capture_id": "expd-final-normal-capture-04", "scenario_id": "final-normal-sequential-idle-replacement", "generator": "curl 8.22.0", "command_config": "six sequential GET / requests with 0.6 second idle intervals; replacement for metadata-invalid session 01"}
+  ]
+}

@@ -1,0 +1,91 @@
+{
+  "metrics": {
+    "accuracy": 0.003214535290006988,
+    "average_inference_time_seconds_per_row": 7.250448357963714e-06,
+    "classification_report": {
+      "DDoS": {
+        "f1-score": 0.0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "support": 7116.0
+      },
+      "Normal": {
+        "f1-score": 0.006408470325996099,
+        "precision": 0.003214535290006988,
+        "recall": 1.0,
+        "support": 23.0
+      },
+      "PortScan": {
+        "f1-score": 0.0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "support": 16.0
+      },
+      "accuracy": 0.003214535290006988,
+      "macro avg": {
+        "f1-score": 0.002136156775332033,
+        "precision": 0.0010715117633356627,
+        "recall": 0.3333333333333333,
+        "support": 7155.0
+      },
+      "weighted avg": {
+        "f1-score": 2.0600254017877048e-05,
+        "precision": 1.0333237130700312e-05,
+        "recall": 0.003214535290006988,
+        "support": 7155.0
+      }
+    },
+    "confusion_matrix": [
+      [
+        23,
+        0,
+        0
+      ],
+      [
+        7116,
+        0,
+        0
+      ],
+      [
+        16,
+        0,
+        0
+      ]
+    ],
+    "confusion_matrix_labels": [
+      "Normal",
+      "DDoS",
+      "PortScan"
+    ],
+    "false_positive_rate_one_vs_rest": {
+      "DDoS": 0.0,
+      "Normal": 1.0,
+      "PortScan": 0.0
+    },
+    "ids_error_counts": {
+      "ddos_predicted_as_normal": 7116,
+      "normal_predicted_as_attack": 0,
+      "portscan_predicted_as_normal": 16
+    },
+    "macro_f1": 0.002136156775332033,
+    "macro_precision": 0.0010715117633356627,
+    "macro_recall": 0.3333333333333333,
+    "prediction_count_per_class": {
+      "DDoS": 0,
+      "Normal": 7155,
+      "PortScan": 0
+    },
+    "support_per_class": {
+      "DDoS": 7116,
+      "Normal": 23,
+      "PortScan": 16
+    },
+    "total_prediction_time_seconds": 0.05187695800123038,
+    "weighted_f1": 2.0600254017877048e-05,
+    "weighted_precision": 1.0333237130700312e-05,
+    "weighted_recall": 0.003214535290006988
+  },
+  "model": "rf_v1_adaptation",
+  "split_manifest_sha256": "293108f19ceeeae59b82175042842c24972da9332bb0083f22999e398c885686",
+  "training_plan_sha256": "5b99e8c97e49b093b9b9035f6d4982ea749103dee81ace7e107e079fbef32139"
+}

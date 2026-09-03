@@ -1,0 +1,186 @@
+{
+  "active": false,
+  "adaptation_training_session_ids": [
+    "expd-adapt-ddos-session-01",
+    "expd-adapt-ddos-session-02",
+    "expd-adapt-normal-session-01",
+    "expd-adapt-normal-session-02",
+    "expd-adapt-portscan-session-01",
+    "expd-adapt-portscan-session-02"
+  ],
+  "adaptation_validation_session_ids": [
+    "expd-adapt-ddos-session-04",
+    "expd-adapt-normal-session-03",
+    "expd-adapt-portscan-session-03"
+  ],
+  "adapter": {
+    "crosswalk_sha256": "66e517cdcea217f19de4d0a2cd45302ede999388393f539fb8ca4a2c68b74cf4",
+    "identity": "CICFLOWMETER_V3_CICIDS2017_MODEL_ADAPTER",
+    "version": "1.0.0"
+  },
+  "cicflowmeter": {
+    "commit": "a26aae27f21d165ff30b4b28e75124a5f9b4b2c4",
+    "image_digest": "sha256:0227c7280e586d54144b9bb11b2a6b5d4b1c4ba9bc7c44199fa312a6b829caab"
+  },
+  "cicids2017_source_identities": [
+    {
+      "logical_path": "data/raw/cicids2017/Friday-WorkingHours-Afternoon-DDos.pcap_ISCX.csv",
+      "sha256": "6ff1580f5f81c0ae28a26f7631721018577f5f7c5e0feac28b795fcfe7b411ee",
+      "size_bytes": 77123859
+    },
+    {
+      "logical_path": "data/raw/cicids2017/Friday-WorkingHours-Afternoon-PortScan.pcap_ISCX.csv",
+      "sha256": "ca1824c51bfbb7b3c72290a11be04366ba8815878c6a1cc5c44cb1cee269e99b",
+      "size_bytes": 76906168
+    },
+    {
+      "logical_path": "data/raw/cicids2017/Friday-WorkingHours-Morning.pcap_ISCX.csv",
+      "sha256": "53a41c24d570ea83b7ac55b2e94df94e7a8216aeb80a2af0246b6bc8bb543000",
+      "size_bytes": 58316725
+    },
+    {
+      "logical_path": "data/raw/cicids2017/Monday-WorkingHours.pcap_ISCX.csv",
+      "sha256": "852c4beb34eda186f32561fa79df7a0747e92e1a6535b01270820dd9ffe17f34",
+      "size_bytes": 176927918
+    },
+    {
+      "logical_path": "data/raw/cicids2017/Thursday-WorkingHours-Afternoon-Infilteration.pcap_ISCX.csv",
+      "sha256": "6bcda3857c2504676034e3ea57762d38393cc734cb377a726bd5cb153961b1b5",
+      "size_bytes": 83102436
+    },
+    {
+      "logical_path": "data/raw/cicids2017/Thursday-WorkingHours-Morning-WebAttacks.pcap_ISCX.csv",
+      "sha256": "d67066211fb1689c78406f1506f4c44704ecb92088353d5c96d96d6474eb819d",
+      "size_bytes": 52023263
+    },
+    {
+      "logical_path": "data/raw/cicids2017/Tuesday-WorkingHours.pcap_ISCX.csv",
+      "sha256": "52b8692ae8c7d2ed04671fe2b98335693c0a92c7ab157d8c8b534d6523080851",
+      "size_bytes": 135078995
+    },
+    {
+      "logical_path": "data/raw/cicids2017/Wednesday-workingHours.pcap_ISCX.csv",
+      "sha256": "893c27dc968bf7a8adef1689f90be55ca4a4dc3088fb63d6ff247ac56856df2a",
+      "size_bytes": 225166395
+    }
+  ],
+  "classes": [
+    "Normal",
+    "DDoS",
+    "PortScan"
+  ],
+  "code_commit": "c251665d9371f7aa4c07a6defc92394ed0a6d361",
+  "feature_count": 78,
+  "feature_names": [
+    "destination_port",
+    "flow_duration",
+    "total_fwd_packets",
+    "total_backward_packets",
+    "total_length_of_fwd_packets",
+    "total_length_of_bwd_packets",
+    "fwd_packet_length_max",
+    "fwd_packet_length_min",
+    "fwd_packet_length_mean",
+    "fwd_packet_length_std",
+    "bwd_packet_length_max",
+    "bwd_packet_length_min",
+    "bwd_packet_length_mean",
+    "bwd_packet_length_std",
+    "flow_bytes_s",
+    "flow_packets_s",
+    "flow_iat_mean",
+    "flow_iat_std",
+    "flow_iat_max",
+    "flow_iat_min",
+    "fwd_iat_total",
+    "fwd_iat_mean",
+    "fwd_iat_std",
+    "fwd_iat_max",
+    "fwd_iat_min",
+    "bwd_iat_total",
+    "bwd_iat_mean",
+    "bwd_iat_std",
+    "bwd_iat_max",
+    "bwd_iat_min",
+    "fwd_psh_flags",
+    "bwd_psh_flags",
+    "fwd_urg_flags",
+    "bwd_urg_flags",
+    "fwd_header_length",
+    "bwd_header_length",
+    "fwd_packets_s",
+    "bwd_packets_s",
+    "min_packet_length",
+    "max_packet_length",
+    "packet_length_mean",
+    "packet_length_std",
+    "packet_length_variance",
+    "fin_flag_count",
+    "syn_flag_count",
+    "rst_flag_count",
+    "psh_flag_count",
+    "ack_flag_count",
+    "urg_flag_count",
+    "cwe_flag_count",
+    "ece_flag_count",
+    "down_up_ratio",
+    "average_packet_size",
+    "avg_fwd_segment_size",
+    "avg_bwd_segment_size",
+    "fwd_header_length.1",
+    "fwd_avg_bytes_bulk",
+    "fwd_avg_packets_bulk",
+    "fwd_avg_bulk_rate",
+    "bwd_avg_bytes_bulk",
+    "bwd_avg_packets_bulk",
+    "bwd_avg_bulk_rate",
+    "subflow_fwd_packets",
+    "subflow_fwd_bytes",
+    "subflow_bwd_packets",
+    "subflow_bwd_bytes",
+    "init_win_bytes_forward",
+    "init_win_bytes_backward",
+    "act_data_pkt_fwd",
+    "min_seg_size_forward",
+    "active_mean",
+    "active_std",
+    "active_max",
+    "active_min",
+    "idle_mean",
+    "idle_std",
+    "idle_max",
+    "idle_min"
+  ],
+  "joblib_version": "1.5.3",
+  "model_name": "RF-NIDS Random Forest",
+  "model_sha256": "fb13a71a0287054d2630bf07529f113a153ba08d8f6835a605b04493408b8a31",
+  "numpy_version": "2.5.2",
+  "pandas_version": "2.3.3",
+  "python_version": "3.12.13",
+  "rf_parameters": {
+    "bootstrap": false,
+    "ccp_alpha": 0.0,
+    "class_weight": "balanced",
+    "criterion": "gini",
+    "max_depth": null,
+    "max_features": "log2",
+    "min_samples_leaf": 4,
+    "min_samples_split": 5,
+    "n_estimators": 200,
+    "n_jobs": -1,
+    "random_state": 42
+  },
+  "role": "Experiment D candidate",
+  "scikit_learn_version": "1.9.0",
+  "split_manifest_identity": "2b9f451c1d161aa96dc55e150c25844e6c88a450e68ace6703009b5c74d21c3b",
+  "split_manifest_sha256": "293108f19ceeeae59b82175042842c24972da9332bb0083f22999e398c885686",
+  "training_plan_sha256": "5b99e8c97e49b093b9b9035f6d4982ea749103dee81ace7e107e079fbef32139",
+  "training_row_counts": {
+    "DDoS": 103613,
+    "Normal": 1677198,
+    "PortScan": 73768
+  },
+  "training_strategy": "D3-C",
+  "training_timestamp_utc": "2026-09-03T04:20:15.540092+00:00",
+  "version": "rf-v2.0-experiment-d"
+}

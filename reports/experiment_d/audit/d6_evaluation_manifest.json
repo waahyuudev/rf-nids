@@ -1,0 +1,72 @@
+{
+  "canonical_row_manifest_sha256": "f8402c1f13227d36f74a8bf065af87cb4db9f776088a7f28e269719fba60cb28",
+  "canonical_row_order_identity": "c89d2b8cf7bb848f8a5d397865870ba0c8823dd1073ea77a9142de152faf0fba",
+  "code_commit": "c251665d9371f7aa4c07a6defc92394ed0a6d361",
+  "confusion_matrix_hashes": {
+    "rf1_cm": "e83f128b969f4186e59812dffb2c88282ecf0d72b231d086a0ac0acd395b92f0",
+    "rf2_cm": "142e5199626cf9430991eb85e5ac9e0084850bf92c60ce15f81927d7e9329310"
+  },
+  "d2_d5_evidence_snapshot": {
+    "file_count": 97,
+    "identity_after": "18e5a9973fbcbf56c46d03f9fdd74f98863572afcefaf776cbb5a3b0b3d2b47a",
+    "identity_before": "18e5a9973fbcbf56c46d03f9fdd74f98863572afcefaf776cbb5a3b0b3d2b47a",
+    "unchanged": true
+  },
+  "documentation_sha256": "002e6901140354c49eaaa9c5abcfcfbc0e71e0bb8d0cee249f8bf24c407149f4",
+  "evaluation_timestamp_utc": "2026-09-03T08:10:37.595311+00:00",
+  "exact_evaluation_command": "/Users/wahyudev/Wahyudev/ai_projects/rf_nids/.venv/bin/python scripts/evaluate_experiment_d_final.py --execute-one-shot",
+  "ground_truth_identity": "a5dec5d0197eee4601843f4832d51de1c86b52361e5f42f36fecebc157749e79",
+  "inference": {
+    "one_shot": true,
+    "retry_count": 0,
+    "rf_v1_predict_calls": 1,
+    "rf_v1_predict_proba_calls": 1,
+    "rf_v2_predict_calls": 1,
+    "rf_v2_predict_proba_calls": 1,
+    "training_fit_calls": 0,
+    "valid_inference_runs": 1
+  },
+  "metric_report_hashes": {
+    "comparison_csv": "a2baf85035ddf66465ccab4d81a1ee6aa64db84e814b6a62978ed9f02259f787",
+    "comparison_json": "04c5a3123b41900fd677eeb7d85493a8579e3b7af64c6a7ce1eef205d6a8061b",
+    "metrics": "56b98bcf2ed4883c2c2cc3beb67e85424c639cf8d2686b2934290133e08562be"
+  },
+  "prediction_table_hashes": {
+    "rf1_pred": "823e2a1606b1692a9d0586d57ea07225728e00b8afdedeb26990372db304873f",
+    "rf2_pred": "29f0c9940abe8d87a87e36e89135faaa65b999f6165c7dc50120056c3b3586ce"
+  },
+  "rf_v1_artifact_sha256": "73d86cb98f35c228d6e619e0f746a2b659d94deabe86d57e801c58bcf935f647",
+  "rf_v1_frozen_identity": "907ad890f4a7e830cc9ca4d38ee6b99075bab5a06ee6cdda0725db52cc0f7e70",
+  "rf_v1_metadata_sha256": "c632b16d30efb8f5a642070520c43cc1caaf36cbead33bddf9b5359b0fb531f2",
+  "rf_v2_artifact_sha256": "fb13a71a0287054d2630bf07529f113a153ba08d8f6835a605b04493408b8a31",
+  "rf_v2_frozen_identity": "3903c87a9eb46e21b56672c08bd9e15d678d598898ea378d0cd1b5c4fc0633cf",
+  "runtime": {
+    "joblib": "1.5.3",
+    "numpy": "2.5.2",
+    "pandas": "2.3.3",
+    "python": "3.12.13",
+    "scikit_learn": "1.9.0"
+  },
+  "schema": "experiment_d_d6_evaluation_manifest",
+  "schema_version": 1,
+  "scientific_integrity": {
+    "checks": {
+      "adapter_crosswalk_unchanged": true,
+      "experiment_c_unchanged": true,
+      "ground_truth_unchanged": true,
+      "no_training_occurred": true,
+      "rf_v1_unchanged": true,
+      "rf_v2_not_activated": true,
+      "rf_v2_unchanged": true,
+      "sealed_final_test_unchanged": true
+    },
+    "status": "PASS"
+  },
+  "sealed_final_test_identity": "a60d79e66690dcb146e76a80dee5ff4e550abd298575a92d77be6db447881d18",
+  "session_report_hashes": {
+    "rf1_sessions": "f08721fa824a6ed1eaeaf3e55b5875602da24983ddf5294f9277113764b69923",
+    "rf2_sessions": "bfbb82c2ef4cb426fb86b963d758c40e78e291b4cf6a58e127f2fac572ba3e6b"
+  },
+  "status": "PASS",
+  "working_tree_dirty": true
+}

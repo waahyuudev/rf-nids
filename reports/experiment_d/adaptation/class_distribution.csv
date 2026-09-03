@@ -1,0 +1,4 @@
+class,valid_sessions,pcap_count,flow_count
+Normal,3,3,44
+PortScan,3,3,1554
+DDoS,3,3,14316

@@ -1,0 +1,4 @@
+actual_class,Normal,DDoS,PortScan
+Normal,30,0,0
+DDoS,15482,0,0
+PortScan,436,0,1

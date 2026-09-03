@@ -1,0 +1,141 @@
+{
+  "dataset": {
+    "canonical_row_order_identity": "c89d2b8cf7bb848f8a5d397865870ba0c8823dd1073ea77a9142de152faf0fba",
+    "class_distribution": {
+      "DDoS": 15482,
+      "Normal": 30,
+      "PortScan": 437
+    },
+    "features": 78,
+    "ground_truth_identity": "a5dec5d0197eee4601843f4832d51de1c86b52361e5f42f36fecebc157749e79",
+    "rows": 15949,
+    "sealed_identity": "a60d79e66690dcb146e76a80dee5ff4e550abd298575a92d77be6db447881d18"
+  },
+  "evaluation_policy": {
+    "class_order": [
+      "Normal",
+      "DDoS",
+      "PortScan"
+    ],
+    "one_shot": true,
+    "resampling": false,
+    "threshold_selection": false,
+    "zero_division": 0
+  },
+  "rf_v1": {
+    "accuracy": 0.0019436955295002822,
+    "attack_detection_rate": 6.281801620704818e-05,
+    "confusion_matrix": [
+      [
+        30,
+        0,
+        0
+      ],
+      [
+        15482,
+        0,
+        0
+      ],
+      [
+        436,
+        0,
+        1
+      ]
+    ],
+    "confusion_matrix_labels": [
+      "Normal",
+      "DDoS",
+      "PortScan"
+    ],
+    "ddos_detection_rate": 0.0,
+    "macro_f1": 0.002773791131755936,
+    "macro_precision": 0.3339603712064209,
+    "macro_recall": 0.33409610983981697,
+    "normal_false_positive_rate": 0.999937181983793,
+    "per_class": {
+      "DDoS": {
+        "f1": 0.0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "support": 15482
+      },
+      "Normal": {
+        "f1": 0.003755163349605708,
+        "precision": 0.0018811136192626034,
+        "recall": 1.0,
+        "support": 30
+      },
+      "PortScan": {
+        "f1": 0.0045662100456621,
+        "precision": 1.0,
+        "recall": 0.002288329519450801,
+        "support": 437
+      }
+    },
+    "portscan_detection_rate": 0.002288329519450801,
+    "total_samples": 15949,
+    "weighted_f1": 0.00013217685688397446,
+    "weighted_precision": 0.027403375346954535,
+    "weighted_recall": 0.0019436955295002822,
+    "zero_division_policy": 0
+  },
+  "rf_v2": {
+    "accuracy": 0.10295316320772462,
+    "attack_detection_rate": 0.10138827815817576,
+    "confusion_matrix": [
+      [
+        28,
+        2,
+        0
+      ],
+      [
+        14291,
+        1191,
+        0
+      ],
+      [
+        14,
+        0,
+        423
+      ]
+    ],
+    "confusion_matrix_labels": [
+      "Normal",
+      "DDoS",
+      "PortScan"
+    ],
+    "ddos_detection_rate": 0.07692804547216121,
+    "macro_f1": 0.3768228042860999,
+    "macro_precision": 0.6667590292894978,
+    "macro_recall": 0.6594082551777278,
+    "normal_false_positive_rate": 0.8986117218418243,
+    "per_class": {
+      "DDoS": {
+        "f1": 0.14284857571214393,
+        "precision": 0.9983235540653814,
+        "recall": 0.07692804547216121,
+        "support": 15482
+      },
+      "Normal": {
+        "f1": 0.003898906913597438,
+        "precision": 0.0019535338031117003,
+        "recall": 0.9333333333333333,
+        "support": 30
+      },
+      "PortScan": {
+        "f1": 0.9837209302325581,
+        "precision": 1.0,
+        "recall": 0.9679633867276888,
+        "support": 437
+      }
+    },
+    "portscan_detection_rate": 0.9679633867276888,
+    "total_samples": 15949,
+    "weighted_f1": 0.16562697742143384,
+    "weighted_precision": 0.9964953207131687,
+    "weighted_recall": 0.10295316320772462,
+    "zero_division_policy": 0
+  },
+  "schema": "experiment_d_d6_final_metrics",
+  "schema_version": 1
+}

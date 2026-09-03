@@ -1,0 +1,91 @@
+{
+  "metrics": {
+    "accuracy": 0.9995788909932342,
+    "average_inference_time_seconds_per_row": 2.4270407050491884e-06,
+    "classification_report": {
+      "DDoS": {
+        "f1-score": 0.9998632999394614,
+        "precision": 0.9998437744102484,
+        "recall": 0.999882826231301,
+        "support": 25603.0
+      },
+      "Normal": {
+        "f1-score": 0.9997674182833084,
+        "precision": 0.9999785263851078,
+        "recall": 0.9995563992978708,
+        "support": 419296.0
+      },
+      "PortScan": {
+        "f1-score": 0.994849879465264,
+        "precision": 0.9900763358778626,
+        "recall": 0.999669676282757,
+        "support": 18164.0
+      },
+      "accuracy": 0.9995788909932342,
+      "macro avg": {
+        "f1-score": 0.9981601992293446,
+        "precision": 0.9966328788910729,
+        "recall": 0.9997029672706429,
+        "support": 463063.0
+      },
+      "weighted avg": {
+        "f1-score": 0.9995798254135511,
+        "precision": 0.9995826548877392,
+        "recall": 0.9995788909932342,
+        "support": 463063.0
+      }
+    },
+    "confusion_matrix": [
+      [
+        419110,
+        4,
+        182
+      ],
+      [
+        3,
+        25600,
+        0
+      ],
+      [
+        6,
+        0,
+        18158
+      ]
+    ],
+    "confusion_matrix_labels": [
+      "Normal",
+      "DDoS",
+      "PortScan"
+    ],
+    "false_positive_rate_one_vs_rest": {
+      "DDoS": 9.1436931376583e-06,
+      "Normal": 0.00020563438206868187,
+      "PortScan": 0.00040908161178155044
+    },
+    "ids_error_counts": {
+      "ddos_predicted_as_normal": 3,
+      "normal_predicted_as_attack": 186,
+      "portscan_predicted_as_normal": 6
+    },
+    "macro_f1": 0.9981601992293446,
+    "macro_precision": 0.9966328788910729,
+    "macro_recall": 0.9997029672706429,
+    "prediction_count_per_class": {
+      "DDoS": 25604,
+      "Normal": 419119,
+      "PortScan": 18340
+    },
+    "support_per_class": {
+      "DDoS": 25603,
+      "Normal": 419296,
+      "PortScan": 18164
+    },
+    "total_prediction_time_seconds": 1.1238727500021923,
+    "weighted_f1": 0.9995798254135511,
+    "weighted_precision": 0.9995826548877392,
+    "weighted_recall": 0.9995788909932342
+  },
+  "model": "rf_v2_control",
+  "split_manifest_sha256": "293108f19ceeeae59b82175042842c24972da9332bb0083f22999e398c885686",
+  "training_plan_sha256": "5b99e8c97e49b093b9b9035f6d4982ea749103dee81ace7e107e079fbef32139"
+}

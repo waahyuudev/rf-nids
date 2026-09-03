@@ -1,0 +1,118 @@
+{
+  "class_imbalance_limitation": "Accuracy is secondary because DDoS dominates and Normal has only 30 rows; macro F1, per-class recall, and session results are essential.",
+  "comparison_basis": "same sealed Experiment D D6 rows in identical canonical order",
+  "confusion_matrices": {
+    "labels": [
+      "Normal",
+      "DDoS",
+      "PortScan"
+    ],
+    "rf_v1": [
+      [
+        30,
+        0,
+        0
+      ],
+      [
+        15482,
+        0,
+        0
+      ],
+      [
+        436,
+        0,
+        1
+      ]
+    ],
+    "rf_v2": [
+      [
+        28,
+        2,
+        0
+      ],
+      [
+        14291,
+        1191,
+        0
+      ],
+      [
+        14,
+        0,
+        423
+      ]
+    ]
+  },
+  "experiment_c_context": {
+    "ddos_recall": 0.0,
+    "normal_recall": 1.0,
+    "portscan_recall": 0.0,
+    "rf_v1_accuracy": 0.005404447594577833,
+    "same_dataset_comparison": false
+  },
+  "metrics": [
+    {
+      "metric": "accuracy",
+      "rf_v1": 0.0019436955295002822,
+      "rf_v2": 0.10295316320772462,
+      "rf_v2_minus_rf_v1": 0.10100946767822433
+    },
+    {
+      "metric": "macro_precision",
+      "rf_v1": 0.3339603712064209,
+      "rf_v2": 0.6667590292894978,
+      "rf_v2_minus_rf_v1": 0.3327986580830769
+    },
+    {
+      "metric": "macro_recall",
+      "rf_v1": 0.33409610983981697,
+      "rf_v2": 0.6594082551777278,
+      "rf_v2_minus_rf_v1": 0.32531214533791086
+    },
+    {
+      "metric": "macro_f1",
+      "rf_v1": 0.002773791131755936,
+      "rf_v2": 0.3768228042860999,
+      "rf_v2_minus_rf_v1": 0.37404901315434397
+    },
+    {
+      "metric": "Normal_recall",
+      "rf_v1": 1.0,
+      "rf_v2": 0.9333333333333333,
+      "rf_v2_minus_rf_v1": -0.06666666666666665
+    },
+    {
+      "metric": "DDoS_recall",
+      "rf_v1": 0.0,
+      "rf_v2": 0.07692804547216121,
+      "rf_v2_minus_rf_v1": 0.07692804547216121
+    },
+    {
+      "metric": "PortScan_recall",
+      "rf_v1": 0.002288329519450801,
+      "rf_v2": 0.9679633867276888,
+      "rf_v2_minus_rf_v1": 0.965675057208238
+    },
+    {
+      "metric": "Normal_FPR",
+      "rf_v1": 0.999937181983793,
+      "rf_v2": 0.8986117218418243,
+      "rf_v2_minus_rf_v1": -0.10132546014196875
+    },
+    {
+      "metric": "attack_detection_rate",
+      "rf_v1": 6.281801620704818e-05,
+      "rf_v2": 0.10138827815817576,
+      "rf_v2_minus_rf_v1": 0.10132546014196872
+    }
+  ],
+  "primary_questions": {
+    "d4_internal_performance_role": "contextual evidence only; not recomputed or used for D6 decisions",
+    "rf_v2_macro_f1_improved": true,
+    "rf_v2_nonzero_ddos_recall": true,
+    "rf_v2_nonzero_portscan_recall": true,
+    "rf_v2_normal_recall": 0.9333333333333333,
+    "sessions_with_recall_improvement": 6
+  },
+  "schema": "experiment_d_d6_rf_v1_vs_rf_v2",
+  "schema_version": 1
+}

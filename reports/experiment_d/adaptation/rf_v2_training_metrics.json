@@ -1,0 +1,30 @@
+{
+  "model": "RF-v2-D3C",
+  "model_size_bytes": 14150634,
+  "peak_memory_measurement": "macOS ru_maxrss bytes; process lifetime high-water mark",
+  "peak_resident_memory_bytes": 5018976256,
+  "rf_parameters": {
+    "bootstrap": false,
+    "ccp_alpha": 0.0,
+    "class_weight": "balanced",
+    "criterion": "gini",
+    "max_depth": null,
+    "max_features": "log2",
+    "min_samples_leaf": 4,
+    "min_samples_split": 5,
+    "n_estimators": 200,
+    "n_jobs": -1,
+    "random_state": 42
+  },
+  "split_manifest_sha256": "293108f19ceeeae59b82175042842c24972da9332bb0083f22999e398c885686",
+  "training_class_counts": {
+    "DDoS": 103613,
+    "Normal": 1677198,
+    "PortScan": 73768
+  },
+  "training_elapsed_seconds": 91.68741408300411,
+  "training_ended_utc": "2026-09-03T04:20:15.540092+00:00",
+  "training_plan_sha256": "5b99e8c97e49b093b9b9035f6d4982ea749103dee81ace7e107e079fbef32139",
+  "training_rows": 1854579,
+  "training_started_utc": "2026-09-03T04:18:43.855197+00:00"
+}

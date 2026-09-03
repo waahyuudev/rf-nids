@@ -1,0 +1,16 @@
+{
+  "audited_at": "2026-09-03T07:54:39.921468+00:00",
+  "checks": {
+    "model_artifacts_predate_freeze": true,
+    "no_adaptation_content_hash_overlap": true,
+    "no_adaptation_identity_overlap": true,
+    "no_experiment_c_content_hash_overlap": true,
+    "no_final_test_path_in_training_manifest": true,
+    "no_prediction_or_metrics_outputs_exist": true,
+    "rf_v2_frozen_hash_unchanged": true
+  },
+  "final_test_manifest_identity": "a60d79e66690dcb146e76a80dee5ff4e550abd298575a92d77be6db447881d18",
+  "rf_v2_frozen_identity": "3903c87a9eb46e21b56672c08bd9e15d678d598898ea378d0cd1b5c4fc0633cf",
+  "schema": "experiment_d_final_test_leakage_audit",
+  "status": "PASS"
+}

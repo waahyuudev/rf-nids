@@ -1,0 +1,17 @@
+{
+  "checks": {
+    "adaptation_validation_excluded_from_fit": true,
+    "cicids_control_excluded_from_fit": true,
+    "feature_count_is_78": true,
+    "imputer_fitted_inside_training_pipeline": true,
+    "no_experiment_c_data": true,
+    "no_final_test_data": true,
+    "no_post_handling_content_hash_overlap": true,
+    "no_session_capture_overlap": true,
+    "provenance_excluded_from_features": true,
+    "rf_v1_immutable": true
+  },
+  "frozen_baseline_after": "907ad890f4a7e830cc9ca4d38ee6b99075bab5a06ee6cdda0725db52cc0f7e70",
+  "frozen_baseline_before": "907ad890f4a7e830cc9ca4d38ee6b99075bab5a06ee6cdda0725db52cc0f7e70",
+  "status": "PASS"
+}

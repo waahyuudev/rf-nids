@@ -1,0 +1,59 @@
+name: experiment-d-final-lab
+
+# Laboratory-only D5 environment. No ports are published to the host and the
+# internal network has no external gateway. Do not attach these services to any
+# application, business, or public network.
+services:
+  target:
+    image: rf-nids-experiment-d-tools:d2
+    platform: linux/amd64
+    container_name: experiment-d-target
+    hostname: experiment-d-target
+    command: ["python3", "-m", "http.server", "8080", "--bind", "172.30.50.10"]
+    read_only: true
+    tmpfs:
+      - /tmp:size=16m,noexec,nosuid
+    cap_drop: ["ALL"]
+    security_opt: ["no-new-privileges:true"]
+    networks:
+      final_lab:
+        ipv4_address: 172.30.50.10
+
+  source:
+    image: rf-nids-experiment-d-tools:d2
+    platform: linux/amd64
+    container_name: experiment-d-source
+    hostname: experiment-d-source
+    command: ["sh", "-c", "trap 'exit 0' TERM INT; while :; do sleep 3600; done"]
+    read_only: true
+    tmpfs:
+      - /tmp:size=16m,noexec,nosuid
+    cap_drop: ["ALL"]
+    security_opt: ["no-new-privileges:true"]
+    networks:
+      final_lab:
+        ipv4_address: 172.30.50.20
+
+  observer:
+    image: rf-nids-experiment-d-tools:d2
+    platform: linux/amd64
+    container_name: experiment-d-observer
+    network_mode: "service:target"
+    depends_on: ["target"]
+    command: ["sh", "-c", "trap 'exit 0' TERM INT; while :; do sleep 3600; done"]
+    read_only: true
+    tmpfs:
+      - /tmp:size=16m,noexec,nosuid
+    cap_drop: ["ALL"]
+    cap_add: ["NET_RAW", "NET_ADMIN"]
+    security_opt: ["no-new-privileges:true"]
+
+networks:
+  final_lab:
+    name: experiment-d-final-net
+    internal: true
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.30.50.0/24
+          gateway: 172.30.50.1

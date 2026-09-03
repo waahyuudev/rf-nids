@@ -1,0 +1,4 @@
+ground_truth,valid_sessions,flow_count
+Normal,3,30
+PortScan,3,437
+DDoS,3,15482

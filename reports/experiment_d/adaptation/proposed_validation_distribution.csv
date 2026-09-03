@@ -1,0 +1,7 @@
+record_type,validation_component,class,flow_count
+planned,adaptation_validation,Normal,23
+planned,cicids2017_internal_control,Normal,419296
+planned,adaptation_validation,DDoS,7116
+planned,cicids2017_internal_control,DDoS,25603
+planned,adaptation_validation,PortScan,16
+planned,cicids2017_internal_control,PortScan,18164

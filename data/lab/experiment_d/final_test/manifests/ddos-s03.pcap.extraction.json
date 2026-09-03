@@ -1,0 +1,24 @@
+{
+  "adapter": {
+    "crosswalk_sha256": "66e517cdcea217f19de4d0a2cd45302ede999388393f539fb8ca4a2c68b74cf4",
+    "identity": "CICFLOWMETER_V3_CICIDS2017_MODEL_ADAPTER",
+    "version": "1.0.0"
+  },
+  "class": "ddos",
+  "experiment_code": "EXPERIMENT_D",
+  "extractor": {
+    "commit": "a26aae27f21d165ff30b4b28e75124a5f9b4b2c4",
+    "image_digest": "sha256:0227c7280e586d54144b9bb11b2a6b5d4b1c4ba9bc7c44199fa312a6b829caab",
+    "image_tag": "rf-nids-cicflowmeter-v3:a26aae27",
+    "repository": "https://github.com/ahlashkari/CICFlowMeter",
+    "source_archive_sha256": "78f13b2d474e5a669a367aef610d597cf86bc338088ffdd72228671bdca364c7"
+  },
+  "input_logical_path": "final_test/pcap/ddos/ddos-s03.pcap",
+  "input_sha256": "b9c73fce961260cd398ec510d6789c3aaf60d4819356e0732092e8690e6ba2b1",
+  "network_access": false,
+  "output_logical_path": "final_test/flows/cicflowmeter-v3/ddos/ddos-s03.pcap_ISCX.csv",
+  "output_sha256": "0e24bbe2f00220ca7e22b89338473d7f814883d5a508a0d6f50a9005a4d8a761",
+  "raw_column_count": 84,
+  "role": "final_test",
+  "row_count": 11882
+}
