@@ -78,6 +78,7 @@ class ModelPresentationInfo(ModelInfo):
     experiment_id: int | None
     experiment_code: str | None
     experiment_name: str | None
+    scientific_source: str | None = None
 
 
 class EvidenceSourceInfo(BaseModel):

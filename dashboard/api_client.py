@@ -115,6 +115,9 @@ class RFNIDSClient:
     def active_model(self):
         return self._request("GET", "/api/models/active")
 
+    def models(self):
+        return self._request("GET", "/api/models")
+
     def datasets(self):
         return self._request("GET", "/api/datasets")
 

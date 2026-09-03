@@ -1,0 +1,139 @@
+{
+  "alert_count": 2,
+  "alert_export_count": 2,
+  "automated_tests": {
+    "command": "PYTHONPATH=. .venv/bin/python -m pytest -q",
+    "passed": 192,
+    "failed": 0,
+    "warnings": 1933
+  },
+  "black_box_cases": [
+    {
+      "actual": "RF-v2 active; RF-v1 retained as previous/rollback",
+      "status": "PASS",
+      "test_id": "RFV2-01"
+    },
+    {
+      "actual": "Normal persisted under RF-v2 with no alert",
+      "status": "PASS",
+      "test_id": "RFV2-02"
+    },
+    {
+      "actual": "PortScan persisted and created MEDIUM alert",
+      "status": "PASS",
+      "test_id": "RFV2-03"
+    },
+    {
+      "actual": "DDoS persisted and created HIGH alert",
+      "status": "PASS",
+      "test_id": "RFV2-04"
+    },
+    {
+      "actual": "detail exposed RF-v2 and genuine three-class probabilities",
+      "status": "PASS",
+      "test_id": "RFV2-05"
+    },
+    {
+      "actual": "dashboard counted three RF-v2 runtime records and active model endpoint showed RF-v2",
+      "status": "PASS",
+      "test_id": "RFV2-06"
+    },
+    {
+      "actual": "prediction export contained all RF-v2 records and model version",
+      "status": "PASS",
+      "test_id": "RFV2-07"
+    },
+    {
+      "actual": "RF-v1 rollback and RF-v2 restoration preserved both records and historical predictions",
+      "status": "PASS",
+      "test_id": "RFV2-08"
+    }
+  ],
+  "black_box_passed": 8,
+  "dashboard": {
+    "acknowledged_alerts": 0,
+    "active_alerts": 2,
+    "active_high_alerts": 1,
+    "active_medium_alerts": 1,
+    "latest_prediction_timestamp": "2026-09-03T08:40:55.900083",
+    "total_ddos": 1,
+    "total_flows": 3,
+    "total_normal": 1,
+    "total_portscan": 1
+  },
+  "database": "disposable SQLite integration database",
+  "active_database_model_record": {
+    "algorithm": "Random Forest",
+    "artifact_path": "models/experiment_d/random_forest_rf_v2.joblib",
+    "artifact_sha256": "fb13a71a0287054d2630bf07529f113a153ba08d8f6835a605b04493408b8a31",
+    "feature_count": 78,
+    "is_active": true,
+    "model_version": "rf-v2.0",
+    "scientific_source": "EXPERIMENT_D"
+  },
+  "executed_at": "2026-09-03T08:40:55.998424+00:00",
+  "functional_only": true,
+  "monitoring_count": 3,
+  "performance_claim": false,
+  "predictions": {
+    "DDoS": {
+      "confidence": 0.5551780038713201,
+      "model_version": "rf-v2.0",
+      "prediction": "DDoS",
+      "prediction_id": 3,
+      "probabilities": {
+        "DDoS": 0.5551780038713201,
+        "Normal": 0.4221542302319655,
+        "PortScan": 0.02266776589671453
+      }
+    },
+    "Normal": {
+      "confidence": 0.8395467229407781,
+      "model_version": "rf-v2.0",
+      "prediction": "Normal",
+      "prediction_id": 1,
+      "probabilities": {
+        "DDoS": 0.018731236167306063,
+        "Normal": 0.8395467229407781,
+        "PortScan": 0.14172204089191587
+      }
+    },
+    "PortScan": {
+      "confidence": 0.5003913691629982,
+      "model_version": "rf-v2.0",
+      "prediction": "PortScan",
+      "prediction_id": 2,
+      "probabilities": {
+        "DDoS": 0.0,
+        "Normal": 0.49960863083700163,
+        "PortScan": 0.5003913691629982
+      }
+    }
+  },
+  "rf_v1": {
+    "artifact_sha256": "73d86cb98f35c228d6e619e0f746a2b659d94deabe86d57e801c58bcf935f647",
+    "preserved": true,
+    "version": "rf-v1.0"
+  },
+  "rf_v2": {
+    "active_after_validation": true,
+    "artifact_sha256": "fb13a71a0287054d2630bf07529f113a153ba08d8f6835a605b04493408b8a31",
+    "version": "rf-v2.0"
+  },
+  "rollback_verified": true,
+  "runtime_metadata": {
+    "path": "models/experiment_d/random_forest_rf_v2_runtime_metadata.json",
+    "sha256": "1c97466a9c987b161e516557d41e63c428d987129f39dcdeb6a735c9097443c0"
+  },
+  "schema": "rf_v2_application_activation_validation",
+  "schema_migration": false,
+  "schema_version": 1,
+  "scientific_integrity": {
+    "file_count": 133,
+    "identity_after": "b14d16a943c99d1c75e78fac9ddb2abf3414230cac43eeef344aedf4482b1e14",
+    "identity_before": "b14d16a943c99d1c75e78fac9ddb2abf3414230cac43eeef344aedf4482b1e14",
+    "no_retraining": true,
+    "status": "PASS"
+  },
+  "status": "PASS"
+}

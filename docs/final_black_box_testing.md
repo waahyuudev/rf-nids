@@ -24,3 +24,9 @@ The controlled end-to-end sequence passed: administrator creation/login → prot
 ## Limitations
 
 This final run did not capture a new browser screenshot set or exercise a production PostgreSQL server. UI behavior was validated at the client/presentation boundary and had already received live browser smoke verification in Phases 3–7. Alembic migration tests validate SQLite upgrade behavior and PostgreSQL DDL generation. Chapter IV screenshots remain a human capture task listed in `docs/chapter_4_screenshot_checklist.md`.
+
+## RF-v2 Activation Update — 2026-09-03
+
+The application freeze was explicitly reopened only for controlled model-version integration. Cases RFV2-01 through RFV2-08 were executed with the real RF-v2 sklearn pipeline through the real FastAPI application and persistence services using a disposable SQLite database. All 8 cases passed. RF-v1 remained registered for rollback; the rollback/restore round trip preserved both models and all RF-v2-linked predictions.
+
+The three controlled vectors are synthetic functional branch fixtures, not captured traffic and not scientific-performance evidence. They produced genuine RF-v2 probability vectors and exercised Normal/no-alert, PortScan/MEDIUM, and DDoS/HIGH behavior. No Experiment C or Experiment D traffic was reused, no model was fitted, and all frozen scientific hashes remained unchanged. The authoritative machine-readable record is `reports/application/rf_v2_activation_validation.json`.

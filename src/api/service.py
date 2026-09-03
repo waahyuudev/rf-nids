@@ -38,25 +38,38 @@ def sync_active_model(db: Session, metadata: dict) -> ModelRecord:
         .values(is_active=False)
     )
     if record is None:
-        record = ModelRecord(
-            model_name=metadata.get("model_name", "RF-NIDS Random Forest"),
-            model_version=version,
-            algorithm="Random Forest",
-            is_active=True,
-            **values,
-            **provenance,
-        )
+        record = ModelRecord(model_version=version)
         db.add(record)
-    else:
-        record.is_active = True
-        record.model_name = metadata.get("model_name", "RF-NIDS Random Forest")
-        record.algorithm = "Random Forest"
-        for field, value in values.items():
-            setattr(record, field, value)
-        for field, value in provenance.items():
-            setattr(record, field, value)
+    record.is_active = True
+    record.model_name = metadata.get("model_name", "RF-NIDS Random Forest")
+    record.algorithm = metadata.get("algorithm", "Random Forest")
+    for field, value in {**values, **provenance}.items():
+        setattr(record, field, value)
     db.commit()
     db.refresh(record)
+    return record
+
+
+def register_inactive_model(db: Session, metadata: dict) -> ModelRecord:
+    """Register rollback metadata without changing the active-model decision."""
+    version = metadata["model_version"]
+    record = db.scalar(select(ModelRecord).where(ModelRecord.model_version == version))
+    if record is None:
+        record = ModelRecord(model_version=version)
+        db.add(record)
+    record.model_name = metadata.get("model_name", "RF-NIDS Random Forest")
+    record.algorithm = metadata.get("algorithm", "Random Forest")
+    record.is_active = False
+    values = metadata_metrics(metadata)
+    values.update({
+        "artifact_path": metadata.get("model_path"),
+        "artifact_sha256": metadata.get("model_sha256"),
+        "parameters": metadata.get("parameters"),
+        "feature_count": len(metadata.get("feature_names", [])) or None,
+    })
+    for field, value in values.items():
+        setattr(record, field, value)
+    db.commit(); db.refresh(record)
     return record
 
 

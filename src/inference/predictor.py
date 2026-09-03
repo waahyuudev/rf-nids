@@ -12,6 +12,7 @@ import numpy as np
 import pandas as pd
 from sklearn.pipeline import Pipeline
 
+from src.common.config import PROJECT_ROOT
 from src.common.hashing import sha256_file
 from src.preprocessing.columns import normalize_column_name
 
@@ -33,6 +34,24 @@ class InferenceEngine:
     ) -> None:
         self.metadata = self._load_metadata(metadata_path)
         self.feature_names = list(self.metadata["feature_names"])
+        if self.metadata.get("feature_count", len(self.feature_names)) != len(self.feature_names):
+            raise ValueError("Model metadata feature_count does not match feature_names")
+        declared_path = self.metadata.get("model_path")
+        if declared_path:
+            expected_path = Path(declared_path)
+            expected_path = expected_path if expected_path.is_absolute() else PROJECT_ROOT / expected_path
+            if expected_path.resolve() != model_path.resolve():
+                raise ValueError("Configured model path does not match runtime metadata")
+        scientific_source = self.metadata.get("scientific_source")
+        if scientific_source:
+            source_path = Path(scientific_source["frozen_metadata_path"])
+            source_path = source_path if source_path.is_absolute() else PROJECT_ROOT / source_path
+            if sha256_file(source_path) != scientific_source["frozen_metadata_sha256"]:
+                raise ValueError("Frozen scientific metadata SHA-256 mismatch")
+            evaluation_path = Path(scientific_source["evaluation_path"])
+            evaluation_path = evaluation_path if evaluation_path.is_absolute() else PROJECT_ROOT / evaluation_path
+            if sha256_file(evaluation_path) != scientific_source["evaluation_sha256"]:
+                raise ValueError("Scientific evaluation SHA-256 mismatch")
         configured_policy = self.metadata.get("extra_feature_policy", "reject")
         self.extra_feature_policy = extra_feature_policy or configured_policy
         if self.extra_feature_policy not in {"reject", "ignore"}:
@@ -48,6 +67,9 @@ class InferenceEngine:
         model_features = list(getattr(self.model, "feature_names_in_", self.feature_names))
         if model_features != self.feature_names:
             raise ValueError("Model feature order does not match metadata")
+        declared_classes = self.metadata.get("class_names")
+        if declared_classes and [str(value) for value in self.model.classes_] != sorted(declared_classes):
+            raise ValueError("Model classes do not match runtime metadata")
 
     @staticmethod
     def _load_metadata(path: Path) -> dict[str, Any]:
@@ -118,4 +140,3 @@ class InferenceEngine:
         if not rows:
             raise FeatureValidationError("Prediction batch must not be empty")
         return [self.predict_one(row) for row in rows]
-

@@ -24,8 +24,8 @@ services:
       APP_HOST: 0.0.0.0
       APP_PORT: "8000"
       DATABASE_URL: postgresql+psycopg2://postgres:postgres@postgres:5432/rf_nids
-      MODEL_PATH: models/random_forest_active.joblib
-      MODEL_METADATA_PATH: models/model_metadata.json
+      MODEL_PATH: models/experiment_d/random_forest_rf_v2.joblib
+      MODEL_METADATA_PATH: models/experiment_d/random_forest_rf_v2_runtime_metadata.json
       MAX_BATCH_SIZE: "1000"
       MAX_PAGE_SIZE: "100"
       AUTH_SESSION_HOURS: "8"

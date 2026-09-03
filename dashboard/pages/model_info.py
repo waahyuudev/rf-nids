@@ -53,3 +53,17 @@ def render(client) -> None:
     render_provenance(client.evidence_sources(owner_type="MODEL", owner_key=info["model_version"]), {
         "Artifact path": info.get("artifact_path"), "Artifact SHA-256": info.get("artifact_sha256")
     })
+    st.divider()
+    section_heading("Model history", "Registered active and rollback-capable model versions.")
+    history = client.models()
+    st.dataframe(
+        pd.DataFrame([{
+            "Version": row.get("model_version"),
+            "Model": row.get("model_name"),
+            "Status": "Active" if row.get("is_active") else "Previous / rollback",
+            "Features": row.get("feature_count"),
+            "Artifact SHA-256": row.get("artifact_sha256"),
+            "Scientific source": row.get("scientific_source") or row.get("experiment_name"),
+        } for row in history]),
+        width="stretch", hide_index=True,
+    )

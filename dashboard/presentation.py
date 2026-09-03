@@ -40,6 +40,7 @@ def model_view(row: dict) -> dict:
         "Feature count": available(row.get("feature_count")),
         "Classes": ", ".join(row.get("class_labels") or []) or "Not available",
         "Linked experiment": available(row.get("experiment_name")),
+        "Scientific source": available(row.get("scientific_source")),
     }
 
 

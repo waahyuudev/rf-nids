@@ -362,7 +362,40 @@ def create_app(
             experiment_id=row.experiment_id,
             experiment_code=experiment.experiment_code if experiment else None,
             experiment_name=experiment.experiment_name if experiment else None,
+            scientific_source=(metadata.get("scientific_source") or {}).get(
+                "experiment_name"
+            ),
         )
+
+    @application.get(
+        "/api/models",
+        response_model=list[ModelPresentationInfo],
+        summary="List registered application models",
+    )
+    def list_models(request: Request, db: Db, _: AdminUser):
+        active_metadata = request.app.state.inference.metadata
+        rows = db.scalars(
+            select(ModelRecord).order_by(ModelRecord.is_active.desc(), ModelRecord.id.desc())
+        ).all()
+        result = []
+        for row in rows:
+            metadata = active_metadata if row.is_active else {}
+            experiment = row.experiment
+            result.append(ModelPresentationInfo(
+                id=row.id, model_name=row.model_name, model_version=row.model_version,
+                algorithm=row.algorithm, feature_count=row.feature_count or 0,
+                class_labels=metadata.get("class_names", ["Normal", "DDoS", "PortScan"]),
+                accuracy=row.accuracy, macro_f1=row.macro_f1,
+                ddos_recall=row.ddos_recall, portscan_recall=row.portscan_recall,
+                trained_at=_parse_datetime(metadata.get("trained_at") or metadata.get("created_at_utc")),
+                is_active=row.is_active, artifact_path=row.artifact_path,
+                artifact_sha256=row.artifact_sha256, parameters=row.parameters,
+                experiment_id=row.experiment_id,
+                experiment_code=experiment.experiment_code if experiment else None,
+                experiment_name=experiment.experiment_name if experiment else None,
+                scientific_source=(metadata.get("scientific_source") or {}).get("experiment_name"),
+            ))
+        return result
 
     @application.get(
         "/api/evidence-sources",
