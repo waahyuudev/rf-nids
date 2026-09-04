@@ -15,7 +15,7 @@ def test_initial_migration_creates_detection_schema(tmp_path, monkeypatch):
 
     engine = create_engine(f"sqlite:///{database_path}")
     schema = inspect(engine)
-    assert {"models", "traffic_flows", "predictions", "alerts"} <= set(
+    assert {"models", "traffic_flows", "predictions", "alerts", "monitoring_sessions"} <= set(
         schema.get_table_names()
     )
     prediction_fks = schema.get_foreign_keys("predictions")
@@ -36,7 +36,7 @@ def test_initial_migration_creates_detection_schema(tmp_path, monkeypatch):
     assert "metric_key" in {
         column["name"] for column in schema.get_columns("evaluation_results")
     }
-    assert {"experiment_id", "source_type", "external_key"} <= {
+    assert {"experiment_id", "source_type", "external_key", "monitoring_session_id"} <= {
         column["name"] for column in schema.get_columns("predictions")
     }
     assert "acknowledged_by_user_id" in {
@@ -84,10 +84,10 @@ def test_phase_1_migration_preserves_legacy_rows(tmp_path, monkeypatch):
     with engine.connect() as connection:
         row = connection.execute(
             text(
-                "SELECT experiment_id, source_type, external_key FROM predictions WHERE id=1"
+                "SELECT experiment_id, source_type, external_key, monitoring_session_id FROM predictions WHERE id=1"
             )
         ).one()
-        assert tuple(row) == (None, None, None)
+        assert tuple(row) == (None, None, None, None)
         model = connection.execute(
             text("SELECT experiment_id, artifact_path FROM models WHERE id=1")
         ).one()

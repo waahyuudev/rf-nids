@@ -151,6 +151,57 @@ class MonitoringSummary(BaseModel):
     active_model: str | None
 
 
+class MonitoringStatus(str, Enum):
+    IDLE = "IDLE"
+    STARTING = "STARTING"
+    RUNNING = "RUNNING"
+    STOPPING = "STOPPING"
+    STOPPED = "STOPPED"
+    FAILED = "FAILED"
+
+
+class MonitoringStartRequest(BaseModel):
+    target_ip: str = Field(min_length=1, max_length=45)
+    interface_name: str = Field(min_length=1, max_length=100)
+
+
+class CaptureInterfaceInfo(BaseModel):
+    name: str
+    is_up: bool | None = None
+
+
+class CaptureInterfaceList(BaseModel):
+    interfaces: list[CaptureInterfaceInfo]
+    discovery_available: bool
+
+
+class MonitoringSessionInfo(BaseModel):
+    id: int
+    target_ip: str
+    interface_name: str
+    model_id: int
+    model_name: str
+    model_version: str
+    status: MonitoringStatus
+    started_at: datetime | None
+    stopped_at: datetime | None
+    created_by_user_id: int | None
+    created_by_name: str | None
+    created_at: datetime
+    updated_at: datetime
+    last_error: str | None
+    flow_count: int
+    prediction_count: int
+    alert_count: int
+    controller_mode: str = "LIFECYCLE_ONLY"
+
+
+class MonitoringControllerStatus(BaseModel):
+    status: MonitoringStatus
+    session: MonitoringSessionInfo | None
+    live_capture_enabled: bool = False
+
+
 class AlertDetail(BaseModel):
     model_config = ConfigDict(from_attributes=True)
     id: int

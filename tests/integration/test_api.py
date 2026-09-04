@@ -9,7 +9,8 @@ from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 
 from src.api import main as api_main
 from src.api.main import create_app
-from src.api.models import Alert, Prediction, TrafficFlow
+from src.api.models import Alert, ModelRecord, MonitoringSession, Prediction, TrafficFlow
+from src.api.monitoring import list_capture_interfaces
 from src.api.auth import hash_password
 from src.api.models import Dataset, EvidenceSource, EvaluationResult, Experiment, User
 from src.api.schemas import PredictionRequest
@@ -136,6 +137,114 @@ def authenticated_admin(http, app, *, email="admin@example.test"):
     )
     token = login.json()["access_token"]
     return {"Authorization": f"Bearer {token}"}, user_id
+
+
+def test_monitoring_controller_lifecycle_validation_and_auth(client):
+    http, app = client
+    no_auth = {"Authorization": ""}
+    assert http.get("/api/monitoring/status", headers=no_auth).status_code == 401
+    assert http.get("/api/monitoring/status").json() == {
+        "status": "IDLE", "session": None, "live_capture_enabled": False
+    }
+    interface_response = http.get("/api/monitoring/interfaces")
+    assert interface_response.status_code == 200
+    interface_data = interface_response.json()
+    assert all(set(item) == {"name", "is_up"} for item in interface_data["interfaces"])
+
+    assert http.post("/api/monitoring/start", json={
+        "target_ip": "not-an-ip", "interface_name": "missing"
+    }).status_code == 422
+    assert http.post("/api/monitoring/start", json={
+        "target_ip": "8.8.8.8", "interface_name": "missing"
+    }).status_code == 422
+    assert http.post("/api/monitoring/start", json={
+        "target_ip": "192.168.128.2", "interface_name": ""
+    }).status_code == 422
+    names, available = list_capture_interfaces()
+    if available:
+        unknown = http.post("/api/monitoring/start", json={
+            "target_ip": "192.168.128.2", "interface_name": "definitely-not-an-interface"
+        })
+        assert unknown.status_code == 422
+    interface_name = names[0]["name"] if names else "test-interface"
+
+    started = http.post("/api/monitoring/start", json={
+        "target_ip": "192.168.128.2", "interface_name": interface_name
+    })
+    assert started.status_code == 201, started.text
+    body = started.json()
+    assert body["status"] == "RUNNING"
+    assert body["model_version"] == "test-v1"
+    assert body["created_by_name"] == "Default Test Admin"
+    assert body["flow_count"] == body["prediction_count"] == body["alert_count"] == 0
+    assert http.post("/api/monitoring/start", json={
+        "target_ip": "192.168.128.2", "interface_name": interface_name
+    }).status_code == 409
+    assert http.get("/api/monitoring/status").json()["session"]["id"] == body["id"]
+    assert http.get(f'/api/monitoring/sessions/{body["id"]}').status_code == 200
+
+    stopped = http.post("/api/monitoring/stop")
+    assert stopped.status_code == 200
+    assert stopped.json()["status"] == "STOPPED"
+    assert stopped.json()["stopped_at"] is not None
+    assert http.post("/api/monitoring/stop").status_code == 409
+    history = http.get("/api/monitoring/sessions").json()
+    assert [row["id"] for row in history] == sorted(
+        [row["id"] for row in history], reverse=True
+    )
+    with app.state.session_factory() as db:
+        persisted = db.get(MonitoringSession, body["id"])
+        assert persisted.status == "STOPPED"
+
+
+def test_monitoring_no_active_model_and_failed_collector_are_persisted(client):
+    http, app = client
+    names, _ = list_capture_interfaces()
+    interface_name = names[0]["name"] if names else "test-interface"
+    with app.state.session_factory() as db:
+        for model in db.scalars(select(ModelRecord)).all():
+            model.is_active = False
+        db.commit()
+    response = http.post("/api/monitoring/start", json={
+        "target_ip": "192.168.128.2", "interface_name": interface_name
+    })
+    assert response.status_code == 422
+    with app.state.session_factory() as db:
+        model = db.scalar(select(ModelRecord))
+        model.is_active = True
+        db.commit()
+
+    class FailedCollector:
+        def start(self, **_):
+            raise RuntimeError("collector startup failed")
+
+        def stop(self, _):
+            return None
+
+    app.state.monitoring_service.collector = FailedCollector()
+    failed = http.post("/api/monitoring/start", json={
+        "target_ip": "192.168.128.2", "interface_name": interface_name
+    })
+    assert failed.status_code == 201
+    assert failed.json()["status"] == "FAILED"
+    assert failed.json()["last_error"] == "collector startup failed"
+
+
+def test_stale_monitoring_session_reconciliation(client):
+    _, app = client
+    with app.state.session_factory() as db:
+        model = db.scalar(select(ModelRecord).where(ModelRecord.is_active.is_(True)))
+        user = db.scalar(select(User))
+        row = MonitoringSession(target_ip="192.168.128.2", interface_name="test0",
+                                model_id=model.id, created_by_user_id=user.id,
+                                status="RUNNING", runtime_handle="lost")
+        db.add(row)
+        db.commit()
+        session_id = row.id
+        assert app.state.monitoring_service.reconcile_stale_sessions(db) == 1
+        db.refresh(row)
+        assert row.id == session_id and row.status == "FAILED"
+        assert "API restarted" in row.last_error
 
 
 def test_health_and_model(client):

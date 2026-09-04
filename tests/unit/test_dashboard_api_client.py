@@ -120,6 +120,31 @@ def test_phase_4_monitoring_clients_preserve_zero_offset_and_filters():
     assert session.calls[1][2]["params"] == {"limit": 20, "offset": 0, "protocol": "TCP"}
 
 
+def test_phase_9_monitoring_controller_client_routes_and_payloads():
+    session = Session([
+        Response({"status": "IDLE"}), Response({"interfaces": []}), Response([]),
+        Response({"id": 1, "status": "RUNNING"}),
+        Response({"id": 1, "status": "STOPPED"}),
+    ])
+    api = RFNIDSClient("http://api.test", session=session)
+    assert api.monitoring_status()["status"] == "IDLE"
+    assert api.monitoring_interfaces()["interfaces"] == []
+    assert api.monitoring_sessions(limit=10, offset=0) == []
+    assert api.start_monitoring("192.168.128.2", "bridge100")["status"] == "RUNNING"
+    assert api.stop_monitoring()["status"] == "STOPPED"
+    assert [call[1] for call in session.calls] == [
+        "http://api.test/api/monitoring/status",
+        "http://api.test/api/monitoring/interfaces",
+        "http://api.test/api/monitoring/sessions",
+        "http://api.test/api/monitoring/start",
+        "http://api.test/api/monitoring/stop",
+    ]
+    assert session.calls[2][2]["params"] == {"limit": 10, "offset": 0}
+    assert session.calls[3][2]["json"] == {
+        "target_ip": "192.168.128.2", "interface_name": "bridge100"
+    }
+
+
 @pytest.mark.parametrize(
     "response, message",
     [

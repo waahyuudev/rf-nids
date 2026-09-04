@@ -30,6 +30,7 @@ from src.api.models import (
     EvaluationResult,
     Experiment,
     ModelRecord,
+    MonitoringSession,
     Prediction,
     TrafficFlow,
     User,
@@ -47,6 +48,10 @@ from src.api.schemas import (
     ModelInfo,
     ModelPresentationInfo,
     MonitoringRecord,
+    MonitoringControllerStatus,
+    MonitoringSessionInfo,
+    MonitoringStartRequest,
+    CaptureInterfaceList,
     MonitoringSummary,
     LoginRequest,
     LoginResult,
@@ -60,6 +65,12 @@ from src.api.schemas import (
     UserInfo,
 )
 from src.api.service import metadata_metrics, persist_predictions, sync_active_model
+from src.api.monitoring import (
+    MonitoringConflict,
+    MonitoringService,
+    MonitoringValidation,
+    list_capture_interfaces,
+)
 from src.api.exports import (
     EVALUATION_FIELDS,
     MAX_EXPORT_RECORDS,
@@ -205,11 +216,26 @@ def _user_info(user: User) -> UserInfo:
     )
 
 
+def _monitoring_session(row: MonitoringSession) -> MonitoringSessionInfo:
+    return MonitoringSessionInfo(
+        id=row.id, target_ip=row.target_ip, interface_name=row.interface_name,
+        model_id=row.model_id, model_name=row.model.model_name,
+        model_version=row.model.model_version, status=row.status,
+        started_at=row.started_at, stopped_at=row.stopped_at,
+        created_by_user_id=row.created_by_user_id,
+        created_by_name=row.created_by_user.name if row.created_by_user else None,
+        created_at=row.created_at, updated_at=row.updated_at, last_error=row.last_error,
+        flow_count=row.flow_count, prediction_count=row.prediction_count,
+        alert_count=row.alert_count,
+    )
+
+
 def create_app(
     settings: Settings | None = None,
     *,
     engine_factory=InferenceEngine,
     create_tables: bool = False,
+    collector_factory=None,
 ) -> FastAPI:
     settings = settings or Settings.from_env()
     default_page_size = min(50, settings.max_page_size)
@@ -235,6 +261,7 @@ def create_app(
             application.state.model_record = sync_active_model(
                 db, application.state.inference.metadata
             )
+            application.state.monitoring_service.reconcile_stale_sessions(db)
         yield
         application.state.engine.dispose()
 
@@ -246,6 +273,9 @@ def create_app(
     )
     application.state.settings = settings
     application.state.auth_sessions = {}
+    application.state.monitoring_service = MonitoringService(
+        collector_factory() if collector_factory else None
+    )
 
     @application.exception_handler(FeatureValidationError)
     async def feature_error_handler(_: Request, exc: FeatureValidationError):
@@ -635,6 +665,92 @@ def create_app(
             latest_detection_timestamp=flow_counts[4],
             active_model=active_model,
         )
+
+    @application.get(
+        "/api/monitoring/interfaces",
+        response_model=CaptureInterfaceList,
+        summary="List safe local capture interface names",
+    )
+    def monitoring_interfaces(_: AdminUser):
+        interfaces, available = list_capture_interfaces()
+        return CaptureInterfaceList(
+            interfaces=interfaces, discovery_available=available
+        )
+
+    @application.get(
+        "/api/monitoring/status",
+        response_model=MonitoringControllerStatus,
+        summary="Get monitoring controller status",
+    )
+    def monitoring_status(request: Request, db: Db, _: AdminUser):
+        service = request.app.state.monitoring_service
+        row = service.active(db)
+        if row is None:
+            row = db.scalar(select(MonitoringSession).order_by(MonitoringSession.id.desc()))
+        return MonitoringControllerStatus(
+            status=row.status if row else "IDLE",
+            session=_monitoring_session(row) if row else None,
+        )
+
+    @application.get(
+        "/api/monitoring/sessions",
+        response_model=list[MonitoringSessionInfo],
+        summary="List monitoring session history",
+    )
+    def monitoring_sessions(
+        db: Db, _: AdminUser,
+        limit: int = Query(default_page_size, ge=1, le=settings.max_page_size),
+        offset: int = Query(0, ge=0),
+    ):
+        rows = db.scalars(
+            select(MonitoringSession).order_by(
+                MonitoringSession.created_at.desc(), MonitoringSession.id.desc()
+            ).offset(offset).limit(limit)
+        ).all()
+        return [_monitoring_session(row) for row in rows]
+
+    @application.get(
+        "/api/monitoring/sessions/{session_id}",
+        response_model=MonitoringSessionInfo,
+        summary="Get one monitoring session",
+    )
+    def monitoring_session(session_id: int, db: Db, _: AdminUser):
+        row = db.get(MonitoringSession, session_id)
+        if row is None:
+            raise HTTPException(404, "Monitoring session not found")
+        return _monitoring_session(row)
+
+    @application.post(
+        "/api/monitoring/start",
+        response_model=MonitoringSessionInfo,
+        status_code=status.HTTP_201_CREATED,
+        summary="Start a lifecycle-only monitoring controller session",
+    )
+    def start_monitoring(
+        payload: MonitoringStartRequest, request: Request, db: Db, user: AdminUser
+    ):
+        try:
+            row = request.app.state.monitoring_service.start(
+                db, target_ip=payload.target_ip,
+                interface_name=payload.interface_name, user=user
+            )
+        except MonitoringValidation as exc:
+            raise HTTPException(422, str(exc)) from exc
+        except MonitoringConflict as exc:
+            raise HTTPException(409, str(exc)) from exc
+        return _monitoring_session(row)
+
+    @application.post(
+        "/api/monitoring/stop",
+        response_model=MonitoringSessionInfo,
+        summary="Stop the active monitoring controller session",
+    )
+    def stop_monitoring(request: Request, db: Db, _: AdminUser):
+        try:
+            row = request.app.state.monitoring_service.stop(db)
+        except MonitoringConflict as exc:
+            raise HTTPException(409, str(exc)) from exc
+        return _monitoring_session(row)
 
     @application.get(
         "/api/predictions/{prediction_id}",

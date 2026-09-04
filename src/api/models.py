@@ -16,6 +16,7 @@ from sqlalchemy import (
     String,
     Text,
     UniqueConstraint,
+    text,
 )
 from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -48,6 +49,9 @@ class User(Base):
     datasets: Mapped[list[Dataset]] = relationship(back_populates="created_by_user")
     acknowledged_alerts: Mapped[list[Alert]] = relationship(
         back_populates="acknowledged_by_user"
+    )
+    monitoring_sessions: Mapped[list[MonitoringSession]] = relationship(
+        back_populates="created_by_user"
     )
 
 
@@ -172,6 +176,57 @@ class ModelRecord(Base):
         back_populates="model", passive_deletes=True
     )
     experiment: Mapped[Experiment | None] = relationship(back_populates="models")
+    monitoring_sessions: Mapped[list[MonitoringSession]] = relationship(
+        back_populates="model", passive_deletes=True
+    )
+
+
+class MonitoringSession(Base):
+    """Auditable lifecycle state for the Phase 9 defensive controller."""
+
+    __tablename__ = "monitoring_sessions"
+    __table_args__ = (
+        CheckConstraint(
+            "status IN ('STARTING', 'RUNNING', 'STOPPING', 'STOPPED', 'FAILED')",
+            name="ck_monitoring_sessions_status",
+        ),
+        CheckConstraint("flow_count >= 0", name="ck_monitoring_sessions_flow_count"),
+        CheckConstraint(
+            "prediction_count >= 0", name="ck_monitoring_sessions_prediction_count"
+        ),
+        CheckConstraint("alert_count >= 0", name="ck_monitoring_sessions_alert_count"),
+        Index("ix_monitoring_sessions_status_created", "status", "created_at"),
+        Index(
+            "uq_monitoring_sessions_single_active", "status", unique=True,
+            postgresql_where=text("status IN ('STARTING', 'RUNNING', 'STOPPING')"),
+            sqlite_where=text("status IN ('STARTING', 'RUNNING', 'STOPPING')"),
+        ),
+    )
+    id: Mapped[int] = mapped_column(primary_key=True)
+    target_ip: Mapped[str] = mapped_column(String(45))
+    interface_name: Mapped[str] = mapped_column(String(100))
+    model_id: Mapped[int] = mapped_column(
+        ForeignKey("models.id", ondelete="RESTRICT"), index=True
+    )
+    status: Mapped[str] = mapped_column(String(20), index=True)
+    started_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    stopped_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    created_by_user_id: Mapped[int | None] = mapped_column(
+        ForeignKey("users.id", ondelete="SET NULL"), index=True
+    )
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), default=utcnow, onupdate=utcnow
+    )
+    last_error: Mapped[str | None] = mapped_column(Text)
+    runtime_handle: Mapped[str | None] = mapped_column(String(100))
+    flow_count: Mapped[int] = mapped_column(Integer, default=0)
+    prediction_count: Mapped[int] = mapped_column(Integer, default=0)
+    alert_count: Mapped[int] = mapped_column(Integer, default=0)
+    model: Mapped[ModelRecord] = relationship(back_populates="monitoring_sessions")
+    created_by_user: Mapped[User | None] = relationship(
+        back_populates="monitoring_sessions"
+    )
 
 
 class TrafficFlow(Base):
@@ -218,6 +273,9 @@ class Prediction(Base):
     )
     experiment_id: Mapped[int | None] = mapped_column(
         ForeignKey("experiments.id", ondelete="SET NULL"), index=True
+    )
+    monitoring_session_id: Mapped[int | None] = mapped_column(
+        ForeignKey("monitoring_sessions.id", ondelete="SET NULL"), index=True
     )
     source_type: Mapped[str | None] = mapped_column(String(50), index=True)
     external_key: Mapped[str | None] = mapped_column(String(255))
