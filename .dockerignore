@@ -12,6 +12,11 @@ data
 dashboard
 notebooks
 reports
+!reports/experiment_d/
+reports/experiment_d/*
+!reports/experiment_d/final_test/
+reports/experiment_d/final_test/*
+!reports/experiment_d/final_test/metrics.json
 scripts
 tests
 tmp

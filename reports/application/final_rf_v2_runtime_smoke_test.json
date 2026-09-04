@@ -1,0 +1,178 @@
+{
+  "schema": "rf_nids_final_rf_v2_runtime_smoke_test",
+  "schema_version": 1,
+  "finalized_date": "2026-09-03",
+  "status": "PASS",
+  "declaration": "RF-NIDS RF-v2 FINAL RUNTIME VERIFIED",
+  "repository": {
+    "branch": "main",
+    "initial_head": "7a0c976ae93bdcf8fb3be0bb9b7a7218ccc90a49",
+    "git_diff_check": "PASS"
+  },
+  "environment": {
+    "python": "3.12.13",
+    "database": "PostgreSQL 16 development Compose service",
+    "database_revision": "20260902_04",
+    "alembic_head": "20260902_04"
+  },
+  "startup": {
+    "fastapi": "PASS",
+    "health_status_code": 200,
+    "health": {
+      "status": "healthy",
+      "database": "connected",
+      "model_loaded": true
+    },
+    "streamlit": "PASS",
+    "streamlit_status_code": 200
+  },
+  "active_model": {
+    "model_name": "RF-NIDS Random Forest v2",
+    "model_version": "rf-v2.0",
+    "algorithm": "Random Forest",
+    "feature_count": 78,
+    "artifact_path": "models/experiment_d/random_forest_rf_v2.joblib",
+    "artifact_sha256": "fb13a71a0287054d2630bf07529f113a153ba08d8f6835a605b04493408b8a31",
+    "hash_verified": true,
+    "is_active_final": true,
+    "scientific_source": "Experiment D — RF-v2 External Generalization"
+  },
+  "authentication": {
+    "login_page_visible": true,
+    "password_input_type": "password",
+    "invalid_login_status": 401,
+    "valid_login_status": 200,
+    "admin_name": "RF-NIDS Administrator",
+    "admin_email": "admin@example.local",
+    "admin_role": "ADMIN",
+    "logout_status": 200,
+    "revoked_token_status": 401,
+    "old_token_after_restart_status": 401,
+    "relogin_after_restart_status": 200
+  },
+  "pages": {
+    "dashboard": "PASS",
+    "dataset": "PASS",
+    "models": "PASS",
+    "evaluation": "PASS",
+    "monitoring": "PASS",
+    "predictions": "PASS",
+    "prediction_detail": "PASS",
+    "alerts": "PASS",
+    "alert_detail": "PASS"
+  },
+  "presentation_records": {
+    "datasets": 1,
+    "models": 2,
+    "experiments": ["EXPERIMENT_A", "EXPERIMENT_B", "EXPERIMENT_C"],
+    "evaluation_rows": 12,
+    "evidence_sources": 10,
+    "experiment_d_ui": "provenance-only per approved activation design"
+  },
+  "runtime_inference": {
+    "fixture": "tests/fixtures/rf_v2_integration/functional_vectors.json",
+    "fixture_policy": "synthetic functional branch coverage only; no Experiment C/D rows",
+    "capture_session_id": "final-runtime-smoke-20260903-f98efa91",
+    "predictions": [
+      {
+        "prediction_id": 1804,
+        "prediction": "Normal",
+        "confidence": 0.8395467229407781,
+        "probabilities": {"DDoS": 0.018731236167306063, "Normal": 0.8395467229407781, "PortScan": 0.14172204089191587},
+        "model_version": "rf-v2.0",
+        "persisted": true,
+        "alert": null
+      },
+      {
+        "prediction_id": 1805,
+        "prediction": "PortScan",
+        "confidence": 0.5003913691629982,
+        "probabilities": {"DDoS": 0.0, "Normal": 0.49960863083700163, "PortScan": 0.5003913691629982},
+        "model_version": "rf-v2.0",
+        "persisted": true,
+        "alert": {"severity": "MEDIUM", "status": "ACTIVE"}
+      },
+      {
+        "prediction_id": 1806,
+        "prediction": "DDoS",
+        "confidence": 0.5551780038713201,
+        "probabilities": {"DDoS": 0.5551780038713201, "Normal": 0.4221542302319655, "PortScan": 0.02266776589671453},
+        "model_version": "rf-v2.0",
+        "persisted": true,
+        "alert": {"severity": "HIGH", "status": "ACKNOWLEDGED"}
+      }
+    ],
+    "one_alert_per_attack_prediction": true
+  },
+  "dashboard": {
+    "before": {"total_flows": 1803, "normal": 1803, "portscan": 0, "ddos": 0, "active_alerts": 0},
+    "after_inference": {"total_flows": 1806, "normal": 1804, "portscan": 1, "ddos": 1, "active_alerts": 2},
+    "final": {"total_flows": 1806, "total_predictions": 1806, "total_alerts": 2, "active_alerts": 1, "acknowledged_alerts": 1}
+  },
+  "acknowledgment": {
+    "status": "PASS",
+    "prediction_id": 1806,
+    "alert_severity": "HIGH",
+    "acknowledged_by_user_id": 1,
+    "acknowledged_by": "RF-NIDS Administrator",
+    "acknowledged_at_populated": true
+  },
+  "exports": {
+    "status": "PASS",
+    "dataset_json": 200,
+    "predictions_json": 200,
+    "alerts_json": 200,
+    "experiment_a_json_csv": 200,
+    "experiment_b_json_csv": 200,
+    "experiment_c_json_csv": 200,
+    "model_version_in_prediction_export": true,
+    "expected_alerts_in_alert_export": true,
+    "credential_or_token_leakage_detected": false
+  },
+  "restart": {
+    "status": "PASS",
+    "rf_v2_reloaded": true,
+    "old_session_rejected": true,
+    "login_after_restart": true,
+    "predictions_persisted": [1804, 1805, 1806]
+  },
+  "rollback": {
+    "status": "PASS",
+    "sequence": ["rf-v2.0", "rf-v1.0", "rf-v2.0"],
+    "models_preserved": true,
+    "historical_prediction_links_preserved": true,
+    "final_active_model": "rf-v2.0"
+  },
+  "automated_tests": {
+    "command": "PYTHONPATH=. .venv/bin/python -m pytest -q",
+    "passed": 192,
+    "failed": 0,
+    "warnings": 1933,
+    "duration_seconds": 15.10
+  },
+  "scientific_integrity": {
+    "status": "PASS",
+    "file_count": 133,
+    "aggregate_identity": "b14d16a943c99d1c75e78fac9ddb2abf3414230cac43eeef344aedf4482b1e14",
+    "rf_v1_sha256": "73d86cb98f35c228d6e619e0f746a2b659d94deabe86d57e801c58bcf935f647",
+    "rf_v2_sha256": "fb13a71a0287054d2630bf07529f113a153ba08d8f6835a605b04493408b8a31",
+    "rf_v2_scientific_metadata_sha256": "0bef82122fbebede27cd14f9dae925f4f48f3f1700c4b6c46ae29f238731e2c2",
+    "rf_v2_runtime_metadata_sha256": "1c97466a9c987b161e516557d41e63c428d987129f39dcdeb6a735c9097443c0",
+    "experiment_d_final_metrics_sha256": "56b98bcf2ed4883c2c2cc3beb67e85424c639cf8d2686b2934290133e08562be",
+    "adapter_sha256": "ed433cfc6943f6eb9f58f8a338b3cec301d504909a1447b7989d8e53c644e5fe",
+    "crosswalk_sha256": "66e517cdcea217f19de4d0a2cd45302ede999388393f539fb8ca4a2c68b74cf4",
+    "no_retraining": true,
+    "sealed_data_used_for_runtime": false
+  },
+  "resolved_runtime_defects": [
+    "Stale API container retained RF-v1 environment overrides; recreated from current Compose configuration.",
+    "Docker image omitted RF-v2 artifact/metadata and frozen D6 metrics required by startup validation; added minimal packaging entries.",
+    "Stale migration image lacked revision 20260902_04; rebuilt from current source."
+  ],
+  "runtime_warnings": [
+    "1933 non-blocking dependency deprecation warnings in pytest.",
+    "Experiment D is intentionally provenance-only in Evaluation until a complete separately approved mapping exists.",
+    "RF-v2 D6 DDoS recall remains weak; runtime activation is not a performance-perfection claim."
+  ],
+  "unresolved_defects": []
+}

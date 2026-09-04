@@ -19,6 +19,10 @@ COPY migrations ./migrations
 COPY config ./config
 COPY models/model_metadata.json ./models/model_metadata.json
 COPY models/random_forest_active.joblib ./models/random_forest_active.joblib
+COPY models/experiment_d/random_forest_rf_v2.joblib ./models/experiment_d/random_forest_rf_v2.joblib
+COPY models/experiment_d/random_forest_rf_v2_metadata.json ./models/experiment_d/random_forest_rf_v2_metadata.json
+COPY models/experiment_d/random_forest_rf_v2_runtime_metadata.json ./models/experiment_d/random_forest_rf_v2_runtime_metadata.json
+COPY reports/experiment_d/final_test/metrics.json ./reports/experiment_d/final_test/metrics.json
 COPY src ./src
 
 RUN useradd --create-home --uid 10001 rf-nids \
