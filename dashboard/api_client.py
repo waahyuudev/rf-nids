@@ -178,6 +178,15 @@ class RFNIDSClient:
     def stop_monitoring(self):
         return self._request("POST", "/api/monitoring/stop")
 
+    def create_runtime_validation(self, session_id: int, scenario: str):
+        return self._request("POST", f"/api/monitoring/{session_id}/validation", json={"scenario": scenario})
+
+    def runtime_validations(self, session_id: int):
+        return self._request("GET", f"/api/monitoring/{session_id}/validation")
+
+    def complete_runtime_validation(self, session_id: int, validation_id: int):
+        return self._request("POST", f"/api/monitoring/{session_id}/validation/{validation_id}/complete")
+
     def alerts(self, *, limit=20, offset=0, **filters):
         params = {"limit": limit, "offset": offset, **filters}
         return self._request(

@@ -230,6 +230,63 @@ class MonitoringSession(Base):
     created_by_user: Mapped[User | None] = relationship(
         back_populates="monitoring_sessions"
     )
+    validation_runs: Mapped[list[RuntimeValidationRun]] = relationship(
+        back_populates="monitoring_session", cascade="all, delete-orphan"
+    )
+
+
+class RuntimeValidationRun(Base):
+    """Server-derived, immutable-on-completion Phase 11 evidence."""
+
+    __tablename__ = "runtime_validation_runs"
+    __table_args__ = (
+        CheckConstraint(
+            "scenario IN ('NORMAL_HTTP', 'PORTSCAN', 'STOP_RESTART')",
+            name="ck_runtime_validation_scenario",
+        ),
+        CheckConstraint(
+            "status IN ('PENDING', 'RUNNING', 'COMPLETED', 'FAILED')",
+            name="ck_runtime_validation_status",
+        ),
+        CheckConstraint(
+            "pipeline_result IN ('PASS', 'FAIL', 'NOT_EVALUATED')",
+            name="ck_runtime_validation_pipeline_result",
+        ),
+        CheckConstraint(
+            "detection_result IN ('PASS', 'FAIL', 'NOT_APPLICABLE', 'NOT_EVALUATED')",
+            name="ck_runtime_validation_detection_result",
+        ),
+        Index("ix_runtime_validation_session_created", "monitoring_session_id", "created_at"),
+    )
+    id: Mapped[int] = mapped_column(primary_key=True)
+    monitoring_session_id: Mapped[int] = mapped_column(
+        ForeignKey("monitoring_sessions.id", ondelete="CASCADE"), index=True
+    )
+    scenario: Mapped[str] = mapped_column(String(30))
+    status: Mapped[str] = mapped_column(String(20), default="RUNNING")
+    target_ip: Mapped[str] = mapped_column(String(45))
+    interface_name: Mapped[str] = mapped_column(String(100))
+    started_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+    finished_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    pcap_files_processed: Mapped[int] = mapped_column(Integer, default=0)
+    pcap_bytes_processed: Mapped[int] = mapped_column(Integer, default=0)
+    flows_extracted: Mapped[int] = mapped_column(Integer, default=0)
+    flows_adapter_valid: Mapped[int] = mapped_column(Integer, default=0)
+    predictions_committed: Mapped[int] = mapped_column(Integer, default=0)
+    alerts_committed: Mapped[int] = mapped_column(Integer, default=0)
+    normal_predictions: Mapped[int] = mapped_column(Integer, default=0)
+    portscan_predictions: Mapped[int] = mapped_column(Integer, default=0)
+    ddos_predictions: Mapped[int] = mapped_column(Integer, default=0)
+    pipeline_result: Mapped[str] = mapped_column(String(20), default="NOT_EVALUATED")
+    detection_result: Mapped[str] = mapped_column(String(20), default="NOT_EVALUATED")
+    extractor_identity: Mapped[str | None] = mapped_column(String(300))
+    adapter_identity: Mapped[str | None] = mapped_column(String(300))
+    model_id: Mapped[int] = mapped_column(ForeignKey("models.id", ondelete="RESTRICT"))
+    model_version: Mapped[str] = mapped_column(String(100))
+    evidence_json: Mapped[dict] = mapped_column(PortableJSON, default=dict)
+    notes: Mapped[str | None] = mapped_column(Text)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+    monitoring_session: Mapped[MonitoringSession] = relationship(back_populates="validation_runs")
 
 
 class TrafficFlow(Base):

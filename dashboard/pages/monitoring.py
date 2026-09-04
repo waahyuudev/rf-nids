@@ -21,7 +21,7 @@ def _elapsed(started_at: str | None) -> str:
 def render(client) -> None:
     section_heading(
         "Monitoring",
-        "Defensive controller lifecycle. Live capture and inference are deferred to Phase 10.",
+        "Live defensive capture, CICFlowMeter V3 extraction, and Random Forest inference.",
     )
     state = client.monitoring_status()
     current = state.get("session")
@@ -86,6 +86,42 @@ def render(client) -> None:
     if running and st.button("STOP MONITORING", type="primary"):
         client.stop_monitoring()
         st.rerun()
+
+    if current:
+        st.divider()
+        st.subheader("Runtime Validation")
+        scenario_labels = {
+            "Normal HTTP": "NORMAL_HTTP", "PortScan": "PORTSCAN",
+            "Stop / Restart": "STOP_RESTART",
+        }
+        scenario_label = st.selectbox("Scenario", list(scenario_labels))
+        if st.button("START VALIDATION"):
+            client.create_runtime_validation(current["id"], scenario_labels[scenario_label])
+            st.rerun()
+        validations = client.runtime_validations(current["id"])
+        if validations:
+            validation = validations[0]
+            if validation["status"] == "RUNNING" and st.button("COMPLETE FROM SERVER EVIDENCE"):
+                client.complete_runtime_validation(current["id"], validation["id"])
+                st.rerun()
+            result_columns = st.columns(2)
+            result_columns[0].metric("Pipeline validation", validation["pipeline_result"])
+            result_columns[1].metric(
+                "PortScan detection" if validation["scenario"] == "PORTSCAN" else "Detection",
+                validation["detection_result"],
+            )
+            if validation["scenario"] == "PORTSCAN" and validation["detection_result"] == "FAIL":
+                st.info("The runtime pipeline may pass while PortScan detection fails; this is a valid scientific result.")
+            fields = [
+                ("Validation ID", "id"), ("Scenario", "scenario"), ("Status", "status"),
+                ("PCAPs Processed", "pcap_files_processed"), ("Flows Extracted", "flows_extracted"),
+                ("Adapter-Valid Flows", "flows_adapter_valid"), ("Predictions", "predictions_committed"),
+                ("Alerts", "alerts_committed"), ("Normal", "normal_predictions"),
+                ("PortScan", "portscan_predictions"), ("DDoS", "ddos_predictions"),
+                ("Model Version", "model_version"), ("Extractor", "extractor_identity"),
+                ("Adapter", "adapter_identity"), ("Started", "started_at"), ("Finished", "finished_at"),
+            ]
+            st.dataframe([{"Field": label, "Value": validation.get(key)} for label, key in fields], hide_index=True, use_container_width=True)
 
     st.divider()
     st.subheader("Session History")

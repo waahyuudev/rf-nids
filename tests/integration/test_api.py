@@ -1,4 +1,5 @@
 from pathlib import Path
+from datetime import datetime, timezone
 import csv
 from io import StringIO
 
@@ -13,7 +14,7 @@ from src.api.models import Alert, ModelRecord, MonitoringSession, Prediction, Tr
 from src.api.monitoring import CollectorController, list_capture_interfaces
 from src.api.auth import hash_password
 from src.api.models import Dataset, EvidenceSource, EvaluationResult, Experiment, User
-from src.api.schemas import PredictionRequest
+from src.api.schemas import FlowMetadata, PredictionRequest
 from src.api.service import persist_predictions
 from src.application.evidence_sync import synchronize_evidence
 from src.common.config import Settings
@@ -198,6 +199,111 @@ def test_monitoring_controller_lifecycle_validation_and_auth(client):
     with app.state.session_factory() as db:
         persisted = db.get(MonitoringSession, body["id"])
         assert persisted.status == "STOPPED"
+
+
+def test_runtime_validation_is_admin_scoped_and_server_derived(client, tmp_path):
+    http, app = client
+    names, _ = list_capture_interfaces()
+    interface_name = names[0]["name"] if names else "test-interface"
+    session = http.post("/api/monitoring/start", json={
+        "target_ip": "192.168.128.2", "interface_name": interface_name
+    }).json()
+    base = f'/api/monitoring/{session["id"]}/validation'
+    assert http.post(base, headers={"Authorization": ""}, json={"scenario": "NORMAL_HTTP"}).status_code == 401
+    assert http.post(base, json={"scenario": "INVALID"}).status_code == 422
+    assert http.post(base, json={"scenario": "NORMAL_HTTP", "predictions_committed": 999}).status_code == 422
+
+    created = http.post(base, json={"scenario": "PORTSCAN"})
+    assert created.status_code == 201
+    validation = created.json()
+    assert validation["status"] == "RUNNING"
+    assert validation["model_version"] == "test-v1"
+
+    artifact_root = tmp_path / "runtime"
+    app.state.runtime_validation_service.artifact_root = artifact_root
+    app.state.runtime_validation_service.expected_feature_names = tuple(
+        f"feature_{index}" for index in range(78)
+    )
+    pcap = artifact_root / str(session["id"]) / "pcap" / "window-000001.pcap"
+    csv_dir = artifact_root / str(session["id"]) / "flows" / "window-000001"
+    pcap.parent.mkdir(parents=True)
+    csv_dir.mkdir(parents=True)
+    pcap.write_bytes(b"real-test-artifact")
+    (csv_dir / "flows.csv").write_text("Flow ID,Protocol\nflow,6\n", encoding="utf-8")
+    with app.state.session_factory() as db:
+        model = db.get(ModelRecord, session["model_id"])
+        request = PredictionRequest(features={f"feature_{index}": index for index in range(78)})
+        request.metadata = FlowMetadata(
+            capture_session_id=str(session["id"]), capture_interface=interface_name,
+            pcap_segment="window-000001.pcap", destination_ip="192.168.128.2",
+        )
+        persist_predictions(db, [request], [{
+            "prediction": "Normal", "confidence": .9,
+            "probabilities": {"Normal": .9, "PortScan": .05, "DDoS": .05},
+            "model_version": model.model_version,
+        }], model.id, monitoring_session_id=session["id"], external_keys=["phase11-real-row"])
+
+    completed = http.post(f'{base}/{validation["id"]}/complete')
+    assert completed.status_code == 200
+    evidence = completed.json()
+    assert evidence["pipeline_result"] == "PASS"
+    assert evidence["detection_result"] == "FAIL"  # valid independent outcome
+    assert evidence["predictions_committed"] == 1
+    assert evidence["normal_predictions"] == 1
+    assert evidence["model_id"] == session["model_id"]
+    assert evidence["evidence_json"]["pcaps"][0]["sha256"]
+    assert http.get(f'/api/monitoring/{session["id"] + 100}/validation/{validation["id"]}').status_code == 404
+
+
+def test_normal_http_and_stop_restart_evaluations(client, tmp_path):
+    http, app = client
+    names, _ = list_capture_interfaces()
+    interface_name = names[0]["name"] if names else "test-interface"
+    first = http.post("/api/monitoring/start", json={
+        "target_ip": "192.168.128.2", "interface_name": interface_name
+    }).json()
+    app.state.runtime_validation_service.artifact_root = tmp_path / "runtime"
+    app.state.runtime_validation_service.expected_feature_names = tuple(
+        f"feature_{index}" for index in range(78)
+    )
+    normal = http.post(f'/api/monitoring/{first["id"]}/validation', json={"scenario": "NORMAL_HTTP"}).json()
+    root = tmp_path / "runtime" / str(first["id"])
+    (root / "pcap").mkdir(parents=True)
+    (root / "flows" / "window-000001").mkdir(parents=True)
+    (root / "pcap" / "window-000001.pcap").write_bytes(b"pcap")
+    (root / "flows" / "window-000001" / "flows.csv").write_text("Flow ID\nflow\n", encoding="utf-8")
+    with app.state.session_factory() as db:
+        request = PredictionRequest(
+            features={f"feature_{index}": index for index in range(78)},
+            metadata=FlowMetadata(
+                pcap_segment="window-000001.pcap", destination_ip="192.168.128.2"
+            ),
+        )
+        persist_predictions(db, [request], [{
+            "prediction": "Normal", "confidence": .9,
+            "probabilities": {"Normal": .9, "PortScan": .05, "DDoS": .05},
+            "model_version": "test-v1",
+        }], first["model_id"], monitoring_session_id=first["id"], external_keys=["normal-phase11"])
+        session = db.get(MonitoringSession, first["id"])
+        session.latest_processing_at = datetime.now(timezone.utc)
+        db.commit()
+    normal_result = http.post(f'/api/monitoring/{first["id"]}/validation/{normal["id"]}/complete').json()
+    assert (normal_result["pipeline_result"], normal_result["detection_result"]) == ("PASS", "PASS")
+
+    lifecycle = http.post(f'/api/monitoring/{first["id"]}/validation', json={"scenario": "STOP_RESTART"}).json()
+    with app.state.session_factory() as db:
+        db.get(MonitoringSession, first["id"]).latest_processing_at = datetime.now(timezone.utc)
+        db.commit()
+    assert http.post("/api/monitoring/stop").json()["status"] == "STOPPED"
+    second = http.post("/api/monitoring/start", json={
+        "target_ip": "192.168.128.2", "interface_name": interface_name
+    }).json()
+    lifecycle_result = http.post(
+        f'/api/monitoring/{first["id"]}/validation/{lifecycle["id"]}/complete'
+    ).json()
+    assert lifecycle_result["pipeline_result"] == "PASS"
+    assert lifecycle_result["detection_result"] == "NOT_APPLICABLE"
+    assert lifecycle_result["evidence_json"]["lifecycle"]["second_session_id"] == second["id"]
 
 
 def test_monitoring_no_active_model_and_failed_collector_are_persisted(client):

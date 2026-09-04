@@ -165,6 +165,47 @@ class MonitoringStartRequest(BaseModel):
     interface_name: str = Field(min_length=1, max_length=100)
 
 
+class RuntimeValidationScenario(str, Enum):
+    NORMAL_HTTP = "NORMAL_HTTP"
+    PORTSCAN = "PORTSCAN"
+    STOP_RESTART = "STOP_RESTART"
+
+
+class RuntimeValidationCreate(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    scenario: RuntimeValidationScenario
+
+
+class RuntimeValidationInfo(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+    id: int
+    monitoring_session_id: int
+    scenario: RuntimeValidationScenario
+    status: str
+    target_ip: str
+    interface_name: str
+    started_at: datetime
+    finished_at: datetime | None
+    pcap_files_processed: int
+    pcap_bytes_processed: int
+    flows_extracted: int
+    flows_adapter_valid: int
+    predictions_committed: int
+    alerts_committed: int
+    normal_predictions: int
+    portscan_predictions: int
+    ddos_predictions: int
+    pipeline_result: str
+    detection_result: str
+    extractor_identity: str | None
+    adapter_identity: str | None
+    model_id: int
+    model_version: str
+    evidence_json: dict[str, Any]
+    notes: str | None
+    created_at: datetime
+
+
 class CaptureInterfaceInfo(BaseModel):
     name: str
     is_up: bool | None = None

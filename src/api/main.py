@@ -31,6 +31,7 @@ from src.api.models import (
     Experiment,
     ModelRecord,
     MonitoringSession,
+    RuntimeValidationRun,
     Prediction,
     TrafficFlow,
     User,
@@ -51,6 +52,8 @@ from src.api.schemas import (
     MonitoringControllerStatus,
     MonitoringSessionInfo,
     MonitoringStartRequest,
+    RuntimeValidationCreate,
+    RuntimeValidationInfo,
     CaptureInterfaceList,
     MonitoringSummary,
     LoginRequest,
@@ -72,6 +75,7 @@ from src.api.monitoring import (
     list_capture_interfaces,
 )
 from src.api.runtime_monitoring import RuntimeCollectorController
+from src.api.runtime_validation import RuntimeValidationService
 from src.api.exports import (
     EVALUATION_FIELDS,
     MAX_EXPORT_RECORDS,
@@ -274,6 +278,10 @@ def create_app(
                 )
             )
             application.state.monitoring_service = MonitoringService(collector)
+            application.state.runtime_validation_service = RuntimeValidationService(
+                settings.runtime_monitoring_root,
+                application.state.inference.metadata["feature_names"],
+            )
             application.state.monitoring_service.reconcile_stale_sessions(db)
         yield
         with application.state.session_factory() as db:
@@ -783,6 +791,62 @@ def create_app(
         except MonitoringConflict as exc:
             raise HTTPException(409, str(exc)) from exc
         return _monitoring_session(row)
+
+    @application.post(
+        "/api/monitoring/{session_id}/validation",
+        response_model=RuntimeValidationInfo,
+        status_code=status.HTTP_201_CREATED,
+        summary="Start a server-derived runtime validation run",
+    )
+    def create_runtime_validation(
+        session_id: int, payload: RuntimeValidationCreate, request: Request,
+        db: Db, _: AdminUser,
+    ):
+        try:
+            return request.app.state.runtime_validation_service.create(
+                db, session_id, payload.scenario.value
+            )
+        except LookupError as exc:
+            raise HTTPException(404, str(exc)) from exc
+        except ValueError as exc:
+            raise HTTPException(422, str(exc)) from exc
+
+    @application.get(
+        "/api/monitoring/{session_id}/validation",
+        response_model=list[RuntimeValidationInfo],
+        summary="List runtime validation evidence for a session",
+    )
+    def list_runtime_validations(session_id: int, db: Db, _: AdminUser):
+        if db.get(MonitoringSession, session_id) is None:
+            raise HTTPException(404, "Monitoring session not found")
+        return db.scalars(select(RuntimeValidationRun).where(
+            RuntimeValidationRun.monitoring_session_id == session_id
+        ).order_by(RuntimeValidationRun.created_at.desc(), RuntimeValidationRun.id.desc())).all()
+
+    @application.get(
+        "/api/monitoring/{session_id}/validation/{validation_id}",
+        response_model=RuntimeValidationInfo,
+    )
+    def get_runtime_validation(session_id: int, validation_id: int, db: Db, _: AdminUser):
+        row = db.get(RuntimeValidationRun, validation_id)
+        if row is None or row.monitoring_session_id != session_id:
+            raise HTTPException(404, "Validation run not found for monitoring session")
+        return row
+
+    @application.post(
+        "/api/monitoring/{session_id}/validation/{validation_id}/complete",
+        response_model=RuntimeValidationInfo,
+        summary="Complete validation from committed rows and runtime artifacts",
+    )
+    def complete_runtime_validation(
+        session_id: int, validation_id: int, request: Request, db: Db, _: AdminUser
+    ):
+        try:
+            return request.app.state.runtime_validation_service.complete(
+                db, session_id, validation_id
+            )
+        except LookupError as exc:
+            raise HTTPException(404, str(exc)) from exc
 
     @application.get(
         "/api/predictions/{prediction_id}",

@@ -18,6 +18,10 @@ def test_initial_migration_creates_detection_schema(tmp_path, monkeypatch):
     assert {"models", "traffic_flows", "predictions", "alerts", "monitoring_sessions"} <= set(
         schema.get_table_names()
     )
+    assert "runtime_validation_runs" in schema.get_table_names()
+    assert {"scenario", "pipeline_result", "detection_result", "evidence_json"} <= {
+        column["name"] for column in schema.get_columns("runtime_validation_runs")
+    }
     prediction_fks = schema.get_foreign_keys("predictions")
     assert {fk["options"].get("ondelete") for fk in prediction_fks} == {
         "CASCADE",
@@ -42,6 +46,23 @@ def test_initial_migration_creates_detection_schema(tmp_path, monkeypatch):
     assert "acknowledged_by_user_id" in {
         column["name"] for column in schema.get_columns("alerts")
     }
+    engine.dispose()
+
+
+def test_phase_11_sqlite_upgrade_downgrade_upgrade(tmp_path, monkeypatch):
+    monkeypatch.delenv("DATABASE_URL", raising=False)
+    database_path = tmp_path / "phase11-roundtrip.db"
+    config = Config("alembic.ini")
+    config.set_main_option("sqlalchemy.url", f"sqlite:///{database_path}")
+    command.upgrade(config, "head")
+    command.downgrade(config, "20260904_06")
+    from sqlalchemy import create_engine
+    engine = create_engine(f"sqlite:///{database_path}")
+    assert "runtime_validation_runs" not in inspect(engine).get_table_names()
+    engine.dispose()
+    command.upgrade(config, "head")
+    engine = create_engine(f"sqlite:///{database_path}")
+    assert "runtime_validation_runs" in inspect(engine).get_table_names()
     engine.dispose()
 
 
