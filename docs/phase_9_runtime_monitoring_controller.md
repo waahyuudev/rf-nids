@@ -1,5 +1,9 @@
 # Phase 9 Runtime Monitoring Controller
 
+> Historical phase document. Phase 10 replaces the lifecycle-only production
+> collector with the runtime V3 pipeline documented in
+> `docs/phase_10_runtime_capture_pipeline.md`.
+
 Phase 9 adds a persistent defensive control plane without implementing packet capture,
 flow extraction, or inference. A monitoring session therefore reports controller
 lifecycle state truthfully; its flow, prediction, and alert counters remain zero until

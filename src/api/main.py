@@ -71,6 +71,7 @@ from src.api.monitoring import (
     MonitoringValidation,
     list_capture_interfaces,
 )
+from src.api.runtime_monitoring import RuntimeCollectorController
 from src.api.exports import (
     EVALUATION_FIELDS,
     MAX_EXPORT_RECORDS,
@@ -225,6 +226,8 @@ def _monitoring_session(row: MonitoringSession) -> MonitoringSessionInfo:
         created_by_user_id=row.created_by_user_id,
         created_by_name=row.created_by_user.name if row.created_by_user else None,
         created_at=row.created_at, updated_at=row.updated_at, last_error=row.last_error,
+        extractor_name=row.extractor_name, extractor_version=row.extractor_version,
+        latest_processing_at=row.latest_processing_at,
         flow_count=row.flow_count, prediction_count=row.prediction_count,
         alert_count=row.alert_count,
     )
@@ -261,8 +264,20 @@ def create_app(
             application.state.model_record = sync_active_model(
                 db, application.state.inference.metadata
             )
+            collector = (
+                collector_factory()
+                if collector_factory
+                else RuntimeCollectorController(
+                    session_factory=application.state.session_factory,
+                    inference=application.state.inference,
+                    settings=settings,
+                )
+            )
+            application.state.monitoring_service = MonitoringService(collector)
             application.state.monitoring_service.reconcile_stale_sessions(db)
         yield
+        with application.state.session_factory() as db:
+            application.state.monitoring_service.shutdown(db)
         application.state.engine.dispose()
 
     application = FastAPI(
@@ -273,9 +288,6 @@ def create_app(
     )
     application.state.settings = settings
     application.state.auth_sessions = {}
-    application.state.monitoring_service = MonitoringService(
-        collector_factory() if collector_factory else None
-    )
 
     @application.exception_handler(FeatureValidationError)
     async def feature_error_handler(_: Request, exc: FeatureValidationError):
@@ -690,6 +702,7 @@ def create_app(
         return MonitoringControllerStatus(
             status=row.status if row else "IDLE",
             session=_monitoring_session(row) if row else None,
+            live_capture_enabled=service.collector.mode == "RUNTIME_V3",
         )
 
     @application.get(
@@ -719,6 +732,25 @@ def create_app(
         if row is None:
             raise HTTPException(404, "Monitoring session not found")
         return _monitoring_session(row)
+
+    @application.get(
+        "/api/monitoring/sessions/{session_id}/predictions",
+        response_model=list[PredictionDetail],
+        summary="List recent predictions for one monitoring session",
+    )
+    def monitoring_session_predictions(
+        session_id: int, db: Db, _: AdminUser,
+        limit: int = Query(10, ge=1, le=settings.max_page_size),
+    ):
+        if db.get(MonitoringSession, session_id) is None:
+            raise HTTPException(404, "Monitoring session not found")
+        rows = db.scalars(
+            select(Prediction)
+            .where(Prediction.monitoring_session_id == session_id)
+            .order_by(Prediction.prediction_time.desc(), Prediction.id.desc())
+            .limit(limit)
+        ).all()
+        return [_prediction_detail(row) for row in rows]
 
     @application.post(
         "/api/monitoring/start",

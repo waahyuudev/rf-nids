@@ -5,7 +5,6 @@ from __future__ import annotations
 from datetime import datetime, timezone
 from ipaddress import ip_address
 import socket
-from uuid import uuid4
 
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
@@ -25,12 +24,12 @@ class MonitoringValidation(ValueError):
 
 
 class CollectorController:
-    """Phase 10 seam. Phase 9 owns lifecycle only and launches no process."""
+    """Deterministic lifecycle test double; production uses RuntimeCollectorController."""
 
     mode = "LIFECYCLE_ONLY"
 
     def start(self, *, session_id: int, target_ip: str, interface_name: str) -> str:
-        return f"lifecycle:{session_id}:{uuid4().hex}"
+        return f"lifecycle:{session_id}"
 
     def stop(self, runtime_handle: str | None) -> None:
         return None
@@ -101,17 +100,22 @@ class MonitoringService:
             model_id=model.id,
             created_by_user_id=user.id,
             status="STARTING",
+            extractor_name="CICFlowMeter V3",
+            extractor_version="a26aae27f21d165ff30b4b28e75124a5f9b4b2c4",
         )
         db.add(row)
         try:
-            db.flush()
+            db.commit()
+            db.refresh(row)
             handle = self.collector.start(
                 session_id=row.id, target_ip=normalized_ip, interface_name=interface_name
             )
-            row.runtime_handle = handle
-            row.started_at = datetime.now(timezone.utc)
-            row.status = "RUNNING"
-            db.commit()
+            db.refresh(row)
+            if row.status != "FAILED":
+                row.runtime_handle = handle
+                row.started_at = datetime.now(timezone.utc)
+                row.status = "RUNNING"
+                db.commit()
         except IntegrityError as exc:
             db.rollback()
             raise MonitoringConflict("A monitoring session is already active") from exc
@@ -123,6 +127,10 @@ class MonitoringService:
             db.commit()
         db.refresh(row)
         return row
+
+    def shutdown(self, db: Session) -> None:
+        if self.active(db) is not None:
+            self.stop(db)
 
     def stop(self, db: Session):
         row = self.active(db)

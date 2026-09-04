@@ -15,6 +15,7 @@ data/lab/live/*
 data/lab/experiment_c/**/*.pcap
 data/lab/experiment_c/**/*.pcapng
 data/lab/experiment_c/**/*.csv
+data/runtime/monitoring/*
 !data/**/.gitkeep
 models/*.joblib
 reports/figures/*

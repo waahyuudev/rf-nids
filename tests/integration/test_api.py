@@ -10,7 +10,7 @@ from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from src.api import main as api_main
 from src.api.main import create_app
 from src.api.models import Alert, ModelRecord, MonitoringSession, Prediction, TrafficFlow
-from src.api.monitoring import list_capture_interfaces
+from src.api.monitoring import CollectorController, list_capture_interfaces
 from src.api.auth import hash_password
 from src.api.models import Dataset, EvidenceSource, EvaluationResult, Experiment, User
 from src.api.schemas import PredictionRequest
@@ -86,7 +86,10 @@ def client(tmp_path: Path):
         max_batch_size=2,
         max_page_size=10,
     )
-    app = create_app(settings, engine_factory=FakeInferenceEngine, create_tables=True)
+    app = create_app(
+        settings, engine_factory=FakeInferenceEngine, create_tables=True,
+        collector_factory=CollectorController,
+    )
     with TestClient(app) as test_client:
         with app.state.session_factory() as db:
             db.add(
@@ -245,6 +248,38 @@ def test_stale_monitoring_session_reconciliation(client):
         db.refresh(row)
         assert row.id == session_id and row.status == "FAILED"
         assert "API restarted" in row.last_error
+
+
+def test_runtime_prediction_preserves_monitoring_model_and_alert_provenance(client):
+    http, app = client
+    names, _ = list_capture_interfaces()
+    interface_name = names[0]["name"] if names else "test-interface"
+    started = http.post("/api/monitoring/start", json={
+        "target_ip": "192.168.128.2", "interface_name": interface_name
+    }).json()
+    request = PredictionRequest(**payload(15, source_ip="192.168.128.3",
+                                          destination_ip="192.168.128.2"))
+    output = app.state.inference.predict_one(request.features)
+    with app.state.session_factory() as db:
+        result = persist_predictions(
+            db, [request], [output], started["model_id"],
+            monitoring_session_id=started["id"],
+            external_keys=[f'monitoring:{started["id"]}:window:1'],
+        )[0]
+        prediction = db.get(Prediction, result["prediction_id"])
+        assert prediction.monitoring_session_id == started["id"]
+        assert prediction.model_id == started["model_id"]
+        assert prediction.alert.severity == "HIGH"
+        with pytest.raises(IntegrityError):
+            persist_predictions(
+                db, [request], [output], started["model_id"],
+                monitoring_session_id=started["id"],
+                external_keys=[f'monitoring:{started["id"]}:window:1'],
+            )
+    listed = http.get(
+        f'/api/monitoring/sessions/{started["id"]}/predictions'
+    ).json()
+    assert [row["id"] for row in listed] == [result["prediction_id"]]
 
 
 def test_health_and_model(client):

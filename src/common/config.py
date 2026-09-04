@@ -32,6 +32,10 @@ class Settings:
     max_batch_size: int = 1000
     max_page_size: int = 100
     auth_session_hours: int = 8
+    runtime_monitoring_root: Path = PROJECT_ROOT / "data/runtime/monitoring"
+    capture_window_seconds: float = 10.0
+    capture_stop_timeout_seconds: float = 15.0
+    cicflowmeter_v3_image: str = "rf-nids-cicflowmeter-v3:a26aae27"
 
     @classmethod
     def from_env(cls) -> "Settings":
@@ -62,4 +66,14 @@ class Settings:
             max_batch_size=int(os.getenv("MAX_BATCH_SIZE", "1000")),
             max_page_size=int(os.getenv("MAX_PAGE_SIZE", "100")),
             auth_session_hours=int(os.getenv("AUTH_SESSION_HOURS", "8")),
+            runtime_monitoring_root=_resolve_project_path(
+                os.getenv("RUNTIME_MONITORING_ROOT", "data/runtime/monitoring")
+            ),
+            capture_window_seconds=float(os.getenv("CAPTURE_WINDOW_SECONDS", "10")),
+            capture_stop_timeout_seconds=float(
+                os.getenv("CAPTURE_STOP_TIMEOUT_SECONDS", "15")
+            ),
+            cicflowmeter_v3_image=os.getenv(
+                "CICFLOWMETER_V3_IMAGE", "rf-nids-cicflowmeter-v3:a26aae27"
+            ),
         )

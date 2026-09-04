@@ -65,6 +65,22 @@ def render(client) -> None:
             columns[index % 4].metric(label, value)
         if current.get("last_error"):
             st.error(current["last_error"])
+        st.caption(
+            f'Extractor: {current.get("extractor_name") or "—"} · '
+            f'Latest processing: {current.get("latest_processing_at") or "—"}'
+        )
+        recent = client.monitoring_session_predictions(current["id"], limit=5)
+        if recent:
+            st.markdown("##### Recent Predictions")
+            st.dataframe([
+                {
+                    "time": row.get("prediction_time"), "source": row.get("source_ip"),
+                    "destination": row.get("destination_ip"),
+                    "class": row.get("predicted_label"),
+                    "probability": row.get("confidence_score"),
+                }
+                for row in recent
+            ], use_container_width=True)
     else:
         st.info("No monitoring session has been created.")
     if running and st.button("STOP MONITORING", type="primary"):

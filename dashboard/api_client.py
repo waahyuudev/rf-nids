@@ -166,6 +166,12 @@ class RFNIDSClient:
     def monitoring_sessions(self, *, limit=20, offset=0):
         return self._request("GET", "/api/monitoring/sessions", params={"limit": limit, "offset": offset})
 
+    def monitoring_session_predictions(self, session_id: int, *, limit=5):
+        return self._request(
+            "GET", f"/api/monitoring/sessions/{session_id}/predictions",
+            params={"limit": limit},
+        )
+
     def start_monitoring(self, target_ip: str, interface_name: str):
         return self._request("POST", "/api/monitoring/start", json={"target_ip": target_ip, "interface_name": interface_name})
 

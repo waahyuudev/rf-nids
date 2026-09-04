@@ -190,16 +190,19 @@ class MonitoringSessionInfo(BaseModel):
     created_at: datetime
     updated_at: datetime
     last_error: str | None
+    extractor_name: str | None
+    extractor_version: str | None
+    latest_processing_at: datetime | None
     flow_count: int
     prediction_count: int
     alert_count: int
-    controller_mode: str = "LIFECYCLE_ONLY"
+    controller_mode: str = "RUNTIME_V3"
 
 
 class MonitoringControllerStatus(BaseModel):
     status: MonitoringStatus
     session: MonitoringSessionInfo | None
-    live_capture_enabled: bool = False
+    live_capture_enabled: bool = True
 
 
 class AlertDetail(BaseModel):

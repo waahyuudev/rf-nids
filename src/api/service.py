@@ -73,16 +73,22 @@ def register_inactive_model(db: Session, metadata: dict) -> ModelRecord:
     return record
 
 
-def persist_predictions(db: Session, requests, outputs, model_id: int):
+def persist_predictions(
+    db: Session, requests, outputs, model_id: int, *,
+    monitoring_session_id: int | None = None,
+    external_keys: list[str] | None = None,
+):
     results = []
     try:
-        for request, output in zip(requests, outputs, strict=True):
+        for index, (request, output) in enumerate(zip(requests, outputs, strict=True)):
             metadata = request.metadata.model_dump() if request.metadata else {}
             flow = TrafficFlow(raw_features=request.features, **metadata)
             prediction = Prediction(
                 traffic_flow=flow,
                 model_id=model_id,
                 source_type="RUNTIME",
+                external_key=external_keys[index] if external_keys else None,
+                monitoring_session_id=monitoring_session_id,
                 predicted_label=output["prediction"],
                 confidence_score=output["confidence"],
                 class_probabilities=output["probabilities"],
