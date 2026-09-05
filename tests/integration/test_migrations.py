@@ -19,6 +19,7 @@ def test_initial_migration_creates_detection_schema(tmp_path, monkeypatch):
         schema.get_table_names()
     )
     assert "runtime_validation_runs" in schema.get_table_names()
+    assert "runtime_capture_artifacts" in schema.get_table_names()
     assert {"scenario", "pipeline_result", "detection_result", "evidence_json"} <= {
         column["name"] for column in schema.get_columns("runtime_validation_runs")
     }
@@ -40,7 +41,7 @@ def test_initial_migration_creates_detection_schema(tmp_path, monkeypatch):
     assert "metric_key" in {
         column["name"] for column in schema.get_columns("evaluation_results")
     }
-    assert {"experiment_id", "source_type", "external_key", "monitoring_session_id"} <= {
+    assert {"experiment_id", "source_type", "external_key", "monitoring_session_id", "runtime_artifact_id"} <= {
         column["name"] for column in schema.get_columns("predictions")
     }
     assert "acknowledged_by_user_id" in {

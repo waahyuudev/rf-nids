@@ -233,6 +233,9 @@ class MonitoringSessionInfo(BaseModel):
     last_error: str | None
     extractor_name: str | None
     extractor_version: str | None
+    extractor_identity: str | None
+    artifact_key: str | None
+    processing_state: str | None
     latest_processing_at: datetime | None
     flow_count: int
     prediction_count: int

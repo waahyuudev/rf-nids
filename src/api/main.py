@@ -74,7 +74,7 @@ from src.api.monitoring import (
     MonitoringValidation,
     list_capture_interfaces,
 )
-from src.api.runtime_monitoring import RuntimeCollectorController
+from src.api.runtime_monitoring import RuntimeCollectorController, validate_runtime_root
 from src.api.runtime_validation import RuntimeValidationService
 from src.api.exports import (
     EVALUATION_FIELDS,
@@ -231,6 +231,8 @@ def _monitoring_session(row: MonitoringSession) -> MonitoringSessionInfo:
         created_by_name=row.created_by_user.name if row.created_by_user else None,
         created_at=row.created_at, updated_at=row.updated_at, last_error=row.last_error,
         extractor_name=row.extractor_name, extractor_version=row.extractor_version,
+        extractor_identity=row.extractor_identity, artifact_key=row.artifact_key,
+        processing_state=row.processing_state,
         latest_processing_at=row.latest_processing_at,
         flow_count=row.flow_count, prediction_count=row.prediction_count,
         alert_count=row.alert_count,
@@ -254,6 +256,7 @@ def create_app(
         # processes that run migrations and API tests together.
         logger.disabled = False
         configure_database(application, settings)
+        validate_runtime_root(settings.runtime_monitoring_root)
         if create_tables:
             if application.state.engine.dialect.name != "sqlite":
                 raise RuntimeError(
@@ -764,7 +767,7 @@ def create_app(
         "/api/monitoring/start",
         response_model=MonitoringSessionInfo,
         status_code=status.HTTP_201_CREATED,
-        summary="Start a lifecycle-only monitoring controller session",
+        summary="Start the runtime monitoring capture pipeline",
     )
     def start_monitoring(
         payload: MonitoringStartRequest, request: Request, db: Db, user: AdminUser

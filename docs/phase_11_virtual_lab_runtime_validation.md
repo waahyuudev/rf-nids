@@ -6,13 +6,13 @@ Phase 11 validates that real, manually generated laboratory traffic traverses th
 
 ## 2. Architecture
 
-RF-NIDS owns capture and processing on its host. Each prediction retains the monitoring session, model, PCAP segment, and runtime external key. A validation run snapshots session/model/extractor/adapter identity at creation and computes its final evidence from committed rows and session-owned artifacts. Browser-supplied counts, identities, distributions, and paths are rejected by the API schema.
+RF-NIDS owns capture and processing on its host. Each prediction retains the monitoring session, durable runtime artifact, model, PCAP segment, and runtime external key. A validation run snapshots session/model/extractor/adapter identity at creation and computes its final evidence from committed artifact and prediction rows. Files are rehashed against those committed records; directory scans, filename similarity, and filesystem modification times do not establish ownership. Browser-supplied counts, identities, distributions, and paths are rejected by the API schema.
 
 ## 3. Preconditions
 
 - Kali and Ubuntu are isolated laboratory machines on a private network.
 - The target is a private lab address only; confirm routing and the RF-NIDS capture interface.
-- `tcpdump`, Docker, the pinned CICFlowMeter V3 image, PostgreSQL (or the configured database), the API, and Streamlit are available.
+- FastAPI, Streamlit, PostgreSQL, `tcpdump`, Docker/CICFlowMeter V3, and Random Forest inference run on macOS. FastAPI remains unprivileged and has BPF capture access.
 - The active scientific model is the intended frozen model (`rf-v1.0` for this phase).
 - Apply `alembic upgrade head` before starting the API.
 
@@ -20,9 +20,9 @@ RF-NIDS does not generate attack traffic, automate Kali/SSH, invoke Nmap, or imp
 
 ## 4. Network roles
 
-- Kali: manually operated traffic source.
-- Ubuntu: private-address target for normal HTTP and operator-controlled PortScan traffic.
-- RF-NIDS host: passive capture, flow extraction, inference, persistence, alerting, and presentation.
+- Kali (`192.168.128.3`): manually operated traffic source.
+- Ubuntu (`192.168.128.4`, target interface `enp0s2`, HTTP port `8080`): private-address target. `enp0s2` is not selected in the macOS dashboard.
+- macOS RF-NIDS host: passive capture on the empirically verified `vmenet3`, flow extraction, inference, persistence, alerting, and presentation.
 
 Do not target public addresses or systems outside the isolated lab.
 

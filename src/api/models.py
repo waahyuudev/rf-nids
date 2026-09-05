@@ -222,6 +222,10 @@ class MonitoringSession(Base):
     runtime_handle: Mapped[str | None] = mapped_column(String(100))
     extractor_name: Mapped[str | None] = mapped_column(String(150))
     extractor_version: Mapped[str | None] = mapped_column(String(100))
+    extractor_identity: Mapped[str | None] = mapped_column(String(300))
+    artifact_key: Mapped[str | None] = mapped_column(String(36), unique=True)
+    artifact_root: Mapped[str | None] = mapped_column(String(1000))
+    processing_state: Mapped[str | None] = mapped_column(String(30))
     latest_processing_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     flow_count: Mapped[int] = mapped_column(Integer, default=0)
     prediction_count: Mapped[int] = mapped_column(Integer, default=0)
@@ -233,6 +237,53 @@ class MonitoringSession(Base):
     validation_runs: Mapped[list[RuntimeValidationRun]] = relationship(
         back_populates="monitoring_session", cascade="all, delete-orphan"
     )
+    runtime_artifacts: Mapped[list[RuntimeCaptureArtifact]] = relationship(
+        back_populates="monitoring_session", cascade="all, delete-orphan"
+    )
+
+
+class RuntimeCaptureArtifact(Base):
+    """Durable provenance for one runtime capture/extraction window."""
+
+    __tablename__ = "runtime_capture_artifacts"
+    __table_args__ = (
+        CheckConstraint(
+            "state IN ('CAPTURING', 'CAPTURED', 'EXTRACTED', 'COMMITTED', 'FAILED')",
+            name="ck_runtime_capture_artifacts_state",
+        ),
+        UniqueConstraint(
+            "monitoring_session_id", "window_number", name="uq_runtime_artifact_session_window"
+        ),
+        UniqueConstraint("artifact_key", name="uq_runtime_capture_artifact_key"),
+        Index("ix_runtime_artifact_session_state", "monitoring_session_id", "state"),
+    )
+    id: Mapped[int] = mapped_column(primary_key=True)
+    monitoring_session_id: Mapped[int] = mapped_column(
+        ForeignKey("monitoring_sessions.id", ondelete="CASCADE"), index=True
+    )
+    artifact_key: Mapped[str] = mapped_column(String(36))
+    window_number: Mapped[int] = mapped_column(Integer)
+    state: Mapped[str] = mapped_column(String(20))
+    pcap_relative_path: Mapped[str | None] = mapped_column(String(1000))
+    pcap_sha256: Mapped[str | None] = mapped_column(String(64))
+    pcap_size: Mapped[int | None] = mapped_column(Integer)
+    csv_relative_path: Mapped[str | None] = mapped_column(String(1000))
+    csv_sha256: Mapped[str | None] = mapped_column(String(64))
+    csv_size: Mapped[int | None] = mapped_column(Integer)
+    extractor_identity: Mapped[str | None] = mapped_column(String(300))
+    extracted_row_count: Mapped[int] = mapped_column(Integer, default=0)
+    adapted_row_count: Mapped[int] = mapped_column(Integer, default=0)
+    error_stage: Mapped[str | None] = mapped_column(String(50))
+    error_message: Mapped[str | None] = mapped_column(Text)
+    capture_started_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    capture_finished_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    extraction_finished_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    committed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+    monitoring_session: Mapped[MonitoringSession] = relationship(
+        back_populates="runtime_artifacts"
+    )
+    predictions: Mapped[list[Prediction]] = relationship(back_populates="runtime_artifact")
 
 
 class RuntimeValidationRun(Base):
@@ -337,6 +388,9 @@ class Prediction(Base):
     monitoring_session_id: Mapped[int | None] = mapped_column(
         ForeignKey("monitoring_sessions.id", ondelete="SET NULL"), index=True
     )
+    runtime_artifact_id: Mapped[int | None] = mapped_column(
+        ForeignKey("runtime_capture_artifacts.id", ondelete="SET NULL"), index=True
+    )
     source_type: Mapped[str | None] = mapped_column(String(50), index=True)
     external_key: Mapped[str | None] = mapped_column(String(255))
     predicted_label: Mapped[str] = mapped_column(String(50), index=True)
@@ -347,6 +401,9 @@ class Prediction(Base):
     traffic_flow: Mapped[TrafficFlow] = relationship(back_populates="prediction")
     model: Mapped[ModelRecord] = relationship(back_populates="predictions")
     experiment: Mapped[Experiment | None] = relationship(back_populates="predictions")
+    runtime_artifact: Mapped[RuntimeCaptureArtifact | None] = relationship(
+        back_populates="predictions"
+    )
     alert: Mapped[Alert | None] = relationship(
         back_populates="prediction",
         cascade="all, delete-orphan",

@@ -37,6 +37,8 @@ services:
     restart: "no"
 
   api:
+    # Application/API deployment only. Real monitoring capture is intentionally
+    # host-run; this container has no Docker socket or packet-capture privileges.
     build:
       context: .
     command:

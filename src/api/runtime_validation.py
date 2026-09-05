@@ -6,11 +6,12 @@ import hashlib
 from datetime import datetime, timezone
 from pathlib import Path
 
-import pandas as pd
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
-from src.api.models import Alert, MonitoringSession, Prediction, RuntimeValidationRun, TrafficFlow
+from src.api.models import (
+    Alert, MonitoringSession, Prediction, RuntimeCaptureArtifact, RuntimeValidationRun,
+)
 from src.ingestion.cicflowmeter_v3_adapter import (
     ADAPTER_IDENTITY, ADAPTER_VERSION, CICFLOWMETER_V3_IMAGE_DIGEST,
 )
@@ -75,30 +76,49 @@ class RuntimeValidationService:
 
     def _derive(self, db: Session, row: RuntimeValidationRun) -> None:
         session = db.get(MonitoringSession, row.monitoring_session_id)
-        predictions = db.scalars(
-            select(Prediction).where(
-                Prediction.monitoring_session_id == row.monitoring_session_id,
-                Prediction.prediction_time >= row.started_at,
-            ).order_by(Prediction.id)
-        ).all()
+        committed_artifacts = db.scalars(select(RuntimeCaptureArtifact).where(
+            RuntimeCaptureArtifact.monitoring_session_id == row.monitoring_session_id,
+            RuntimeCaptureArtifact.state == "COMMITTED",
+            RuntimeCaptureArtifact.committed_at >= row.started_at,
+        ).order_by(RuntimeCaptureArtifact.window_number)).all()
+        artifact_ids = [artifact.id for artifact in committed_artifacts]
+        predictions = db.scalars(select(Prediction).where(
+            Prediction.monitoring_session_id == row.monitoring_session_id,
+            Prediction.runtime_artifact_id.in_(artifact_ids),
+            Prediction.prediction_time >= row.started_at,
+        ).order_by(Prediction.id)).all() if artifact_ids else []
         prediction_ids = [item.id for item in predictions]
         flows = [item.traffic_flow for item in predictions]
-        segments = {flow.pcap_segment for flow in flows if flow.pcap_segment}
         artifacts = []
-        session_root = (self.artifact_root / str(row.monitoring_session_id)).resolve()
+        session_root = Path(session.artifact_root or "").resolve()
+        configured_root = self.artifact_root.resolve()
+        if configured_root not in session_root.parents:
+            raise ValueError("Session artifact root is outside the configured runtime tree")
         raw_rows = 0
-        flow_root = session_root / "flows"
-        if flow_root.is_dir():
-            for csv_path in flow_root.glob("window-*/*.csv"):
-                if csv_path.stat().st_mtime >= row.started_at.timestamp():
-                    segments.add(f"{csv_path.parent.name}.pcap")
-                    raw_rows += len(pd.read_csv(csv_path))
-        segments = sorted(segments)
-        for segment in segments:
-            path = (session_root / "pcap" / Path(segment).name).resolve()
-            if session_root not in path.parents or not path.is_file():
-                continue
-            artifacts.append({"filename": path.name, "sha256": _sha256(path), "bytes": path.stat().st_size})
+        for artifact in committed_artifacts:
+            if not artifact.pcap_relative_path or not artifact.csv_relative_path:
+                raise ValueError(f"Committed artifact {artifact.id} lacks file provenance")
+            pcap = (session_root / artifact.pcap_relative_path).resolve()
+            csv_path = (session_root / artifact.csv_relative_path).resolve()
+            if session_root not in pcap.parents or session_root not in csv_path.parents:
+                raise ValueError(f"Artifact {artifact.id} path escapes its session root")
+            for path, expected, kind in (
+                (pcap, artifact.pcap_sha256, "PCAP"),
+                (csv_path, artifact.csv_sha256, "CSV"),
+            ):
+                if not path.is_file() or not expected or _sha256(path) != expected:
+                    raise ValueError(f"{kind} integrity mismatch for runtime artifact {artifact.id}")
+            raw_rows += artifact.extracted_row_count
+            artifacts.append({
+                "artifact_id": artifact.id,
+                "artifact_key": artifact.artifact_key,
+                "filename": pcap.name,
+                "sha256": artifact.pcap_sha256,
+                "bytes": artifact.pcap_size,
+                "csv_sha256": artifact.csv_sha256,
+                "extracted_rows": artifact.extracted_row_count,
+                "adapted_rows": artifact.adapted_row_count,
+            })
 
         labels = {label: 0 for label in ("Normal", "PortScan", "DDoS")}
         for item in predictions:
@@ -133,7 +153,7 @@ class RuntimeValidationService:
             probability_summary[label] = ({"mean": sum(values) / len(values), "min": min(values), "max": max(values)} if values else None)
 
         core_pass = bool(
-            artifacts and raw_rows > 0 and adapter_valid > 0
+            artifacts and raw_rows > 0 and adapter_valid == len(predictions)
             and predictions and target_matches > 0
         )
         model_matches = all(p.model_id == session.model_id for p in predictions)
@@ -167,7 +187,7 @@ class RuntimeValidationService:
                 row.detection_result = "PASS" if labels["Normal"] * 2 >= len(predictions) else "FAIL"
             lifecycle = None
         row.evidence_json = {
-            "pcaps": artifacts, "pcap_segments": segments,
+            "pcaps": artifacts,
             "prediction_id_range": [prediction_ids[0], prediction_ids[-1]] if prediction_ids else None,
             "prediction_ids": prediction_ids, "alert_count": alerts,
             "label_distribution": labels, "class_probability_summary": probability_summary,

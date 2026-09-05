@@ -104,7 +104,10 @@ streamlit run dashboard/app.py
 - OpenAPI: <http://localhost:8000/docs>
 - Dashboard: <http://localhost:8501>
 
-Alternatif untuk menjalankan database, migration, dan API sekaligus:
+Compose dapat dipakai untuk PostgreSQL dan migration, tetapi service API Compose **bukan**
+deployment capture. API runtime monitoring harus dijalankan langsung pada host Ubuntu yang
+memiliki interface yang dipantau, izin `tcpdump`, Docker CLI, dan image V3 yang sudah diverifikasi.
+Perintah berikut cukup untuk aplikasi non-capture, tetapi tidak cukup untuk real packet capture:
 
 ```bash
 docker compose up -d --build
@@ -124,6 +127,9 @@ Dashboard tetap dijalankan dari host dengan perintah Streamlit di atas.
 | `AUTH_SESSION_HOURS` | `8` | Masa berlaku sesi administrator |
 | `FASTAPI_BASE_URL` | `http://localhost:8000` | URL API dashboard/ingestion |
 | `DASHBOARD_REFRESH_SECONDS` | `5` | Interval auto-refresh dashboard |
+| `RUNTIME_MONITORING_ROOT` | `data/runtime/monitoring` | Tree khusus evidence runtime; tidak boleh diarahkan ke evidence ilmiah |
+| `CICFLOWMETER_V3_IMAGE_DIGEST` | digest V3 teraudit | Identitas image yang wajib cocok saat preflight |
+| `EXTRACTION_TIMEOUT_SECONDS` | `120` | Batas waktu ekstraksi setiap window |
 | `RF_NIDS_CAPTURE_INTERFACE` | `en0` | Interface default capture macOS |
 | `LIVE_FEATURE_COMPATIBILITY_POLICY` | artifact reproduction | Policy adapter 78 fitur |
 

@@ -32,7 +32,9 @@ def render(client) -> None:
     choices = [item["name"] for item in interfaces["interfaces"]]
     model = client.active_model()
     with st.form("monitoring_configuration"):
-        target = st.text_input("Target IP", value="192.168.128.2", disabled=running)
+        target = st.text_input(
+            "Target IP", value="", placeholder="192.168.128.4", disabled=running
+        )
         interface = st.selectbox(
             "Capture Interface", choices or ["Interface discovery unavailable"],
             disabled=running or not choices,
@@ -69,6 +71,8 @@ def render(client) -> None:
             f'Extractor: {current.get("extractor_name") or "—"} · '
             f'Latest processing: {current.get("latest_processing_at") or "—"}'
         )
+        if current.get("processing_state"):
+            st.info(f'Current processing state: {current["processing_state"]}')
         recent = client.monitoring_session_predictions(current["id"], limit=5)
         if recent:
             st.markdown("##### Recent Predictions")
@@ -84,7 +88,8 @@ def render(client) -> None:
     else:
         st.info("No monitoring session has been created.")
     if running and st.button("STOP MONITORING", type="primary"):
-        client.stop_monitoring()
+        with st.spinner("Flushing the final capture window before stopping…"):
+            client.stop_monitoring()
         st.rerun()
 
     if current:

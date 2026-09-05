@@ -1,6 +1,7 @@
 from pathlib import Path
 from datetime import datetime, timezone
 import csv
+import hashlib
 from io import StringIO
 
 import pytest
@@ -10,7 +11,9 @@ from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 
 from src.api import main as api_main
 from src.api.main import create_app
-from src.api.models import Alert, ModelRecord, MonitoringSession, Prediction, TrafficFlow
+from src.api.models import (
+    Alert, ModelRecord, MonitoringSession, Prediction, RuntimeCaptureArtifact, TrafficFlow,
+)
 from src.api.monitoring import CollectorController, list_capture_interfaces
 from src.api.auth import hash_password
 from src.api.models import Dataset, EvidenceSource, EvaluationResult, Experiment, User
@@ -123,6 +126,33 @@ def payload(value, **metadata):
     }
 
 
+def committed_artifact(db, session_id, root, pcap, csv_path):
+    session = db.get(MonitoringSession, session_id)
+    session.artifact_root = str(root)
+    artifact = RuntimeCaptureArtifact(
+        monitoring_session_id=session_id,
+        artifact_key=f"artifact-{session_id}-{pcap.stem}",
+        window_number=1,
+        state="COMMITTED",
+        pcap_relative_path=str(pcap.relative_to(root)),
+        pcap_sha256=hashlib.sha256(pcap.read_bytes()).hexdigest(),
+        pcap_size=pcap.stat().st_size,
+        csv_relative_path=str(csv_path.relative_to(root)),
+        csv_sha256=hashlib.sha256(csv_path.read_bytes()).hexdigest(),
+        csv_size=csv_path.stat().st_size,
+        extractor_identity="test-v3",
+        extracted_row_count=1,
+        adapted_row_count=1,
+        capture_started_at=datetime.now(timezone.utc),
+        capture_finished_at=datetime.now(timezone.utc),
+        extraction_finished_at=datetime.now(timezone.utc),
+        committed_at=datetime.now(timezone.utc),
+    )
+    db.add(artifact)
+    db.flush()
+    return artifact
+
+
 def authenticated_admin(http, app, *, email="admin@example.test"):
     with app.state.session_factory() as db:
         admin = User(
@@ -201,6 +231,40 @@ def test_monitoring_controller_lifecycle_validation_and_auth(client):
         assert persisted.status == "STOPPED"
 
 
+@pytest.mark.parametrize("target", [
+    "8.8.8.8", "127.0.0.1", "169.254.1.1", "224.0.0.1", "0.0.0.0", "::1",
+])
+def test_monitoring_rejects_non_rfc1918_targets(client, target):
+    http, _ = client
+    names, available = list_capture_interfaces()
+    if not available:
+        pytest.skip("host interface discovery unavailable")
+    response = http.post("/api/monitoring/start", json={
+        "target_ip": target, "interface_name": names[0]["name"],
+    })
+    assert response.status_code == 422
+
+
+def test_monitoring_accepts_rfc1918_target(client):
+    http, _ = client
+    names, available = list_capture_interfaces()
+    if not available:
+        pytest.skip("host interface discovery unavailable")
+    assert http.post("/api/monitoring/start", json={
+        "target_ip": "192.168.128.4", "interface_name": names[0]["name"],
+    }).status_code == 201
+
+
+def test_monitoring_fails_closed_when_interface_discovery_fails(client, monkeypatch):
+    http, _ = client
+    monkeypatch.setattr("src.api.monitoring.list_capture_interfaces", lambda: ([], False))
+    response = http.post("/api/monitoring/start", json={
+        "target_ip": "192.168.128.4", "interface_name": "enp0s2",
+    })
+    assert response.status_code == 422
+    assert "discovery" in response.json()["detail"]
+
+
 def test_runtime_validation_is_admin_scoped_and_server_derived(client, tmp_path):
     http, app = client
     names, _ = list_capture_interfaces()
@@ -224,14 +288,16 @@ def test_runtime_validation_is_admin_scoped_and_server_derived(client, tmp_path)
     app.state.runtime_validation_service.expected_feature_names = tuple(
         f"feature_{index}" for index in range(78)
     )
-    pcap = artifact_root / str(session["id"]) / "pcap" / "window-000001.pcap"
-    csv_dir = artifact_root / str(session["id"]) / "flows" / "window-000001"
+    root = artifact_root / f'{session["id"]}-test'
+    pcap = root / "pcap" / "window-000001.pcap"
+    csv_dir = root / "flows" / "window-000001"
     pcap.parent.mkdir(parents=True)
     csv_dir.mkdir(parents=True)
     pcap.write_bytes(b"real-test-artifact")
     (csv_dir / "flows.csv").write_text("Flow ID,Protocol\nflow,6\n", encoding="utf-8")
     with app.state.session_factory() as db:
         model = db.get(ModelRecord, session["model_id"])
+        artifact = committed_artifact(db, session["id"], root, pcap, csv_dir / "flows.csv")
         request = PredictionRequest(features={f"feature_{index}": index for index in range(78)})
         request.metadata = FlowMetadata(
             capture_session_id=str(session["id"]), capture_interface=interface_name,
@@ -241,7 +307,8 @@ def test_runtime_validation_is_admin_scoped_and_server_derived(client, tmp_path)
             "prediction": "Normal", "confidence": .9,
             "probabilities": {"Normal": .9, "PortScan": .05, "DDoS": .05},
             "model_version": model.model_version,
-        }], model.id, monitoring_session_id=session["id"], external_keys=["phase11-real-row"])
+        }], model.id, monitoring_session_id=session["id"],
+            runtime_artifact_id=artifact.id, external_keys=["phase11-real-row"])
 
     completed = http.post(f'{base}/{validation["id"]}/complete')
     assert completed.status_code == 200
@@ -253,6 +320,51 @@ def test_runtime_validation_is_admin_scoped_and_server_derived(client, tmp_path)
     assert evidence["model_id"] == session["model_id"]
     assert evidence["evidence_json"]["pcaps"][0]["sha256"]
     assert http.get(f'/api/monitoring/{session["id"] + 100}/validation/{validation["id"]}').status_code == 404
+
+
+def test_runtime_validation_rejects_uncommitted_files_and_hash_mismatch(client, tmp_path):
+    http, app = client
+    names, available = list_capture_interfaces()
+    if not available:
+        pytest.skip("host interface discovery unavailable")
+    session = http.post("/api/monitoring/start", json={
+        "target_ip": "192.168.128.4", "interface_name": names[0]["name"],
+    }).json()
+    artifact_root = tmp_path / "runtime"
+    app.state.runtime_validation_service.artifact_root = artifact_root
+    app.state.runtime_validation_service.expected_feature_names = tuple(
+        f"feature_{index}" for index in range(78)
+    )
+    validation = http.post(
+        f'/api/monitoring/{session["id"]}/validation', json={"scenario": "NORMAL_HTTP"}
+    ).json()
+    foreign = artifact_root / "foreign"
+    foreign.mkdir(parents=True)
+    (foreign / "window-000001.pcap").write_bytes(b"uncommitted")
+    result = http.post(
+        f'/api/monitoring/{session["id"]}/validation/{validation["id"]}/complete'
+    ).json()
+    assert result["pipeline_result"] == "FAIL"
+
+    second_validation = http.post(
+        f'/api/monitoring/{session["id"]}/validation', json={"scenario": "NORMAL_HTTP"}
+    ).json()
+    root = artifact_root / f'{session["id"]}-hash-test'
+    pcap = root / "pcap/window-000001.pcap"
+    csv_path = root / "flows/window-000001/flows.csv"
+    pcap.parent.mkdir(parents=True)
+    csv_path.parent.mkdir(parents=True)
+    pcap.write_bytes(b"original")
+    csv_path.write_text("Flow ID\nflow\n", encoding="utf-8")
+    with app.state.session_factory() as db:
+        committed_artifact(db, session["id"], root, pcap, csv_path)
+        db.commit()
+    pcap.write_bytes(b"tampered")
+    mismatch = http.post(
+        f'/api/monitoring/{session["id"]}/validation/{second_validation["id"]}/complete'
+    ).json()
+    assert mismatch["status"] == "FAILED"
+    assert "integrity mismatch" in mismatch["notes"]
 
 
 def test_normal_http_and_stop_restart_evaluations(client, tmp_path):
@@ -267,12 +379,16 @@ def test_normal_http_and_stop_restart_evaluations(client, tmp_path):
         f"feature_{index}" for index in range(78)
     )
     normal = http.post(f'/api/monitoring/{first["id"]}/validation', json={"scenario": "NORMAL_HTTP"}).json()
-    root = tmp_path / "runtime" / str(first["id"])
+    root = tmp_path / "runtime" / f'{first["id"]}-test'
     (root / "pcap").mkdir(parents=True)
     (root / "flows" / "window-000001").mkdir(parents=True)
     (root / "pcap" / "window-000001.pcap").write_bytes(b"pcap")
     (root / "flows" / "window-000001" / "flows.csv").write_text("Flow ID\nflow\n", encoding="utf-8")
     with app.state.session_factory() as db:
+        artifact = committed_artifact(
+            db, first["id"], root, root / "pcap" / "window-000001.pcap",
+            root / "flows" / "window-000001" / "flows.csv",
+        )
         request = PredictionRequest(
             features={f"feature_{index}": index for index in range(78)},
             metadata=FlowMetadata(
@@ -283,7 +399,8 @@ def test_normal_http_and_stop_restart_evaluations(client, tmp_path):
             "prediction": "Normal", "confidence": .9,
             "probabilities": {"Normal": .9, "PortScan": .05, "DDoS": .05},
             "model_version": "test-v1",
-        }], first["model_id"], monitoring_session_id=first["id"], external_keys=["normal-phase11"])
+        }], first["model_id"], monitoring_session_id=first["id"],
+            runtime_artifact_id=artifact.id, external_keys=["normal-phase11"])
         session = db.get(MonitoringSession, first["id"])
         session.latest_processing_at = datetime.now(timezone.utc)
         db.commit()

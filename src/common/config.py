@@ -6,6 +6,8 @@ import os
 from dataclasses import dataclass
 from pathlib import Path
 
+from src.ingestion.cicflowmeter_v3_adapter import CICFLOWMETER_V3_IMAGE_DIGEST
+
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 
@@ -36,6 +38,8 @@ class Settings:
     capture_window_seconds: float = 10.0
     capture_stop_timeout_seconds: float = 15.0
     cicflowmeter_v3_image: str = "rf-nids-cicflowmeter-v3:a26aae27"
+    cicflowmeter_v3_image_digest: str = CICFLOWMETER_V3_IMAGE_DIGEST
+    extraction_timeout_seconds: float = 120.0
 
     @classmethod
     def from_env(cls) -> "Settings":
@@ -75,5 +79,11 @@ class Settings:
             ),
             cicflowmeter_v3_image=os.getenv(
                 "CICFLOWMETER_V3_IMAGE", "rf-nids-cicflowmeter-v3:a26aae27"
+            ),
+            cicflowmeter_v3_image_digest=os.getenv(
+                "CICFLOWMETER_V3_IMAGE_DIGEST", CICFLOWMETER_V3_IMAGE_DIGEST
+            ),
+            extraction_timeout_seconds=float(
+                os.getenv("EXTRACTION_TIMEOUT_SECONDS", "120")
             ),
         )

@@ -76,7 +76,9 @@ def register_inactive_model(db: Session, metadata: dict) -> ModelRecord:
 def persist_predictions(
     db: Session, requests, outputs, model_id: int, *,
     monitoring_session_id: int | None = None,
+    runtime_artifact_id: int | None = None,
     external_keys: list[str] | None = None,
+    commit: bool = True,
 ):
     results = []
     try:
@@ -89,6 +91,7 @@ def persist_predictions(
                 source_type="RUNTIME",
                 external_key=external_keys[index] if external_keys else None,
                 monitoring_session_id=monitoring_session_id,
+                runtime_artifact_id=runtime_artifact_id,
                 predicted_label=output["prediction"],
                 confidence_score=output["confidence"],
                 class_probabilities=output["probabilities"],
@@ -111,7 +114,8 @@ def persist_predictions(
             results.append((prediction, output))
         # Flush assigns every ID and exposes constraint failures before the one commit.
         db.flush()
-        db.commit()
+        if commit:
+            db.commit()
     except Exception:
         db.rollback()
         raise

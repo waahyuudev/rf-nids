@@ -42,6 +42,7 @@ class RFNIDSClient:
 
     def _request(self, method: str, path: str, **kwargs) -> Any:
         headers = dict(kwargs.pop("headers", {}))
+        timeout = kwargs.pop("timeout", self.timeout)
         token = self._access_token()
         if token:
             headers.setdefault("Authorization", f"Bearer {token}")
@@ -49,7 +50,7 @@ class RFNIDSClient:
             response = self.session.request(
                 method,
                 f"{self.base_url}{path}",
-                timeout=self.timeout,
+                timeout=timeout,
                 headers=headers,
                 **kwargs,
             )
@@ -176,7 +177,7 @@ class RFNIDSClient:
         return self._request("POST", "/api/monitoring/start", json={"target_ip": target_ip, "interface_name": interface_name})
 
     def stop_monitoring(self):
-        return self._request("POST", "/api/monitoring/stop")
+        return self._request("POST", "/api/monitoring/stop", timeout=max(self.timeout, 150))
 
     def create_runtime_validation(self, session_id: int, scenario: str):
         return self._request("POST", f"/api/monitoring/{session_id}/validation", json={"scenario": scenario})

@@ -3,8 +3,9 @@
 from __future__ import annotations
 
 from datetime import datetime, timezone
-from ipaddress import ip_address
+from ipaddress import ip_address, ip_network
 import socket
+from uuid import uuid4
 
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
@@ -13,6 +14,9 @@ from sqlalchemy.orm import Session
 from src.api.models import ModelRecord, MonitoringSession, User
 
 ACTIVE_STATUSES = ("STARTING", "RUNNING", "STOPPING")
+RFC1918_NETWORKS = tuple(
+    ip_network(value) for value in ("10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16")
+)
 
 
 class MonitoringConflict(RuntimeError):
@@ -79,13 +83,22 @@ class MonitoringService:
             normalized_ip = str(address)
         except ValueError as exc:
             raise MonitoringValidation("target_ip must be a valid IP address") from exc
-        if not address.is_private:
-            raise MonitoringValidation("target_ip must be a private laboratory address")
+        if (
+            address.version != 4
+            or not any(address in network for network in RFC1918_NETWORKS)
+            or address.is_loopback
+            or address.is_unspecified
+            or address.is_multicast
+            or address.is_link_local
+        ):
+            raise MonitoringValidation("target_ip must be an RFC1918 private IPv4 laboratory address")
         interface_name = interface_name.strip()
         if not interface_name:
             raise MonitoringValidation("interface_name cannot be empty")
         interfaces, available = list_capture_interfaces()
-        if available and interface_name not in {item["name"] for item in interfaces}:
+        if not available:
+            raise MonitoringValidation("capture interface discovery is unavailable")
+        if interface_name not in {item["name"] for item in interfaces}:
             raise MonitoringValidation("interface_name is not an available local interface")
         if self.active(db) is not None:
             raise MonitoringConflict("A monitoring session is already active")
@@ -102,6 +115,7 @@ class MonitoringService:
             status="STARTING",
             extractor_name="CICFlowMeter V3",
             extractor_version="a26aae27f21d165ff30b4b28e75124a5f9b4b2c4",
+            artifact_key=uuid4().hex,
         )
         db.add(row)
         try:
@@ -124,6 +138,7 @@ class MonitoringService:
             row.last_error = str(exc)[:2000] or exc.__class__.__name__
             row.stopped_at = datetime.now(timezone.utc)
             row.runtime_handle = None
+            row.processing_state = None
             db.commit()
         db.refresh(row)
         return row
@@ -146,6 +161,7 @@ class MonitoringService:
             row.status = "FAILED"
             row.last_error = str(exc)[:2000] or exc.__class__.__name__
         row.runtime_handle = None
+        row.processing_state = None
         row.stopped_at = datetime.now(timezone.utc)
         db.commit()
         db.refresh(row)

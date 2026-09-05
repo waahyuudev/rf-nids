@@ -50,12 +50,15 @@ Gunakan tiga mesin atau role:
 - Ubuntu target: host private yang menyediakan service HTTP
 - Kali attacker/operator: menghasilkan traffic manual
 
-Contoh rencana IP:
+Topologi runtime yang digunakan:
 
-- Ubuntu: `192.168.56.10/24`
-- Kali: `192.168.56.20/24`
+- macOS: menjalankan FastAPI, Streamlit, PostgreSQL, Docker/CICFlowMeter V3, dan Random Forest; capture pada `vmenet3`
+- Ubuntu: `192.168.128.4/24` pada `enp0s2`
+- Kali: `192.168.128.3/24`
 
-Host RF-NIDS harus dapat melihat traffic pada interface private/host-only hypervisor.
+`enp0s2` adalah interface sisi target Ubuntu, bukan interface capture dashboard. Topologi ini
+telah diverifikasi secara empiris: macOS `vmenet3` melihat traffic TCP dua arah Kali ↔ Ubuntu,
+termasuk HTTP GET dan HTTP 200 OK.
 
 ## 4. Prasyarat
 
@@ -79,9 +82,12 @@ cd /Users/wahyudev/Wahyudev/ai_projects/rf_nids
 source .venv/bin/activate
 docker compose up -d postgres
 alembic upgrade head
-docker compose build cicflowmeter
-docker compose up -d --build
+docker image inspect rf-nids-cicflowmeter-v3:a26aae27 --format '{{.Id}}'
 ```
+
+Hasil inspect harus sama dengan `CICFLOWMETER_V3_IMAGE_DIGEST` di `.env`. Jangan jalankan
+service API Compose untuk real capture; container tersebut sengaja tidak memiliki Docker socket
+atau privilege packet capture. FastAPI berikut berjalan tanpa root langsung pada host macOS.
 
 Jalankan API:
 
@@ -109,17 +115,17 @@ Di host RF-NIDS, identifikasi interface yang benar:
 python scripts/run_live_capture.py --list-interfaces
 ```
 
-Pilih interface private yang benar-benar membawa traffic Ubuntu <-> Kali.
+Pilih `vmenet3`, interface yang telah terbukti membawa traffic Ubuntu <-> Kali.
 
-Jangan mengasumsikan `en0` otomatis benar. Nama seperti `bridge*`, `vmnet*`, `vboxnet*`,
-`utun*`, atau `tap*` hanya kandidat.
+Jangan pilih Ubuntu `enp0s2` atau macOS `bridge101`; keduanya bukan interface capture runtime
+yang telah diverifikasi untuk topologi ini.
 
 ## 7. Menyiapkan Ubuntu target
 
 Di Ubuntu, pastikan private IP benar lalu jalankan HTTP service sederhana:
 
 ```bash
-python3 -m http.server 8080 --bind 192.168.56.10
+python3 -m http.server 8080 --bind 192.168.128.4
 ```
 
 Service harus bind hanya ke private IP lab.
@@ -129,8 +135,8 @@ Service harus bind hanya ke private IP lab.
 Dari Kali, verifikasi konektivitas dasar ke Ubuntu:
 
 ```bash
-ping -c 4 192.168.56.10
-curl --fail http://192.168.56.10:8080/
+ping -c 4 192.168.128.4
+curl --fail http://192.168.128.4:8080/
 ```
 
 Kalau ini gagal, jangan lanjut ke pengujian monitoring atau simulasi serangan.
@@ -140,8 +146,8 @@ Kalau ini gagal, jangan lanjut ke pengujian monitoring atau simulasi serangan.
 1. Login ke dashboard sebagai admin.
 2. Buka halaman `Monitoring`.
 3. Start monitoring session.
-4. Isi target IP dengan IP Ubuntu private, misalnya `192.168.56.10`.
-5. Pilih interface capture private yang sudah diverifikasi.
+4. Isi target IP dengan IP Ubuntu private `192.168.128.4`.
+5. Pilih interface capture `vmenet3`.
 6. Pastikan status sesi berubah menjadi `RUNNING`.
 
 Setelah sesi aktif, RF-NIDS akan menjalankan window capture berulang:
@@ -150,7 +156,7 @@ Setelah sesi aktif, RF-NIDS akan menjalankan window capture berulang:
 
 Artefak runtime sesi disimpan di:
 
-`data/runtime/monitoring/<session-id>/`
+`data/runtime/monitoring/<session-id>-<uuid>/`
 
 ## 10. Skenario A: traffic normal
 
@@ -164,9 +170,9 @@ Langkah:
 3. Dari Kali, kirim request HTTP biasa:
 
 ```bash
-curl http://192.168.56.10:8080/
-curl http://192.168.56.10:8080/
-curl http://192.168.56.10:8080/
+curl http://192.168.128.4:8080/
+curl http://192.168.128.4:8080/
+curl http://192.168.128.4:8080/
 ```
 
 4. Tunggu minimal satu window capture selesai.
@@ -200,7 +206,7 @@ Langkah:
 3. Dari Kali, jalankan scan hanya ke private IP target:
 
 ```bash
-nmap -n -Pn -sT -T3 -p 1-200 192.168.56.10
+nmap -n -Pn -sT -T3 -p 1-200 192.168.128.4
 ```
 
 Alternatif yang juga pernah direkam di dokumen eksperimen:
