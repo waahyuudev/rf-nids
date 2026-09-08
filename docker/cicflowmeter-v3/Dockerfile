@@ -1,5 +1,8 @@
 # syntax=docker/dockerfile:1
-FROM eclipse-temurin:8-jdk-jammy@sha256:e0e0243c25c8985bb786948c2e23d267597ad9751c0311f43c113211a25392f5 AS builder
+ARG BUILDPLATFORM
+ARG TARGETPLATFORM=linux/amd64
+
+FROM --platform=$BUILDPLATFORM eclipse-temurin:8u492-b09-jdk-jammy AS builder
 
 ARG CICFLOWMETER_REPOSITORY=https://github.com/ahlashkari/CICFlowMeter
 ARG CICFLOWMETER_COMMIT=a26aae27f21d165ff30b4b28e75124a5f9b4b2c4
@@ -40,7 +43,7 @@ RUN sed -i "/exclude '\*\*\/CICFlowMeter.java'/d" build.gradle \
       src/main/java/cic/cs/unb/ca/ifm/CICFlowMeter.java \
       > /build/source-hashes.txt
 
-FROM eclipse-temurin:8-jre-jammy@sha256:8d8ffe619c1b4aebfa670426ea6b938cccf76faa491ca8483dee520c48b30441 AS runtime
+FROM --platform=$TARGETPLATFORM eclipse-temurin:8u492-b09-jre-jammy AS runtime
 
 ARG CICFLOWMETER_REPOSITORY=https://github.com/ahlashkari/CICFlowMeter
 ARG CICFLOWMETER_COMMIT=a26aae27f21d165ff30b4b28e75124a5f9b4b2c4
