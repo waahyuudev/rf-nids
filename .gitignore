@@ -26,3 +26,8 @@ reports/experiments/*
 !reports/experiment_c/experiment_manifest.json
 tmp/
 .DS_Store
+
+# Experiment D generated/raw artifacts
+data/lab/experiment_d/**/*.pcap
+data/lab/experiment_d/**/*.pcapng
+reports/experiment_d/**/*_predictions.csv
