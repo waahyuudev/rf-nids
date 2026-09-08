@@ -69,7 +69,17 @@ def run_validation(output: Path | None = None) -> dict:
     vectors = expanded_vectors()
     cases = []
     with tempfile.TemporaryDirectory(prefix="rf-nids-rf-v2-integration-") as directory:
-        database_path = Path(directory) / "integration.db"
+        temporary_root = Path(directory)
+        database_path = temporary_root / "integration.db"
+
+        rf1_runtime_metadata = json.loads(RF1_META.read_text(encoding="utf-8"))
+        rf1_runtime_metadata["model_path"] = "models/random_forest_active.joblib"
+        rf1_runtime_metadata_path = temporary_root / "rf1_runtime_metadata.json"
+        rf1_runtime_metadata_path.write_text(
+            json.dumps(rf1_runtime_metadata, indent=2, sort_keys=True) + "\n",
+            encoding="utf-8",
+        )
+
         settings = Settings(
             app_env="integration-test", log_level="WARNING",
             leakage_columns_config=ROOT / "config/leakage_columns.json",
@@ -137,7 +147,7 @@ def run_validation(output: Path | None = None) -> dict:
             _assert(acknowledged["status"] == "ACKNOWLEDGED" and acknowledged["model_version"] == "rf-v2.0", "alert acknowledgment failure")
 
             with app.state.session_factory() as db:
-                rf1_engine = InferenceEngine(RF1, RF1_META)
+                rf1_engine = InferenceEngine(RF1, rf1_runtime_metadata_path)
                 rollback = sync_active_model(db, rf1_engine.metadata)
                 _assert(rollback.model_version == "rf-v1.0", "rollback activation failed")
                 _assert(db.scalar(select(ModelRecord).where(ModelRecord.model_version=="rf-v2.0")) is not None, "rollback deleted RF-v2")
