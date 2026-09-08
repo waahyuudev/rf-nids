@@ -1,0 +1,38 @@
+Image tag:
+rf-nids-cicflowmeter-v3:a26aae27
+
+CICFlowMeter commit:
+a26aae27f21d165ff30b4b28e75124a5f9b4b2c4
+
+Java:
+Temurin 8u492-b09
+
+Builder architecture:
+linux/arm64
+
+Runtime architecture:
+linux/amd64
+
+Normal HTTP PCAP:
+data/lab/pcap/normal-http-test.pcap
+
+Generated flows:
+61
+
+CSV columns:
+84
+
+CSV SHA256:
+5fced18068b91e1955206a3f07833f5533d68f706b45c36eca9e6d6e3eec477a
+
+PortScan PCAP:
+data/lab/pcap/portscan-test.pcap
+
+Generated flows:
+1000
+
+CSV columns:
+84
+
+CSV SHA256:
+e10519fe09819247eecd45260740380f5bb037f5e320432634e7905e9f4c43c8

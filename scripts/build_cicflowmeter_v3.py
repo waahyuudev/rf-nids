@@ -21,8 +21,8 @@ SOURCE_URL = "https://github.com/ahlashkari/CICFlowMeter"
 SOURCE_COMMIT = "a26aae27f21d165ff30b4b28e75124a5f9b4b2c4"
 COMMIT_DATE = "2018-04-03T09:30:33-03:00"
 SOURCE_SHA256 = "78f13b2d474e5a669a367aef610d597cf86bc338088ffdd72228671bdca364c7"
-BUILD_BASE = "eclipse-temurin:8-jdk-jammy@sha256:e0e0243c25c8985bb786948c2e23d267597ad9751c0311f43c113211a25392f5"
-RUNTIME_BASE = "eclipse-temurin:8-jre-jammy@sha256:8d8ffe619c1b4aebfa670426ea6b938cccf76faa491ca8483dee520c48b30441"
+BUILD_BASE = "eclipse-temurin:8u492-b09-jdk-jammy"
+RUNTIME_BASE = "eclipse-temurin:8u492-b09-jre-jammy"
 
 
 def run(command: list[str], *, timeout: int = 1800) -> subprocess.CompletedProcess[str]:
