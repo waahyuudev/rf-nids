@@ -1,3 +1,4 @@
+FROM docker:28-cli AS docker-cli
 FROM python:3.12-slim
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
@@ -7,8 +8,11 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 WORKDIR /app
 
 RUN apt-get update \
-    && apt-get install --no-install-recommends -y libgomp1 \
+    && apt-get install --no-install-recommends -y libgomp1 tcpdump libcap2-bin \
+    && setcap cap_net_raw=ep "$(command -v tcpdump)" \
     && rm -rf /var/lib/apt/lists/*
+
+COPY --from=docker-cli /usr/local/bin/docker /usr/local/bin/docker
 
 COPY requirements.txt ./
 RUN python -m pip install --upgrade pip \

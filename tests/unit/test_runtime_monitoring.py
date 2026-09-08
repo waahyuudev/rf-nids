@@ -1,5 +1,8 @@
 import subprocess
 import threading
+import io
+import signal
+from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
@@ -86,7 +89,7 @@ def test_capture_uses_argument_array_target_filter_and_clean_process_group(tmp_p
     pipeline.capture("bridge100", "192.168.128.2", output, threading.Event())
     command, kwargs = calls[0]
     assert command == [
-        "/usr/sbin/tcpdump", "-i", "bridge100", "-U", "-n", "-w", str(output),
+        "/usr/sbin/tcpdump", "-i", "bridge100", "-p", "-U", "-n", "-w", str(output),
         "host", "192.168.128.2",
     ]
     assert "shell" not in kwargs
@@ -109,49 +112,107 @@ def test_preflight_reports_missing_capture_executable(tmp_path, monkeypatch):
         pipeline.preflight("vmenet3")
 
 
-def test_preflight_reports_missing_macos_bpf_permission(tmp_path, monkeypatch):
+class ProbeProcess:
+    pid = 4242
+
+    def __init__(self, returncode=None, detail="", ignore_signals=False):
+        self.returncode = returncode
+        self.detail = detail
+        self.stderr = io.StringIO(detail)
+        self.ignore_signals = ignore_signals
+        self.signals = []
+        self.waited = False
+
+    def communicate(self, timeout=None):
+        if self.returncode is None:
+            raise subprocess.TimeoutExpired("tcpdump", timeout)
+        return None, self.detail
+
+    def poll(self):
+        return self.returncode
+
+    def wait(self, timeout=None):
+        if self.returncode is None:
+            raise subprocess.TimeoutExpired("tcpdump", timeout)
+        self.waited = True
+        return self.returncode
+
+
+@pytest.fixture
+def probe(monkeypatch):
+    process = ProbeProcess()
     monkeypatch.setattr(
         "src.api.runtime_monitoring.list_capture_interfaces",
-        lambda: ([{"name": "vmenet3", "is_up": True}], True),
+        lambda: ([{"name": "enp0s3", "is_up": None}], True),
     )
-    monkeypatch.setattr(
-        "src.api.runtime_monitoring.shutil.which", lambda _: "/usr/sbin/tcpdump"
-    )
-    denied = SimpleNamespace(
-        returncode=1, stdout="",
-        stderr="tcpdump: (cannot open BPF device) /dev/bpf0: Permission denied",
-    )
+    monkeypatch.setattr("src.api.runtime_monitoring.shutil.which", lambda _: "/usr/bin/tcpdump")
+
+    def killpg(pid, sig):
+        assert pid == process.pid
+        process.signals.append(sig)
+        if not process.ignore_signals or sig == signal.SIGKILL:
+            process.returncode = -sig
+
+    monkeypatch.setattr("src.api.runtime_monitoring.os.killpg", killpg)
+    return process
+
+
+@pytest.mark.parametrize("detail", [
+    "Permission denied", "No such device", "cannot open BPF device /dev/bpf0",
+])
+def test_preflight_reports_immediate_capture_failure(tmp_path, probe, detail):
+    probe.returncode, probe.detail = 1, detail
     pipeline = RuntimePipeline(
-        root=tmp_path, image="pinned-v3", window_seconds=1,
-        run=lambda *args, **kwargs: denied,
+        root=tmp_path, image="v3", window_seconds=1,
+        popen=lambda *a, **kw: probe,
+        run=lambda *a, **kw: pytest.fail("must not inspect Docker after capture failure"),
     )
-    with pytest.raises(RuntimePipelineError, match="macOS packet-capture permission"):
-        pipeline.preflight("vmenet3")
+    with pytest.raises(RuntimePipelineError, match=detail):
+        pipeline.preflight("enp0s3")
+    assert probe.waited and probe.stderr.closed
+    assert probe.signals == []
 
 
-def test_preflight_accepts_discovered_vmenet3_and_resolved_tcpdump(tmp_path, monkeypatch):
+def test_preflight_accepts_idle_interface_without_packets_and_reaps(tmp_path, probe):
     calls = []
-    monkeypatch.setattr(
-        "src.api.runtime_monitoring.list_capture_interfaces",
-        lambda: ([{"name": "vmenet3", "is_up": True}], True),
-    )
-    monkeypatch.setattr(
-        "src.api.runtime_monitoring.shutil.which", lambda _: "/usr/sbin/tcpdump"
-    )
 
-    def run(command, **kwargs):
-        calls.append(command)
-        if command[0] == "/usr/sbin/tcpdump":
-            return SimpleNamespace(returncode=0, stdout="", stderr="")
-        return SimpleNamespace(returncode=0, stdout="sha256:expected\n", stderr="")
+    def popen(command, **kwargs):
+        calls.append((command, kwargs))
+        return probe
 
     pipeline = RuntimePipeline(
         root=tmp_path, image="v3", expected_image_digest="sha256:expected",
-        window_seconds=1, run=run,
+        window_seconds=1, popen=popen,
+        run=lambda *a, **kw: SimpleNamespace(returncode=0, stdout="sha256:expected", stderr=""),
     )
-    pipeline.preflight("vmenet3")
-    assert calls[0] == ["/usr/sbin/tcpdump", "-i", "vmenet3", "-c", "0", "-n"]
-    assert pipeline.tcpdump_path == "/usr/sbin/tcpdump"
+    pipeline.preflight("enp0s3")
+    assert calls[0][0] == [
+        "/usr/bin/tcpdump", "-i", "enp0s3", "-p", "-n", "-U", "-w", "/dev/null",
+    ]
+    assert calls[0][1]["process_group"] == 0
+    assert probe.signals == [signal.SIGINT]
+    assert probe.waited and probe.stderr.closed and probe.poll() is not None
+    assert pipeline.tcpdump_path == "/usr/bin/tcpdump"
+    assert pipeline.resolved_image_identity == "sha256:expected"
+
+
+def test_preflight_escalates_and_reaps_stubborn_capture(tmp_path, probe):
+    probe.ignore_signals = True
+    pipeline = RuntimePipeline(
+        root=tmp_path, image="v3", window_seconds=1, popen=lambda *a, **kw: probe,
+    )
+    with pytest.raises(RuntimePipelineError, match="Unable to open"):
+        pipeline.preflight("enp0s3")
+    assert probe.signals == [signal.SIGINT, signal.SIGTERM, signal.SIGKILL]
+    assert probe.waited and probe.stderr.closed
+
+
+def test_preflight_reports_spawn_error(tmp_path, probe):
+    def popen(*a, **kw):
+        raise PermissionError("executable denied")
+    pipeline = RuntimePipeline(root=tmp_path, image="v3", window_seconds=1, popen=popen)
+    with pytest.raises(RuntimePipelineError, match="executable denied"):
+        pipeline.preflight("enp0s3")
 
 
 def test_preflight_rejects_ubuntu_interface_not_discovered_on_macos(tmp_path, monkeypatch):
@@ -167,19 +228,19 @@ def test_preflight_rejects_ubuntu_interface_not_discovered_on_macos(tmp_path, mo
         pipeline.preflight("enp0s2")
 
 
-def test_preflight_rejects_mismatched_extractor_identity(tmp_path, monkeypatch):
-    monkeypatch.setattr("src.api.runtime_monitoring.shutil.which", lambda _: "/usr/bin/tcpdump")
-    monkeypatch.setattr(
-        "src.api.runtime_monitoring.list_capture_interfaces",
-        lambda: ([{"name": "vmenet3", "is_up": True}], True),
-    )
-    result = SimpleNamespace(returncode=0, stdout="sha256:wrong\n", stderr="")
+@pytest.mark.parametrize("returncode, identity, error", [
+    (0, "sha256:wrong", "identity mismatch"),
+    (1, "", "image is unavailable"),
+])
+def test_preflight_validates_extractor_identity(tmp_path, probe, returncode, identity, error):
     pipeline = RuntimePipeline(
         root=tmp_path, image="v3", expected_image_digest="sha256:expected",
-        window_seconds=1, run=lambda *args, **kwargs: result,
+        window_seconds=1, popen=lambda *a, **kw: probe,
+        run=lambda *a, **kw: SimpleNamespace(returncode=returncode, stdout=identity, stderr=""),
     )
-    with pytest.raises(RuntimePipelineError, match="identity mismatch"):
-        pipeline.preflight("vmenet3")
+    with pytest.raises(RuntimePipelineError, match=error):
+        pipeline.preflight("enp0s3")
+    assert probe.waited and probe.stderr.closed
 
 
 @pytest.mark.parametrize("relative", [".", "data/lab", "reports", "models", "migrations"])
@@ -437,3 +498,46 @@ def test_worker_reuses_v3_adapter_persists_prediction_and_real_counters(tmp_path
         assert row.latest_processing_at is not None
         assert worker.pipeline.capture_calls == 1
     engine.dispose()
+
+
+def test_host_path_mapping_is_used_for_both_extractor_mounts(tmp_path):
+    session = tmp_path / "session-x"
+    session.mkdir()
+    pcap = session / "capture.pcap"
+    pcap.write_bytes(b"pcap")
+    output = session / "flows"
+    calls = []
+    def popen(command, **kwargs):
+        calls.append(command)
+        return FakeExtractorProcess(command, output)
+    pipeline = RuntimePipeline(
+        root=tmp_path, host_root=Path("/srv/rf-nids/data/runtime/monitoring"),
+        image="v3", window_seconds=1, popen=popen,
+    )
+    pipeline.extract(pcap, output)
+    assert "type=bind,src=/srv/rf-nids/data/runtime/monitoring/session-x/capture.pcap,dst=/input/capture.pcap,readonly" in calls[0]
+    assert "type=bind,src=/srv/rf-nids/data/runtime/monitoring/session-x/flows,dst=/output" in calls[0]
+
+
+def test_container_path_maps_without_resolving_host_filesystem():
+    pipeline = RuntimePipeline(
+        root=Path("/app/data/runtime/monitoring"), host_root=Path("/srv/runtime"),
+        image="v3", window_seconds=1,
+    )
+    assert pipeline.host_artifact_path(Path("/app/data/runtime/monitoring/session-x/capture.pcap")) == Path("/srv/runtime/session-x/capture.pcap")
+
+
+def test_host_mapping_rejects_escape_and_symlinks(tmp_path):
+    root = tmp_path / "runtime"
+    root.mkdir()
+    (root / "escape").symlink_to(tmp_path, target_is_directory=True)
+    pipeline = RuntimePipeline(root=root, image="v3", window_seconds=1)
+    for path in (root / "../capture.pcap", root / "escape/capture.pcap"):
+        with pytest.raises(RuntimePipelineError, match="escapes runtime root"):
+            pipeline.host_artifact_path(path)
+
+
+@pytest.mark.parametrize("host", ["relative/path", "/srv/../runtime"])
+def test_host_mapping_requires_absolute_unambiguous_root(tmp_path, host):
+    with pytest.raises(RuntimePipelineError, match="absolute path"):
+        RuntimePipeline(root=tmp_path, host_root=Path(host), image="v3", window_seconds=1)

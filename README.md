@@ -56,64 +56,44 @@ report, atau database secara langsung; seluruh data disediakan oleh FastAPI.
 - SQLAlchemy, Alembic, PostgreSQL 16
 - Docker Compose dan CICFlowMeter V3
 
-## Quick start
+## Quick start — Ubuntu NIDS
 
-### 1. Siapkan environment
+FastAPI dan PostgreSQL tetap berjalan di Docker Compose. Streamlit berjalan di
+host Ubuntu dan mengakses API pada port 8000. Ikuti
+[panduan Docker runtime monitoring](docs/docker_runtime_monitoring.md) untuk
+setup satu kali: direktori runtime milik UID 10001, `RUNTIME_MONITORING_HOST_ROOT`,
+`DOCKER_SOCKET_GID`, dan verifikasi image CICFlowMeter V3 yang sudah dipin.
+Simpan konfigurasi tersebut dalam `.env` yang ada; jangan menimpa atau commit `.env`.
 
-```bash
-python3.11 -m venv .venv
-source .venv/bin/activate
-python -m pip install -r requirements.txt
-cp .env.example .env
-```
-
-Jangan commit `.env`. Default `.env.example` mengasumsikan API dan Alembic berjalan dari
-host sehingga PostgreSQL menggunakan `localhost`. Compose mengganti hostname menjadi
-`postgres` secara otomatis.
-
-### 2. Jalankan database dan migration
+Setelah setup, jalankan dari direktori repository yang sama:
 
 ```bash
-docker compose up -d postgres
-alembic upgrade head
+docker compose build
+docker compose up -d
 ```
 
-### 3. Buat administrator pertama
+Migration tetap menggunakan `postgres:5432`; API dengan Linux host networking
+menggunakan `127.0.0.1:5432`. Volume PostgreSQL yang ada tetap dipakai.
+Jangan menjalankan `docker compose down -v`.
+
+Gunakan instalasi Streamlit host yang ada:
 
 ```bash
-python scripts/bootstrap_admin.py \
-  --name "Administrator" \
-  --email admin@example.com
+FASTAPI_BASE_URL=http://127.0.0.1:8000 .venv/bin/streamlit run dashboard/app.py
 ```
 
-Password diminta secara interaktif dan minimal 12 karakter.
-
-### 4. Jalankan API dan dashboard
-
-Pada dua terminal terpisah:
-
-```bash
-uvicorn src.api.main:app --reload
-```
-
-```bash
-streamlit run dashboard/app.py
-```
+Virtual environment hanya diperlukan untuk Streamlit/tools host, bukan untuk
+menjalankan FastAPI. Login dengan administrator yang sudah ada. Untuk instalasi
+baru saja, administrator pertama dapat dibuat melalui `scripts/bootstrap_admin.py`.
 
 - API: <http://localhost:8000>
 - OpenAPI: <http://localhost:8000/docs>
 - Dashboard: <http://localhost:8501>
 
-Compose dapat dipakai untuk PostgreSQL dan migration, tetapi service API Compose **bukan**
-deployment capture. API runtime monitoring harus dijalankan langsung pada host Ubuntu yang
-memiliki interface yang dipantau, izin `tcpdump`, Docker CLI, dan image V3 yang sudah diverifikasi.
-Perintah berikut cukup untuk aplikasi non-capture, tetapi tidak cukup untuk real packet capture:
-
-```bash
-docker compose up -d --build
-```
-
-Dashboard tetap dijalankan dari host dengan perintah Streamlit di atas.
+Pada Monitoring, pilih target `10.10.20.2` dan interface `enp0s3`, lalu klik
+**START MONITORING**. Panduan deployment memuat perintah validasi traffic, PCAP,
+ekstraksi, prediksi, alert, Stop, dan Runtime Validation. Capture jaringan host
+Ubuntu tidak dapat dibuktikan lewat Docker Desktop/macOS.
 
 ## Konfigurasi penting
 
@@ -128,6 +108,8 @@ Dashboard tetap dijalankan dari host dengan perintah Streamlit di atas.
 | `FASTAPI_BASE_URL` | `http://localhost:8000` | URL API dashboard/ingestion |
 | `DASHBOARD_REFRESH_SECONDS` | `5` | Interval auto-refresh dashboard |
 | `RUNTIME_MONITORING_ROOT` | `data/runtime/monitoring` | Tree khusus evidence runtime; tidak boleh diarahkan ke evidence ilmiah |
+| `RUNTIME_MONITORING_HOST_ROOT` | wajib di Compose | Path absolut host untuk bind PCAP/CSV oleh Docker daemon |
+| `DOCKER_SOCKET_GID` | wajib di Compose | GID socket Docker host untuk API UID 10001 |
 | `CICFLOWMETER_V3_IMAGE_DIGEST` | digest V3 teraudit | Identitas image yang wajib cocok saat preflight |
 | `EXTRACTION_TIMEOUT_SECONDS` | `120` | Batas waktu ekstraksi setiap window |
 | `RF_NIDS_CAPTURE_INTERFACE` | `en0` | Interface default capture macOS |

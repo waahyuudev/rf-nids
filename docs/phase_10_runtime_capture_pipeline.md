@@ -8,8 +8,8 @@ the worker repeatedly executes bounded windows:
 
 ## Capture and artifacts
 
-The macOS host resolves `tcpdump` once during preflight, verifies that the unprivileged
-FastAPI process can open BPF on the server-discovered interface, and then invokes that
+The API resolves `tcpdump` once during preflight, verifies capture access using a
+bounded, packet-free probe on the server-discovered interface, and then invokes that
 same executable directly with an argument array and the filter `host <target>`.
 This includes traffic where the configured private target is either source or
 destination. Interfaces are selected from host discovery. Commands, output paths,
@@ -48,29 +48,14 @@ is `GET /api/monitoring/sessions/{id}/predictions`.
 
 The RF-NIDS dashboard controls the defensive monitoring pipeline. Attack traffic is generated externally from the isolated Kali Linux virtual machine.
 
-This remains a bounded-window thesis prototype, not inline prevention. FastAPI runs
-unprivileged on the macOS host and captures the verified UTM guest-to-guest path on
-`vmenet3`; Ubuntu `enp0s2` is the target-side interface, not a dashboard capture choice.
-The current Compose API service is not a capture deployment. Successful operation requires
-BPF permission, `tcpdump`, Docker, and the prebuilt pinned V3 image on the API host. No attacker automation, model retraining, threshold change,
-or scientific evidence mutation is performed.
+This remains a bounded-window thesis prototype, not inline prevention. The Ubuntu
+runtime deployment keeps FastAPI and PostgreSQL in Docker Compose and Streamlit
+on the host. See [Docker runtime monitoring](docker_runtime_monitoring.md) for
+networking, capabilities, shared artifact paths, setup, and validation commands.
 
-## One-time macOS BPF permission
-
-Do not run FastAPI as root and do not add `sudo` to the runtime command. From an official
-Wireshark macOS disk image, open and install only `Install ChmodBPF.pkg`. This installs the
-standard `org.wireshark.ChmodBPF` launch daemon, creates the scoped `access_bpf` group, adds
-the installing user to that group, and grants that group access to the dynamically created
-`/dev/bpf*` devices. Log out of macOS and back in after installation.
-
-Verify the one-time configuration without capturing traffic:
-
-```bash
-id -Gn | tr ' ' '\n' | grep '^access_bpf$'
-stat -f '%N %Su:%Sg %Sp' /dev/bpf0
-/usr/sbin/tcpdump -i vmenet3 -c 0 -n
-```
-
-The first command must print `access_bpf`, the BPF device group must be `access_bpf`, and
-the final command must exit without a BPF permission error. Dashboard Start repeats the
-same zero-packet open check on the selected server-discovered interface before capture.
+The probe starts non-promiscuous tcpdump writing to `/dev/null`, waits at most one
+second for immediate errors, then interrupts and reaps it. It never uses `-c 0`
+and never requires a packet. Linux errors mention capture permissions; macOS
+errors mention BPF device access. Historical macOS host development can still use
+its configured BPF permissions, but Docker Desktop does not validate the Ubuntu
+host-interface capture deployment.

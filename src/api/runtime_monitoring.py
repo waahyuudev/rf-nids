@@ -84,11 +84,16 @@ class RuntimePipeline:
 
     def __init__(
         self, *, root: Path, image: str, window_seconds: float,
+        host_root: Path | None = None,
         expected_image_digest: str = CICFLOWMETER_V3_IMAGE_DIGEST,
         extraction_timeout_seconds: float = 120.0,
         popen=subprocess.Popen, run=subprocess.run,
     ):
         self.root = root.resolve()
+        if host_root is not None and (not host_root.is_absolute() or ".." in host_root.parts):
+            raise RuntimePipelineError("Runtime host root must be an absolute path without ..")
+        # Do not resolve host paths in the container filesystem.
+        self.host_root = host_root if host_root is not None else self.root
         self.image = image
         self.expected_image_digest = expected_image_digest
         self.window_seconds = window_seconds
@@ -110,24 +115,37 @@ class RuntimePipeline:
         interfaces, available = list_capture_interfaces()
         if not available or interface not in {item["name"] for item in interfaces}:
             raise RuntimePipelineError("Capture interface is no longer available")
+        process = None
         try:
-            capture_access = self._run(
-                [tcpdump_path, "-i", interface, "-c", "0", "-n"],
+            process = self._popen(
+                [tcpdump_path, "-i", interface, "-p", "-n", "-U", "-w", os.devnull],
                 stdout=subprocess.DEVNULL, stderr=subprocess.PIPE,
-                text=True, check=False, timeout=10,
+                text=True, process_group=0,
             )
-        except (OSError, subprocess.TimeoutExpired) as exc:
+            try:
+                _, detail = process.communicate(timeout=1.0)
+            except subprocess.TimeoutExpired:
+                # An open capture waits even on an idle interface. No packet count
+                # or arrival is required. Always reap the owned process group.
+                self._terminate_process(process)
+                _, detail = process.communicate()
+                if process.returncode in (0, 130, -signal.SIGINT):
+                    detail = None
+            if detail is not None:
+                raise RuntimePipelineError(
+                    f"Unable to open packet capture on {interface}. Check interface access "
+                    "and capture permissions (Linux NET_RAW; macOS BPF device access). "
+                    f"tcpdump: {detail.strip() or 'capture exited before probe completed'}"
+                )
+        except OSError as exc:
             raise RuntimePipelineError(
                 f"Unable to verify packet-capture access on {interface}: {exc}"
             ) from exc
-        if capture_access.returncode != 0:
-            detail = capture_access.stderr.strip()
-            raise RuntimePipelineError(
-                f"macOS packet-capture permission is unavailable for interface {interface}. "
-                "Grant this user BPF access with the Wireshark ChmodBPF launch daemon, "
-                "then log out and back in; do not run FastAPI as root."
-                + (f" tcpdump: {detail}" if detail else "")
-            )
+        finally:
+            if process is not None:
+                self._terminate_process(process)
+                if process.stderr:
+                    process.stderr.close()
         self.tcpdump_path = tcpdump_path
         docker = self._run(
             ["docker", "image", "inspect", self.image, "--format", "{{.Id}}"], capture_output=True,
@@ -190,7 +208,7 @@ class RuntimePipeline:
         output.parent.mkdir(parents=True, exist_ok=True)
         command = [
             self.tcpdump_path or shutil.which("tcpdump") or "tcpdump",
-            "-i", interface, "-U", "-n", "-w", str(output),
+            "-i", interface, "-p", "-U", "-n", "-w", str(output),
             "host", target_ip,
         ]
         try:
@@ -219,7 +237,20 @@ class RuntimePipeline:
         if output.stat().st_size <= 24:
             raise NoTrafficObserved("No traffic observed in capture window")
 
+    def host_artifact_path(self, path: Path) -> Path:
+        """Map only resolved runtime descendants to the daemon's bind source."""
+        try:
+            relative = path.resolve().relative_to(self.root)
+        except ValueError as exc:
+            raise RuntimePipelineError("Docker artifact path escapes runtime root") from exc
+        mapped = self.host_root / relative
+        if "," in str(mapped):
+            raise RuntimePipelineError("Docker bind source paths cannot contain commas")
+        return mapped
+
     def extract(self, pcap: Path, output_dir: Path) -> Path:
+        host_pcap = self.host_artifact_path(pcap)
+        host_output = self.host_artifact_path(output_dir)
         if output_dir.exists():
             raise RuntimePipelineError(f"Refusing to overwrite runtime CSV directory: {output_dir}")
         output_dir.mkdir(parents=True, exist_ok=False)
@@ -228,8 +259,8 @@ class RuntimePipeline:
             "--network", "none", "--cap-drop", "ALL",
             "--security-opt", "no-new-privileges", "--read-only",
             "--tmpfs", "/work:rw,noexec,nosuid,size=64m,uid=10001,gid=10001",
-            "--mount", f"type=bind,src={pcap},dst=/input/{pcap.name},readonly",
-            "--mount", f"type=bind,src={output_dir.resolve()},dst=/output",
+            "--mount", f"type=bind,src={host_pcap},dst=/input/{pcap.name},readonly",
+            "--mount", f"type=bind,src={host_output},dst=/output",
             self.image, f"/input/{pcap.name}", "/output",
         ]
         try:
@@ -272,6 +303,7 @@ class RuntimeWorker:
         self.failure = None
         self.pipeline = RuntimePipeline(
             root=settings.runtime_monitoring_root,
+            host_root=getattr(settings, "runtime_monitoring_host_root", None),
             image=settings.cicflowmeter_v3_image,
             expected_image_digest=getattr(
                 settings, "cicflowmeter_v3_image_digest", CICFLOWMETER_V3_IMAGE_DIGEST

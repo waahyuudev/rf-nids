@@ -35,6 +35,7 @@ class Settings:
     max_page_size: int = 100
     auth_session_hours: int = 8
     runtime_monitoring_root: Path = PROJECT_ROOT / "data/runtime/monitoring"
+    runtime_monitoring_host_root: Path | None = None
     capture_window_seconds: float = 10.0
     capture_stop_timeout_seconds: float = 15.0
     cicflowmeter_v3_image: str = "rf-nids-cicflowmeter-v3:a26aae27"
@@ -72,6 +73,10 @@ class Settings:
             auth_session_hours=int(os.getenv("AUTH_SESSION_HOURS", "8")),
             runtime_monitoring_root=_resolve_project_path(
                 os.getenv("RUNTIME_MONITORING_ROOT", "data/runtime/monitoring")
+            ),
+            runtime_monitoring_host_root=(
+                Path(os.environ["RUNTIME_MONITORING_HOST_ROOT"])
+                if os.getenv("RUNTIME_MONITORING_HOST_ROOT") else None
             ),
             capture_window_seconds=float(os.getenv("CAPTURE_WINDOW_SECONDS", "10")),
             capture_stop_timeout_seconds=float(

@@ -6,7 +6,7 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     ports:
-      - "5432:5432"
+      - "127.0.0.1:5432:5432"
     volumes:
       - rf_nids_postgres:/var/lib/postgresql/data
     healthcheck:
@@ -37,8 +37,7 @@ services:
     restart: "no"
 
   api:
-    # Application/API deployment only. Real monitoring capture is intentionally
-    # host-run; this container has no Docker socket or packet-capture privileges.
+    # Ubuntu Docker Engine deployment; see docs/docker_runtime_monitoring.md.
     build:
       context: .
     command:
@@ -48,14 +47,35 @@ services:
       - 0.0.0.0
       - --port
       - "8000"
-      - --reload
-    environment: *backend-environment
-    ports:
-      - "8000:8000"
+    network_mode: host
+    cap_drop: [ALL]
+    cap_add: [NET_RAW]
+    group_add:
+      - "${DOCKER_SOCKET_GID:?Set DOCKER_SOCKET_GID to the host Docker socket group ID}"
+    environment:
+      <<: *backend-environment
+      DATABASE_URL: postgresql+psycopg2://postgres:postgres@127.0.0.1:5432/rf_nids
+      RUNTIME_MONITORING_ROOT: /app/data/runtime/monitoring
+      RUNTIME_MONITORING_HOST_ROOT: "${RUNTIME_MONITORING_HOST_ROOT:?Set the absolute host runtime directory}"
+      CAPTURE_WINDOW_SECONDS: "${CAPTURE_WINDOW_SECONDS:-10}"
+      CAPTURE_STOP_TIMEOUT_SECONDS: "${CAPTURE_STOP_TIMEOUT_SECONDS:-15}"
+      EXTRACTION_TIMEOUT_SECONDS: "${EXTRACTION_TIMEOUT_SECONDS:-120}"
+    stop_grace_period: 180s
     volumes:
       - ./src:/app/src
       - ./config:/app/config:ro
       - ./models:/app/models:ro
+      - type: bind
+        source: "${RUNTIME_MONITORING_HOST_ROOT:?Set the absolute host runtime directory}"
+        target: /app/data/runtime/monitoring
+        bind:
+          create_host_path: false
+      # Host-equivalent privileges: required only by the runtime extractor.
+      - type: bind
+        source: /var/run/docker.sock
+        target: /var/run/docker.sock
+        bind:
+          create_host_path: false
     depends_on:
       postgres:
         condition: service_healthy
