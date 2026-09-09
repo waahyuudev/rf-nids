@@ -505,6 +505,45 @@ def test_runtime_prediction_preserves_monitoring_model_and_alert_provenance(clie
     assert [row["id"] for row in listed] == [result["prediction_id"]]
 
 
+def test_demo_monitoring_uses_effective_candidate_provenance(client):
+    """A new demo session must not fall back to the database-active RF-v2 row."""
+    from dataclasses import replace
+
+    http, app = client
+    app.state.settings = replace(app.state.settings, demo_model_version="rf-v3.0-candidate")
+    with app.state.session_factory() as db:
+        candidate = ModelRecord(
+            model_name="Experiment E demo candidate", model_version="rf-v3.0-candidate",
+            algorithm="Random Forest", is_active=False,
+        )
+        db.add(candidate); db.commit(); db.refresh(candidate)
+        app.state.model_record = candidate
+    names, _ = list_capture_interfaces()
+    interface_name = names[0]["name"] if names else "test-interface"
+    started = http.post("/api/monitoring/start", json={
+        "target_ip": "192.168.128.2", "interface_name": interface_name,
+    })
+    assert started.status_code == 201
+    session = started.json()
+    assert session["model_version"] == "rf-v3.0-candidate"
+    with app.state.session_factory() as db:
+        active = db.scalar(select(ModelRecord).where(ModelRecord.is_active.is_(True)))
+        assert active.model_version == "test-v1"
+        assert db.get(MonitoringSession, session["id"]).model_id == candidate.id
+        output = {
+            "prediction": "PortScan", "confidence": 0.99,
+            "probabilities": {"Normal": 0.005, "DDoS": 0.005, "PortScan": 0.99},
+            "model_version": "rf-v3.0-candidate",
+        }
+        result = persist_predictions(
+            db, [PredictionRequest(**payload(20))], [output], candidate.id,
+            monitoring_session_id=session["id"], external_keys=[f"demo:{session['id']}:1"],
+        )[0]
+    listed = http.get(f"/api/monitoring/sessions/{session['id']}/predictions").json()
+    assert listed[0]["id"] == result["prediction_id"]
+    assert listed[0]["model_version"] == "rf-v3.0-candidate"
+
+
 def test_health_and_model(client):
     http, _ = client
     assert http.get("/health").json() == {

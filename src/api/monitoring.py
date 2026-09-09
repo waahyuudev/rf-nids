@@ -77,7 +77,10 @@ class MonitoringService:
             db.commit()
         return len(rows)
 
-    def start(self, db: Session, *, target_ip: str, interface_name: str, user: User):
+    def start(
+        self, db: Session, *, target_ip: str, interface_name: str, user: User,
+        model_id: int | None = None,
+    ):
         try:
             address = ip_address(target_ip.strip())
             normalized_ip = str(address)
@@ -102,8 +105,10 @@ class MonitoringService:
             raise MonitoringValidation("interface_name is not an available local interface")
         if self.active(db) is not None:
             raise MonitoringConflict("A monitoring session is already active")
-        model = db.scalar(
-            select(ModelRecord).where(ModelRecord.is_active.is_(True)).order_by(ModelRecord.id.desc())
+        model = (
+            db.get(ModelRecord, model_id)
+            if model_id is not None else
+            db.scalar(select(ModelRecord).where(ModelRecord.is_active.is_(True)).order_by(ModelRecord.id.desc()))
         )
         if model is None:
             raise MonitoringValidation("No active model is available")

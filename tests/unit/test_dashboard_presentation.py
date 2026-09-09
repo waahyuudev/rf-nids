@@ -8,6 +8,12 @@ from dashboard.presentation import (
     prediction_context,
     split_evaluations,
 )
+from dashboard.pages.monitoring import session_model_display
+
+
+def test_monitoring_session_model_display_marks_only_current_demo_model():
+    assert session_model_display("rf-v3.0-candidate", "rf-v3.0-candidate") == "rf-v3.0-candidate · DEMO"
+    assert session_model_display("rf-v2.0", "rf-v3.0-candidate") == "rf-v2.0"
 
 
 def test_dataset_and_model_mapping_preserve_imported_values_and_nulls():

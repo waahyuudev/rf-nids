@@ -784,7 +784,9 @@ def create_app(
         try:
             row = request.app.state.monitoring_service.start(
                 db, target_ip=payload.target_ip,
-                interface_name=payload.interface_name, user=user
+                interface_name=payload.interface_name, user=user,
+                # May be an inactive provenance record in explicitly enabled demo mode.
+                model_id=request.app.state.model_record.id,
             )
         except MonitoringValidation as exc:
             raise HTTPException(422, str(exc)) from exc

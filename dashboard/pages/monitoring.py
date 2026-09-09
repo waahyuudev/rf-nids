@@ -3,6 +3,7 @@ from datetime import datetime, timezone
 import streamlit as st
 
 from dashboard.components.styles import section_heading
+from dashboard.config import DashboardConfig
 
 PAGE_SIZE = 20
 ACTIVE = {"STARTING", "RUNNING", "STOPPING"}
@@ -18,6 +19,12 @@ def _elapsed(started_at: str | None) -> str:
     return f"{hours:02d}:{minutes:02d}:{seconds:02d}"
 
 
+def session_model_display(model_version: str | None, demo_model_version: str | None) -> str:
+    """Label only the current demo inference model; historical sessions stay literal."""
+    value = model_version or "—"
+    return f"{value} · DEMO" if value == demo_model_version else value
+
+
 def render(client) -> None:
     section_heading(
         "Monitoring",
@@ -26,6 +33,7 @@ def render(client) -> None:
     state = client.monitoring_status()
     current = state.get("session")
     running = state["status"] in ACTIVE
+    dashboard_config = DashboardConfig.from_env()
 
     st.subheader("Monitoring Configuration")
     interfaces = client.monitoring_interfaces()
@@ -59,7 +67,8 @@ def render(client) -> None:
         columns = st.columns(4)
         values = [
             ("Session ID", current["id"]), ("Target", current["target_ip"]),
-            ("Interface", current["interface_name"]), ("Model", current["model_version"]),
+            ("Interface", current["interface_name"]),
+            ("Model", session_model_display(current["model_version"], dashboard_config.demo_model_version)),
             ("Elapsed", _elapsed(current["started_at"])), ("Flows", current["flow_count"]),
             ("Predictions", current["prediction_count"]), ("Alerts", current["alert_count"]),
         ]
