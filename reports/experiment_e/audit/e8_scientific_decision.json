@@ -1,0 +1,22 @@
+{
+  "comparison_path": "reports/experiment_e/analysis/e8_final_comparison.json",
+  "comparison_sha256": "9a031c84ae2e363925f3a8b84e3b33be0c2e5e4dc009ab30dccc67b9037c3fda",
+  "decision": "MORE_VALIDATION_REQUIRED",
+  "e9_promotion_scientifically_authorized": false,
+  "final_test_policy": "No final-test content was read; sealed Experiment D results were referenced only through previously published runtime metadata and frozen manifests.",
+  "integrity_checks": {
+    "candidate_hash": true,
+    "candidate_not_active": true,
+    "e3_84_to_78": true,
+    "e4_lineage_and_session_control": true,
+    "e5_frozen_parameters_and_feature_contract": true,
+    "e6_frozen_validation": true,
+    "e7_new_runtime_validation": true,
+    "final_test_seal": true,
+    "no_promotion_performed": true,
+    "rf_v2_frozen_hashes": true
+  },
+  "recommendation": "The candidate is scientifically supported for the narrow PortScan remediation finding, but broad three-class promotion requires new DDoS runtime validation and broader Normal/runtime replication.",
+  "schema": "experiment_e_e8_scientific_decision",
+  "status": "PASS_WITH_DOCUMENTED_LIMITATION"
+}

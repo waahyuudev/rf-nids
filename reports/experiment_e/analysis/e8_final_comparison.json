@@ -1,0 +1,153 @@
+{
+  "comparison_rows": [
+    {
+      "accuracy": 0.10295316320772462,
+      "dataset_or_scope": "D6 published RF-v2 baseline evidence",
+      "ddos_recall": 0.07692804547216121,
+      "evidence_type": "historical sealed Experiment D evidence",
+      "interpretation": "Historical reference only; not reused for Experiment E model selection.",
+      "model": "rf-v2.0",
+      "normal_recall": 0.9333333333333333,
+      "portscan_recall": 0.9679633867276888
+    },
+    {
+      "accuracy": 0.011198945981554678,
+      "dataset_or_scope": "new Experiment E held-out validation",
+      "ddos_recall": null,
+      "evidence_type": "E6 offline validation",
+      "interpretation": "Direct, same-row model comparison; no DDoS ground truth.",
+      "model": "rf-v2.0",
+      "normal_recall": 1.0,
+      "normal_to_portscan_false_positives": 0,
+      "portscan_false_negatives": 1501,
+      "portscan_recall": 0.0
+    },
+    {
+      "accuracy": 0.9993412384716732,
+      "dataset_or_scope": "new Experiment E held-out validation",
+      "ddos_recall": null,
+      "evidence_type": "E6 offline validation",
+      "interpretation": "Direct, same-row model comparison; no DDoS ground truth.",
+      "model": "rf-v3.0-candidate",
+      "normal_recall": 1.0,
+      "normal_to_portscan_false_positives": 0,
+      "portscan_false_negatives": 1,
+      "portscan_recall": 0.9993337774816788
+    },
+    {
+      "accuracy": 0.039936102236421724,
+      "dataset_or_scope": "new preregistered 3-VM PCAPs",
+      "ddos_recall": null,
+      "evidence_type": "E7 unseen 3-VM runtime validation",
+      "interpretation": "Direct, same-row model comparison; no DDoS ground truth.",
+      "model": "rf-v2.0",
+      "normal_recall": 1.0,
+      "normal_to_portscan_false_positives": 0,
+      "portscan_false_negatives": 601,
+      "portscan_recall": 0.0
+    },
+    {
+      "accuracy": 0.9984025559105432,
+      "dataset_or_scope": "new preregistered 3-VM PCAPs",
+      "ddos_recall": null,
+      "evidence_type": "E7 unseen 3-VM runtime validation",
+      "interpretation": "Direct, same-row model comparison; no DDoS ground truth.",
+      "model": "rf-v3.0-candidate",
+      "normal_recall": 1.0,
+      "normal_to_portscan_false_positives": 0,
+      "portscan_false_negatives": 1,
+      "portscan_recall": 0.9983361064891847
+    }
+  ],
+  "conclusion": {
+    "answer": "Yes, for the observed PortScan and Normal scenarios.",
+    "consistency": "RF-v2 PortScan recall was 0.0 in E6 and E7; RF-v3 was 0.999334 in E6 and 0.998336 in the distinct E7 live topology.",
+    "e6_false_negative_reduction": 1500,
+    "e6_portscan_recall_delta": 0.9993337774816788,
+    "e7_false_negative_reduction": 600,
+    "e7_portscan_recall_delta": 0.9983361064891847,
+    "normal_recall_preserved_in_e6_and_e7": true,
+    "probability_shift": {
+      "e6_p_v1_portscan_probability_mean": {
+        "rf_v2": 0.400839309129178,
+        "rf_v3": 0.986169556910304
+      },
+      "e7_p_r1_portscan_probability_mean": {
+        "rf_v2": 0.39383528626783754,
+        "rf_v3": 0.9858362307695435
+      }
+    },
+    "scientific_question": "Did controlled Experiment E adaptation improve PortScan generalization to the new 3-VM runtime distribution?"
+  },
+  "decision": "MORE_VALIDATION_REQUIRED",
+  "e9_promotion_scientifically_authorized": false,
+  "evidence": {
+    "candidate": {
+      "path": "models/experiment_e/random_forest_rf_v3_candidate.joblib",
+      "sha256": "6b01c7b3923c1a6bd471862d011f8f5b88a31378e51d1dde082bd2e72bedef86"
+    },
+    "candidate_metadata": {
+      "path": "models/experiment_e/random_forest_rf_v3_candidate_metadata.json",
+      "sha256": "30b6bdf2a6cb2d60e2be36d4db1e124d71504393081b229e6d94da7e70322cbc"
+    },
+    "e3_distribution": {
+      "path": "reports/experiment_e/analysis/e3_distribution_analysis.json",
+      "sha256": "3d495008285fc8d5f41c90cad75a07da00d5db0db727dc66f8167d4dc74b95d3"
+    },
+    "e3_extraction": {
+      "path": "reports/experiment_e/audit/e3_extraction_validation_final.json",
+      "sha256": "2e9d6c9a9ddd9b0144e76fa4c68db81470c3fa81a7fc1d846d625f9c5493f51d"
+    },
+    "e4": {
+      "path": "reports/experiment_e/audit/e4_dataset_construction_audit.json",
+      "sha256": "69cc278d2a6139b7b2d2e9d4db3312fb3a3b06cf70381a719d542ec624e2b45c"
+    },
+    "e5": {
+      "path": "reports/experiment_e/audit/e5_training_audit.json",
+      "sha256": "bd8201345c9521d0c99b78f92793099f3e5e9926c0703c50c81f7f3584b1ae52"
+    },
+    "e6": {
+      "path": "reports/experiment_e/evaluation/e6_offline_validation.json",
+      "sha256": "66722d430c112e222a5e767086294dc8f27b658ac92e34bbc6eca7e69572093d"
+    },
+    "e7": {
+      "path": "reports/experiment_e/runtime_validation/e7_runtime_validation.json",
+      "sha256": "0c655a51dee12b3610180eaf5145f9e06a720622a33ce8e204419a87f9eca640"
+    },
+    "final_test_seal": {
+      "path": "reports/experiment_d/audit/final_test_leakage_audit.json",
+      "sha256": "e89193ab23fdf87f092c8b0b2f867174cfa6ef99715d126fe720c3c07dce42af"
+    },
+    "rf_v2_frozen": {
+      "path": "reports/experiment_d/audit/rf_v2_frozen_manifest.json",
+      "sha256": "00ad490dbbe92415d96b861ead8e08a258d12cf8e68e6debd0521ef81ba1b852"
+    }
+  },
+  "evidence_role_separation": {
+    "adaptation_training": "E4 controlled, session-aware E5 training data; not performance evidence.",
+    "historical": "Experiment D sealed RF-v2 results are background/baseline evidence only.",
+    "unseen_runtime": "E7 preregistered new 3-VM PCAP comparison.",
+    "validation": "E6 untouched N-V1/P-V1 same-row comparison."
+  },
+  "integrity_checks": {
+    "candidate_hash": true,
+    "candidate_not_active": true,
+    "e3_84_to_78": true,
+    "e4_lineage_and_session_control": true,
+    "e5_frozen_parameters_and_feature_contract": true,
+    "e6_frozen_validation": true,
+    "e7_new_runtime_validation": true,
+    "final_test_seal": true,
+    "no_promotion_performed": true,
+    "rf_v2_frozen_hashes": true
+  },
+  "limitations": [
+    "Experiment E does not validate DDoS runtime recall because no new DDoS validation/runtime session exists.",
+    "Experiment E Normal validation is small (17 E6 rows; 25 E7 flows).",
+    "E7 is minimal one-session-per-observed-class runtime evidence.",
+    "RF-v3 is not established as universally superior across attacks, topologies, or operating conditions."
+  ],
+  "schema": "experiment_e_e8_final_comparison",
+  "scope": "Scientific decision only; no model promotion, activation, retraining, tuning, or final-test access.",
+  "status": "PASS_WITH_DOCUMENTED_LIMITATION"
+}

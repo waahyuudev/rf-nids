@@ -1,0 +1,288 @@
+{
+  "adapter": {
+    "exact_rf_v2_feature_order": true,
+    "output_feature_count": 78,
+    "session_merged_before_validation": false,
+    "unexpected_model_features_accepted": false
+  },
+  "experiment_code": "EXPERIMENT_E",
+  "extractor_provenance": {
+    "amendment": "reports/experiment_e/audit/e3_provenance_amendment_a1.json",
+    "approved_replacement_digest": "sha256:b12b3a4a4218968aba2436685a4eb113473e5681de70705409e834e4613a879b",
+    "historical_digest": "sha256:0227c7280e586d54144b9bb11b2a6b5d4b1c4ba9bc7c44199fa312a6b829caab"
+  },
+  "limitations": [
+    "Normal adaptation contains 50 flows across three sessions while PortScan adaptation contains 1568 flows, including 1042 from P-A2. E4 must remain session-aware and must not silently row-oversample or allow P-A2 to dominate fitting.",
+    "KS statistics describe feature-distribution differences, not model quality or compatibility."
+  ],
+  "ordered_raw_header_consistent_across_eight": true,
+  "prohibited_operations": {
+    "e4_constructed": false,
+    "evaluation": false,
+    "experiment_d_final_test_read": false,
+    "experiment_d_modified": false,
+    "inference": false,
+    "rf_v2_modified": false,
+    "threshold_change": false,
+    "training": false
+  },
+  "raw_header_count": 84,
+  "row_totals": {
+    "adaptation": 1618,
+    "overall": 3136,
+    "validation": 1518
+  },
+  "schema": "experiment_e_e3_extraction_validation_final",
+  "schema_version": 1,
+  "session_isolation": {
+    "adaptation_sessions": [
+      "expe-normal-n-a1",
+      "expe-normal-n-a2",
+      "expe-normal-n-a3",
+      "expe-portscan-p-a1",
+      "expe-portscan-p-a2",
+      "expe-portscan-p-a3"
+    ],
+    "adaptation_validation_disjoint": true,
+    "final_test_sessions_absent_and_unread": true,
+    "validation_sessions": [
+      "expe-normal-n-v1",
+      "expe-portscan-p-v1"
+    ]
+  },
+  "sessions": [
+    {
+      "adapter_feature_order_matches_rf_v2": true,
+      "adapter_output_feature_count": 78,
+      "adapter_schema_validation": "PASS",
+      "class": "Normal",
+      "expected_sha256": "e0a4f6bb3e2148e0cd1a5be1409694c496b6e95ced34eee7468f2abbbd3aff1b",
+      "imputation_performed": false,
+      "logical_path": "data/lab/experiment_e/adaptation/flows/cicflowmeter-v3/normal/expe-normal-n-a1.pcap_ISCX.csv",
+      "malformed_row_numbers": [],
+      "non_finite_after_adapter_boundary": {
+        "nan": 0,
+        "negative_infinity": 0,
+        "positive_infinity": 0,
+        "total": 0
+      },
+      "non_finite_before_adapter_boundary": {
+        "nan": 0,
+        "negative_infinity": 0,
+        "positive_infinity": 0,
+        "total": 0
+      },
+      "raw_column_count": 84,
+      "raw_row_count": 13,
+      "role": "adaptation",
+      "session_id": "expe-normal-n-a1",
+      "sha256": "e0a4f6bb3e2148e0cd1a5be1409694c496b6e95ced34eee7468f2abbbd3aff1b",
+      "sha256_match": true,
+      "size_bytes": 7176
+    },
+    {
+      "adapter_feature_order_matches_rf_v2": true,
+      "adapter_output_feature_count": 78,
+      "adapter_schema_validation": "PASS",
+      "class": "Normal",
+      "expected_sha256": "100c7be956778ad41555c9b67cc2bb9031a2322f09e208f05e081afd92a9af85",
+      "imputation_performed": false,
+      "logical_path": "data/lab/experiment_e/adaptation/flows/cicflowmeter-v3/normal/expe-normal-n-a2.pcap_ISCX.csv",
+      "malformed_row_numbers": [],
+      "non_finite_after_adapter_boundary": {
+        "nan": 0,
+        "negative_infinity": 0,
+        "positive_infinity": 0,
+        "total": 0
+      },
+      "non_finite_before_adapter_boundary": {
+        "nan": 0,
+        "negative_infinity": 0,
+        "positive_infinity": 0,
+        "total": 0
+      },
+      "raw_column_count": 84,
+      "raw_row_count": 19,
+      "role": "adaptation",
+      "session_id": "expe-normal-n-a2",
+      "sha256": "100c7be956778ad41555c9b67cc2bb9031a2322f09e208f05e081afd92a9af85",
+      "sha256_match": true,
+      "size_bytes": 9990
+    },
+    {
+      "adapter_feature_order_matches_rf_v2": true,
+      "adapter_output_feature_count": 78,
+      "adapter_schema_validation": "PASS",
+      "class": "Normal",
+      "expected_sha256": "6a86409353c47a1922c28ecf3f506ec3d71b570d2cf6f2669ef790b05b8318d5",
+      "imputation_performed": false,
+      "logical_path": "data/lab/experiment_e/adaptation/flows/cicflowmeter-v3/normal/expe-normal-n-a3.pcap_ISCX.csv",
+      "malformed_row_numbers": [],
+      "non_finite_after_adapter_boundary": {
+        "nan": 0,
+        "negative_infinity": 0,
+        "positive_infinity": 0,
+        "total": 0
+      },
+      "non_finite_before_adapter_boundary": {
+        "nan": 0,
+        "negative_infinity": 0,
+        "positive_infinity": 0,
+        "total": 0
+      },
+      "raw_column_count": 84,
+      "raw_row_count": 18,
+      "role": "adaptation",
+      "session_id": "expe-normal-n-a3",
+      "sha256": "6a86409353c47a1922c28ecf3f506ec3d71b570d2cf6f2669ef790b05b8318d5",
+      "sha256_match": true,
+      "size_bytes": 9239
+    },
+    {
+      "adapter_feature_order_matches_rf_v2": true,
+      "adapter_output_feature_count": 78,
+      "adapter_schema_validation": "PASS",
+      "class": "Normal",
+      "expected_sha256": "1120b5efb9700d4c2173b1d7cf0c9ccd3beee3f09959ec3397181fc824190a76",
+      "imputation_performed": false,
+      "logical_path": "data/lab/experiment_e/validation/flows/cicflowmeter-v3/normal/expe-normal-n-v1.pcap_ISCX.csv",
+      "malformed_row_numbers": [],
+      "non_finite_after_adapter_boundary": {
+        "nan": 0,
+        "negative_infinity": 0,
+        "positive_infinity": 0,
+        "total": 0
+      },
+      "non_finite_before_adapter_boundary": {
+        "nan": 0,
+        "negative_infinity": 0,
+        "positive_infinity": 0,
+        "total": 0
+      },
+      "raw_column_count": 84,
+      "raw_row_count": 17,
+      "role": "validation",
+      "session_id": "expe-normal-n-v1",
+      "sha256": "1120b5efb9700d4c2173b1d7cf0c9ccd3beee3f09959ec3397181fc824190a76",
+      "sha256_match": true,
+      "size_bytes": 8982
+    },
+    {
+      "adapter_feature_order_matches_rf_v2": true,
+      "adapter_output_feature_count": 78,
+      "adapter_schema_validation": "PASS",
+      "class": "PortScan",
+      "expected_sha256": "2891b03c688ab73a1de9bbf748c5b67ceaabc8d8a8cd3afa6806a3e0a19ab514",
+      "imputation_performed": false,
+      "logical_path": "data/lab/experiment_e/adaptation/flows/cicflowmeter-v3/portscan/expe-portscan-p-a1.pcap_ISCX.csv",
+      "malformed_row_numbers": [],
+      "non_finite_after_adapter_boundary": {
+        "nan": 0,
+        "negative_infinity": 0,
+        "positive_infinity": 0,
+        "total": 0
+      },
+      "non_finite_before_adapter_boundary": {
+        "nan": 0,
+        "negative_infinity": 0,
+        "positive_infinity": 0,
+        "total": 0
+      },
+      "raw_column_count": 84,
+      "raw_row_count": 501,
+      "role": "adaptation",
+      "session_id": "expe-portscan-p-a1",
+      "sha256": "2891b03c688ab73a1de9bbf748c5b67ceaabc8d8a8cd3afa6806a3e0a19ab514",
+      "sha256_match": true,
+      "size_bytes": 182434
+    },
+    {
+      "adapter_feature_order_matches_rf_v2": true,
+      "adapter_output_feature_count": 78,
+      "adapter_schema_validation": "PASS",
+      "class": "PortScan",
+      "expected_sha256": "9a10fc286ae327a4af481eeb65b655c921211c274aebcc6422524b4c2d615886",
+      "imputation_performed": false,
+      "logical_path": "data/lab/experiment_e/adaptation/flows/cicflowmeter-v3/portscan/expe-portscan-p-a2.pcap_ISCX.csv",
+      "malformed_row_numbers": [],
+      "non_finite_after_adapter_boundary": {
+        "nan": 0,
+        "negative_infinity": 0,
+        "positive_infinity": 0,
+        "total": 0
+      },
+      "non_finite_before_adapter_boundary": {
+        "nan": 0,
+        "negative_infinity": 0,
+        "positive_infinity": 0,
+        "total": 0
+      },
+      "raw_column_count": 84,
+      "raw_row_count": 1042,
+      "role": "adaptation",
+      "session_id": "expe-portscan-p-a2",
+      "sha256": "9a10fc286ae327a4af481eeb65b655c921211c274aebcc6422524b4c2d615886",
+      "sha256_match": true,
+      "size_bytes": 378629
+    },
+    {
+      "adapter_feature_order_matches_rf_v2": true,
+      "adapter_output_feature_count": 78,
+      "adapter_schema_validation": "PASS",
+      "class": "PortScan",
+      "expected_sha256": "c22d170b574098ad2aa88aa51bd45b9231a1b34e2f19f7d8f0b85b99f1ebc424",
+      "imputation_performed": false,
+      "logical_path": "data/lab/experiment_e/adaptation/flows/cicflowmeter-v3/portscan/expe-portscan-p-a3.pcap_ISCX.csv",
+      "malformed_row_numbers": [],
+      "non_finite_after_adapter_boundary": {
+        "nan": 0,
+        "negative_infinity": 0,
+        "positive_infinity": 0,
+        "total": 0
+      },
+      "non_finite_before_adapter_boundary": {
+        "nan": 0,
+        "negative_infinity": 0,
+        "positive_infinity": 0,
+        "total": 0
+      },
+      "raw_column_count": 84,
+      "raw_row_count": 25,
+      "role": "adaptation",
+      "session_id": "expe-portscan-p-a3",
+      "sha256": "c22d170b574098ad2aa88aa51bd45b9231a1b34e2f19f7d8f0b85b99f1ebc424",
+      "sha256_match": true,
+      "size_bytes": 10371
+    },
+    {
+      "adapter_feature_order_matches_rf_v2": true,
+      "adapter_output_feature_count": 78,
+      "adapter_schema_validation": "PASS",
+      "class": "PortScan",
+      "expected_sha256": "1664c6ab044daced69d198ee967a7deba452ecad68da46d99bff9faffd8820dc",
+      "imputation_performed": false,
+      "logical_path": "data/lab/experiment_e/validation/flows/cicflowmeter-v3/portscan/expe-portscan-p-v1.pcap_ISCX.csv",
+      "malformed_row_numbers": [],
+      "non_finite_after_adapter_boundary": {
+        "nan": 0,
+        "negative_infinity": 0,
+        "positive_infinity": 0,
+        "total": 0
+      },
+      "non_finite_before_adapter_boundary": {
+        "nan": 0,
+        "negative_infinity": 0,
+        "positive_infinity": 0,
+        "total": 0
+      },
+      "raw_column_count": 84,
+      "raw_row_count": 1501,
+      "role": "validation",
+      "session_id": "expe-portscan-p-v1",
+      "sha256": "1664c6ab044daced69d198ee967a7deba452ecad68da46d99bff9faffd8820dc",
+      "sha256_match": true,
+      "size_bytes": 544205
+    }
+  ],
+  "status": "PASS_WITH_DOCUMENTED_LIMITATION"
+}

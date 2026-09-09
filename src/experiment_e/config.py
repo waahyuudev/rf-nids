@@ -93,6 +93,24 @@ class LivePreflight(BaseModel):
     benign_target_service: str
 
 
+class E3ProvenanceAmendment(BaseModel):
+    """Experiment E-only authorization for a compatibility-qualified extractor."""
+
+    model_config = ConfigDict(extra="forbid")
+    amendment_id: str
+    status: str
+    historical_required_image_digest: str = Field(pattern=r"^sha256:[0-9a-f]{64}$")
+    historical_artifact_available: bool
+    approved_replacement_image_digest: str = Field(pattern=r"^sha256:[0-9a-f]{64}$")
+    approved_replacement_image_tag: str
+    recovery_gate_evidence: str
+    compatibility_verdict: str
+    equivalence_scope: str
+    architecture_provenance_difference: str
+    scope: str
+    e3_extraction_authorized: bool
+
+
 class ExperimentEConfig(BaseModel):
     model_config = ConfigDict(extra="forbid")
     experiment_code: str
@@ -115,6 +133,7 @@ class ExperimentEConfig(BaseModel):
     final_test_policy: FinalTestPolicy
     topology_amendment: TopologyAmendment | None = None
     live_preflight: LivePreflight | None = None
+    e3_provenance_amendment: E3ProvenanceAmendment | None = None
 
     @model_validator(mode="after")
     def protocol_is_locked(self) -> "ExperimentEConfig":
@@ -175,6 +194,22 @@ class ExperimentEConfig(BaseModel):
                 raise ValueError("E2 live preflight must reject tcpdump any interface")
             if preflight.benign_target_service != "http://10.10.20.2:8080/":
                 raise ValueError("unexpected Experiment E benign target service")
+        if self.e3_provenance_amendment is not None:
+            amendment = self.e3_provenance_amendment
+            if amendment.amendment_id != "E3-A1" or amendment.status != "APPROVED":
+                raise ValueError("unexpected Experiment E E3 provenance amendment")
+            if amendment.historical_required_image_digest != self.cicflowmeter_v3.image_digest:
+                raise ValueError("E3 amendment must preserve the historical required image digest")
+            if amendment.historical_artifact_available:
+                raise ValueError("E3 amendment is only valid when historical image is unavailable")
+            if amendment.approved_replacement_image_digest == amendment.historical_required_image_digest:
+                raise ValueError("E3 replacement image must be distinct from historical image")
+            if amendment.compatibility_verdict != (
+                "BYTE_IDENTICAL_ON_NINE_NON_FINAL_EXPERIMENT_D_ADAPTATION_REFERENCE_PCAPS"
+            ):
+                raise ValueError("E3 replacement must have the approved byte-identical verdict")
+            if amendment.scope != "Experiment E only" or not amendment.e3_extraction_authorized:
+                raise ValueError("E3 provenance amendment must be limited to authorized Experiment E extraction")
         return self
 
 

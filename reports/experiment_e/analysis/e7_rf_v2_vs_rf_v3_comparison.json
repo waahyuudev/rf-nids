@@ -1,0 +1,271 @@
+{
+  "deltas": {
+    "accuracy": 0.9584664536741214,
+    "normal_recall": 0.0,
+    "normal_to_portscan_false_positive_change": 0,
+    "portscan_false_negative_reduction": 600,
+    "portscan_recall": 0.9983361064891847
+  },
+  "e6_comparison": {
+    "e6_rf_v2_portscan_recall": 0.0,
+    "e6_rf_v3_portscan_recall": 0.9993337774816788,
+    "e7_rf_v2_portscan_recall": 0.0,
+    "e7_rf_v3_portscan_recall": 0.9983361064891847,
+    "interpretation": "E7 is a distinct live 3-VM capture and is not expected to numerically equal E6."
+  },
+  "e8_comparison_final_decision_authorized": true,
+  "rf_v2": {
+    "accuracy": 0.039936102236421724,
+    "confusion_matrix": [
+      [
+        25,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0
+      ],
+      [
+        601,
+        0,
+        0
+      ]
+    ],
+    "confusion_matrix_labels": [
+      "Normal",
+      "DDoS",
+      "PortScan"
+    ],
+    "ddos_ground_truth_evaluated": false,
+    "ddos_predictions_on_observed_classes": 0,
+    "normal_to_portscan_false_positives": 0,
+    "observed_class_metrics": {
+      "Normal": {
+        "f1": 0.07680491551459294,
+        "precision": 0.039936102236421724,
+        "recall": 1.0,
+        "support": 25
+      },
+      "PortScan": {
+        "f1": 0.0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "support": 601
+      }
+    },
+    "portscan_false_negatives": 601,
+    "predicted_counts": {
+      "DDoS": 0,
+      "Normal": 626,
+      "PortScan": 0
+    },
+    "sessions": {
+      "E7-N-R1": {
+        "correct": 25,
+        "ground_truth_class": "Normal",
+        "ground_truth_class_recall": 1.0,
+        "incorrect": 0,
+        "predicted_counts": {
+          "DDoS": 0,
+          "Normal": 25,
+          "PortScan": 0
+        },
+        "probability_summary": {
+          "DDoS": {
+            "max": 0.37684558488705205,
+            "mean": 0.09472437368124015,
+            "median": 0.0050117415162447745,
+            "min": 0.0,
+            "q1": 0.0,
+            "q3": 0.18366883567873488
+          },
+          "Normal": {
+            "max": 1.0,
+            "mean": 0.8764187269635904,
+            "median": 0.9465170892682666,
+            "min": 0.5655061399908625,
+            "q1": 0.7623000575899617,
+            "q3": 1.0
+          },
+          "PortScan": {
+            "max": 0.06998239233933956,
+            "mean": 0.028856899355169646,
+            "median": 0.0484711692154886,
+            "min": 0.0,
+            "q1": 0.0,
+            "q3": 0.054684705886160506
+          }
+        },
+        "total_flows": 25
+      },
+      "E7-P-R1": {
+        "correct": 0,
+        "ground_truth_class": "PortScan",
+        "ground_truth_class_recall": 0.0,
+        "incorrect": 601,
+        "predicted_counts": {
+          "DDoS": 0,
+          "Normal": 601,
+          "PortScan": 0
+        },
+        "probability_summary": {
+          "DDoS": {
+            "max": 5.548223253494015e-05,
+            "mean": 9.231652668043286e-08,
+            "median": 0.0,
+            "min": 0.0,
+            "q1": 0.0,
+            "q3": 0.0
+          },
+          "Normal": {
+            "max": 0.9939829426249888,
+            "mean": 0.6061646214156355,
+            "median": 0.5922984248091747,
+            "min": 0.5922984248091747,
+            "q1": 0.5922984248091747,
+            "q3": 0.6304841319005398
+          },
+          "PortScan": {
+            "max": 0.4077015751908251,
+            "mean": 0.39383528626783754,
+            "median": 0.4077015751908251,
+            "min": 0.005961575142476278,
+            "q1": 0.3695158680994601,
+            "q3": 0.4077015751908251
+          }
+        },
+        "total_flows": 601
+      }
+    }
+  },
+  "rf_v3_candidate": {
+    "accuracy": 0.9984025559105432,
+    "confusion_matrix": [
+      [
+        25,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0
+      ],
+      [
+        1,
+        0,
+        600
+      ]
+    ],
+    "confusion_matrix_labels": [
+      "Normal",
+      "DDoS",
+      "PortScan"
+    ],
+    "ddos_ground_truth_evaluated": false,
+    "ddos_predictions_on_observed_classes": 0,
+    "normal_to_portscan_false_positives": 0,
+    "observed_class_metrics": {
+      "Normal": {
+        "f1": 0.9803921568627451,
+        "precision": 0.9615384615384616,
+        "recall": 1.0,
+        "support": 25
+      },
+      "PortScan": {
+        "f1": 0.9991673605328892,
+        "precision": 1.0,
+        "recall": 0.9983361064891847,
+        "support": 601
+      }
+    },
+    "portscan_false_negatives": 1,
+    "predicted_counts": {
+      "DDoS": 0,
+      "Normal": 26,
+      "PortScan": 600
+    },
+    "sessions": {
+      "E7-N-R1": {
+        "correct": 25,
+        "ground_truth_class": "Normal",
+        "ground_truth_class_recall": 1.0,
+        "incorrect": 0,
+        "predicted_counts": {
+          "DDoS": 0,
+          "Normal": 25,
+          "PortScan": 0
+        },
+        "probability_summary": {
+          "DDoS": {
+            "max": 0.32455454509937276,
+            "mean": 0.03094526623610886,
+            "median": 0.004788929590339676,
+            "min": 0.0003742640095546241,
+            "q1": 0.004788929590339676,
+            "q3": 0.03090003698342929
+          },
+          "Normal": {
+            "max": 0.9993715044932061,
+            "mean": 0.9614670436328651,
+            "median": 0.9816167546707862,
+            "min": 0.6747492214414983,
+            "q1": 0.9579015982236371,
+            "q3": 0.9870045202016365
+          },
+          "PortScan": {
+            "max": 0.06691457071122228,
+            "mean": 0.007587690131025955,
+            "median": 0.008206550208023586,
+            "min": 7.099385755799623e-05,
+            "q1": 0.0003406657686926543,
+            "q3": 0.008266522136057273
+          }
+        },
+        "total_flows": 25
+      },
+      "E7-P-R1": {
+        "correct": 600,
+        "ground_truth_class": "PortScan",
+        "ground_truth_class_recall": 0.9983361064891847,
+        "incorrect": 1,
+        "predicted_counts": {
+          "DDoS": 0,
+          "Normal": 1,
+          "PortScan": 600
+        },
+        "probability_summary": {
+          "DDoS": {
+            "max": 0.040084032720409196,
+            "mean": 0.0029859721799136837,
+            "median": 0.0034906074112497276,
+            "min": 0.0016101204881968916,
+            "q1": 0.0016198991628057163,
+            "q3": 0.0034906074112497276
+          },
+          "Normal": {
+            "max": 0.5551502150894229,
+            "mean": 0.011177797050542523,
+            "median": 0.00966971850722246,
+            "min": 0.0066626223056158,
+            "q1": 0.00966971850722246,
+            "q3": 0.012272594586158455
+          },
+          "PortScan": {
+            "max": 0.9917174785315784,
+            "mean": 0.9858362307695435,
+            "median": 0.9868396740815275,
+            "min": 0.4047657521901683,
+            "q1": 0.9861172849256445,
+            "q3": 0.9868396740815275
+          }
+        },
+        "total_flows": 601
+      }
+    }
+  },
+  "schema": "experiment_e_e7_rf_v2_vs_rf_v3_comparison",
+  "status": "PASS_WITH_DOCUMENTED_LIMITATION"
+}

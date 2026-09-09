@@ -77,3 +77,16 @@ live_preflight:
   recommended_capture_interface: enp0s3
   rejected_capture_interfaces: [any]
   benign_target_service: http://10.10.20.2:8080/
+e3_provenance_amendment:
+  amendment_id: E3-A1
+  status: APPROVED
+  historical_required_image_digest: sha256:0227c7280e586d54144b9bb11b2a6b5d4b1c4ba9bc7c44199fa312a6b829caab
+  historical_artifact_available: false
+  approved_replacement_image_digest: sha256:b12b3a4a4218968aba2436685a4eb113473e5681de70705409e834e4613a879b
+  approved_replacement_image_tag: rf-nids-cicflowmeter-v3:a26aae27
+  recovery_gate_evidence: reports/experiment_e/audit/e3_cicflowmeter_provenance_recovery_gate.json
+  compatibility_verdict: BYTE_IDENTICAL_ON_NINE_NON_FINAL_EXPERIMENT_D_ADAPTATION_REFERENCE_PCAPS
+  equivalence_scope: all nine non-final Experiment D adaptation reference PCAPs
+  architecture_provenance_difference: historical build toolchain amd64; approved candidate build toolchain aarch64
+  scope: Experiment E only
+  e3_extraction_authorized: true

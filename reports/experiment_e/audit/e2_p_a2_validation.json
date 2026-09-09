@@ -1,0 +1,33 @@
+{
+  "schema": "experiment_e_e2_session_validation_audit",
+  "schema_version": 1,
+  "session_id": "expe-portscan-p-a2",
+  "validation_status": "PASS",
+  "validation_basis": "operator-supplied evidence recorded in the create-new session manifest",
+  "checks": {
+    "e1_validator": "PASS",
+    "live_preflight_evidence_present_and_passed": "PASS",
+    "authorized_session_and_role": "PASS",
+    "preregistered_syn_t2_ports_501_1500_target_10_10_20_2_match": "PASS",
+    "pre_scan_privilege_rejection_preserved_and_excluded_from_scientific_traffic": "PASS",
+    "target_scoped_capture_filter": "PASS",
+    "capture_interface_enp0s3_not_any": "PASS",
+    "capture_start_readiness_recorded": "PASS",
+    "source_10_10_10_2_and_destination_10_10_20_2": "PASS",
+    "packet_evidence_consistent_with_syn_scan_within_preregistered_range": "PASS",
+    "pcap_nonempty": "PASS",
+    "pcap_size_packet_count_and_sha256_recorded": "PASS",
+    "no_kernel_drops": "PASS",
+    "no_remaining_tcpdump_process": "PASS",
+    "p_a2_identity_distinct_from_p_a1_and_all_normal_sessions": "PASS",
+    "adaptation_validation_and_final_test_roles_isolated": "PASS",
+    "no_final_test_session_collected": "PASS",
+    "no_experiment_d_artifact_referenced": "PASS",
+    "rf_v2_identity": "PASS",
+    "feature_contract_and_cicflowmeter_provenance_identity": "PASS",
+    "experiment_d_integrity": "PASS",
+    "all_recorded_paths_under_experiment_e_roots": "PASS"
+  },
+  "pcap_bytes_available_in_workspace": false,
+  "next_session_authorization": "P-A3 only"
+}

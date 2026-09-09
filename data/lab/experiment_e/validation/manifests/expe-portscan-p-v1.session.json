@@ -1,0 +1,74 @@
+{
+  "schema": "experiment_e_e2_scientific_session_manifest",
+  "schema_version": 1,
+  "experiment_code": "EXPERIMENT_E",
+  "phase": "E2_SCIENTIFIC_COLLECTION",
+  "session_id": "expe-portscan-p-v1",
+  "capture_id": "expe-portscan-capture-p-v1",
+  "role": "validation",
+  "class": "PortScan",
+  "scenario_id": "portscan-validation-syn-broad-moderate",
+  "validation_status": "PASS",
+  "preregistration_match": {
+    "session_id": true,
+    "capture_id": true,
+    "role": true,
+    "class": true,
+    "scenario_id": true,
+    "command": "sudo nmap -n -Pn -sS -T3 -p 1501-3000 10.10.20.2",
+    "scan_type": "SYN",
+    "timing_template": "T3",
+    "port_range": "1501-3000",
+    "target": "10.10.20.2"
+  },
+  "live_topology_match": {
+    "source_host": "ubuntu-traffic",
+    "source_ip": "10.10.10.2",
+    "observer_host": "ubuntu-nids",
+    "capture_interface": "enp0s3",
+    "capture_filter": "host 10.10.20.2",
+    "target_host": "ubuntu-target",
+    "target_ip": "10.10.20.2"
+  },
+  "timing_utc": {
+    "capture_start": "2026-09-09T08:59:43Z",
+    "traffic_start": "2026-09-09T09:00:16Z",
+    "traffic_end": "2026-09-09T09:00:16Z",
+    "capture_end": "2026-09-09T09:00:50Z",
+    "nmap_duration_seconds": 0.06
+  },
+  "traffic_procedure": {
+    "generator": "sudo nmap 7.98",
+    "nmap_exit_code": 0,
+    "host_up": true,
+    "reported_latency_seconds": 0.00043,
+    "scanned_port_count": 1500,
+    "closed_or_reset_port_count": 1500,
+    "open_port_count": 0
+  },
+  "pcap": {
+    "logical_path": "data/lab/experiment_e/validation/pcap/portscan/expe-portscan-p-v1.pcap",
+    "size_bytes": 216256,
+    "sha256": "d996fddb2f0d3eb092795b302939d55805380c8d9c57630e7c5cfca4d0c5c35f",
+    "packet_count": 3004,
+    "packets_captured": 3004,
+    "packets_received_by_filter": 3004,
+    "packets_dropped_by_kernel": 0,
+    "offline_packet_count": 3004,
+    "identity_verification_basis": "operator-supplied tcpdump, stat, sha256sum, and offline tcpdump evidence; PCAP bytes were not transferred into this workspace"
+  },
+  "packet_evidence": {
+    "expected_source_destination_present": true,
+    "syn_probes_within_preregistered_port_range_present": true,
+    "closed_port_rst_ack_present": true,
+    "consistent_with_preregistered_syn_validation_scan": true,
+    "capture_process_remaining_after_shutdown": false
+  },
+  "successful_capture_privilege": "tcpdump was run directly without sudo on enp0s3",
+  "prohibited_operations": {
+    "cicflowmeter_run": false,
+    "inference_run": false,
+    "model_trained": false,
+    "evaluation_run": false
+  }
+}

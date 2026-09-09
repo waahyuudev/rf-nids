@@ -1,0 +1,45 @@
+{
+  "class_imbalance_notes": "No row oversampling was used. E5 must use session-aware class weighting or equivalent fitting-time control.",
+  "experiment_code": "EXPERIMENT_E",
+  "experiment_e_runtime_fraction": 0.18710910354412785,
+  "experiment_e_runtime_rows": 1077,
+  "p_a2_fraction_of_e_portscan": 0.4878286270691334,
+  "p_a2_fraction_of_total_portscan": 0.1941108097636575,
+  "portscan_e_session_counts": {
+    "expe-portscan-p-a1": 501,
+    "expe-portscan-p-a2": 501,
+    "expe-portscan-p-a3": 25
+  },
+  "rows_per_class": {
+    "DDoS": 3081,
+    "Normal": 94,
+    "PortScan": 2581
+  },
+  "rows_per_session": {
+    "EXPERIMENT_D:expd-adapt-ddos-session-01": 1027,
+    "EXPERIMENT_D:expd-adapt-ddos-session-02": 1027,
+    "EXPERIMENT_D:expd-adapt-ddos-session-04": 1027,
+    "EXPERIMENT_D:expd-adapt-normal-session-01": 9,
+    "EXPERIMENT_D:expd-adapt-normal-session-02": 12,
+    "EXPERIMENT_D:expd-adapt-normal-session-03": 23,
+    "EXPERIMENT_D:expd-adapt-portscan-session-01": 513,
+    "EXPERIMENT_D:expd-adapt-portscan-session-02": 1025,
+    "EXPERIMENT_D:expd-adapt-portscan-session-03": 16,
+    "EXPERIMENT_E:expe-normal-n-a1": 13,
+    "EXPERIMENT_E:expe-normal-n-a2": 19,
+    "EXPERIMENT_E:expe-normal-n-a3": 18,
+    "EXPERIMENT_E:expe-portscan-p-a1": 501,
+    "EXPERIMENT_E:expe-portscan-p-a2": 501,
+    "EXPERIMENT_E:expe-portscan-p-a3": 25
+  },
+  "rows_per_source": {
+    "EXPERIMENT_D:DDoS": 3081,
+    "EXPERIMENT_D:Normal": 44,
+    "EXPERIMENT_D:PortScan": 1554,
+    "EXPERIMENT_E:Normal": 50,
+    "EXPERIMENT_E:PortScan": 1027
+  },
+  "schema": "experiment_e_e4_class_session_distribution",
+  "schema_version": 1,
+  "training_performed": false
+}

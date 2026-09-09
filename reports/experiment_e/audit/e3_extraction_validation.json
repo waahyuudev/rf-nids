@@ -1,0 +1,40 @@
+{
+  "schema": "experiment_e_e3_extraction_validation",
+  "schema_version": 1,
+  "experiment_code": "EXPERIMENT_E",
+  "validation_status": "INCOMPLETE_FAIL_CLOSED",
+  "validation_basis": "operator-supplied E3 extraction metadata only; the eight CSV byte streams are not available in this workspace",
+  "approved_extractor": {
+    "historical_image_digest": "sha256:0227c7280e586d54144b9bb11b2a6b5d4b1c4ba9bc7c44199fa312a6b829caab",
+    "approved_experiment_e_replacement_digest": "sha256:b12b3a4a4218968aba2436685a4eb113473e5681de70705409e834e4613a879b",
+    "provenance_amendment": "reports/experiment_e/audit/e3_provenance_amendment_a1.json"
+  },
+  "expected_session_outputs": [
+    {"session_id": "expe-normal-n-a1", "role": "adaptation", "class": "Normal", "path": "data/lab/experiment_e/adaptation/flows/cicflowmeter-v3/normal/expe-normal-n-a1.pcap_ISCX.csv", "sha256": "e0a4f6bb3e2148e0cd1a5be1409694c496b6e95ced34eee7468f2abbbd3aff1b", "raw_columns": 84, "flow_rows": 13},
+    {"session_id": "expe-normal-n-a2", "role": "adaptation", "class": "Normal", "path": "data/lab/experiment_e/adaptation/flows/cicflowmeter-v3/normal/expe-normal-n-a2.pcap_ISCX.csv", "sha256": "100c7be956778ad41555c9b67cc2bb9031a2322f09e208f05e081afd92a9af85", "raw_columns": 84, "flow_rows": 19},
+    {"session_id": "expe-normal-n-a3", "role": "adaptation", "class": "Normal", "path": "data/lab/experiment_e/adaptation/flows/cicflowmeter-v3/normal/expe-normal-n-a3.pcap_ISCX.csv", "sha256": "6a86409353c47a1922c28ecf3f506ec3d71b570d2cf6f2669ef790b05b8318d5", "raw_columns": 84, "flow_rows": 18},
+    {"session_id": "expe-normal-n-v1", "role": "validation", "class": "Normal", "path": "data/lab/experiment_e/validation/flows/cicflowmeter-v3/normal/expe-normal-n-v1.pcap_ISCX.csv", "sha256": "1120b5efb9700d4c2173b1d7cf0c9ccd3beee3f09959ec3397181fc824190a76", "raw_columns": 84, "flow_rows": 17},
+    {"session_id": "expe-portscan-p-a1", "role": "adaptation", "class": "PortScan", "path": "data/lab/experiment_e/adaptation/flows/cicflowmeter-v3/portscan/expe-portscan-p-a1.pcap_ISCX.csv", "sha256": "2891b03c688ab73a1de9bbf748c5b67ceaabc8d8a8cd3afa6806a3e0a19ab514", "raw_columns": 84, "flow_rows": 501},
+    {"session_id": "expe-portscan-p-a2", "role": "adaptation", "class": "PortScan", "path": "data/lab/experiment_e/adaptation/flows/cicflowmeter-v3/portscan/expe-portscan-p-a2.pcap_ISCX.csv", "sha256": "9a10fc286ae327a4af481eeb65b655c921211c274aebcc6422524b4c2d615886", "raw_columns": 84, "flow_rows": 1042},
+    {"session_id": "expe-portscan-p-a3", "role": "adaptation", "class": "PortScan", "path": "data/lab/experiment_e/adaptation/flows/cicflowmeter-v3/portscan/expe-portscan-p-a3.pcap_ISCX.csv", "sha256": "c22d170b574098ad2aa88aa51bd45b9231a1b34e2f19f7d8f0b85b99f1ebc424", "raw_columns": 84, "flow_rows": 25},
+    {"session_id": "expe-portscan-p-v1", "role": "validation", "class": "PortScan", "path": "data/lab/experiment_e/validation/flows/cicflowmeter-v3/portscan/expe-portscan-p-v1.pcap_ISCX.csv", "sha256": "1664c6ab044daced69d198ee967a7deba452ecad68da46d99bff9faffd8820dc", "raw_columns": 84, "flow_rows": 1501}
+  ],
+  "operator_reported_totals": {
+    "adaptation": {"Normal": 50, "PortScan": 1568, "total": 1618},
+    "validation": {"Normal": 17, "PortScan": 1501, "total": 1518},
+    "overall": 3136
+  },
+  "checks": {
+    "local_file_existence_and_nonempty": "NOT_RUN",
+    "local_sha256_verification": "NOT_RUN",
+    "raw_csv_parse_and_malformed_row_check": "NOT_RUN",
+    "ordered_84_column_header_consistency": "NOT_RUN",
+    "adapter_84_to_78_validation": "NOT_RUN",
+    "session_preserving_role_class_analysis": "NOT_RUN",
+    "distribution_analysis": "NOT_RUN",
+    "final_test_files_read": false,
+    "training_inference_evaluation_or_e4_run": false
+  },
+  "blocker": "Transfer the eight create-new E3 CSV outputs into their declared Experiment E flow paths in this workspace, preserving bytes, before validation or distribution analysis can be performed.",
+  "e4_authorized": false
+}

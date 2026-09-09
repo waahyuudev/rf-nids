@@ -1,0 +1,79 @@
+{
+  "schema": "experiment_e_e2_scientific_session_manifest",
+  "schema_version": 1,
+  "experiment_code": "EXPERIMENT_E",
+  "phase": "E2_SCIENTIFIC_COLLECTION",
+  "session_id": "expe-normal-n-a3",
+  "capture_id": "expe-normal-capture-n-a3",
+  "role": "adaptation",
+  "class": "Normal",
+  "scenario_id": "normal-modest-concurrent-pairs",
+  "validation_status": "PASS",
+  "preregistration_match": {
+    "session_id": true,
+    "capture_id": true,
+    "role": true,
+    "class": true,
+    "scenario_id": true,
+    "procedure": "four pairs of concurrent GET / requests with 1.0-second intervals between the first three pair boundaries"
+  },
+  "live_topology_match": {
+    "source_host": "ubuntu-traffic",
+    "source_ip": "10.10.10.2",
+    "observer_host": "ubuntu-nids",
+    "capture_interface": "enp0s3",
+    "capture_filter": "host 10.10.20.2",
+    "target_host": "ubuntu-target",
+    "target_ip": "10.10.20.2",
+    "target_service": "http://10.10.20.2:8080/"
+  },
+  "timing_utc": {
+    "capture_start": "2026-09-09T08:23:18Z",
+    "traffic_start": "2026-09-09T08:23:54Z",
+    "traffic_end": "2026-09-09T08:23:57Z",
+    "capture_end": "2026-09-09T08:24:33Z",
+    "capture_duration_seconds": 75,
+    "traffic_duration_seconds": 3
+  },
+  "traffic_procedure": {
+    "generator": "curl",
+    "request_count": 8,
+    "path": "/",
+    "pair_count": 4,
+    "requests_per_pair": 2,
+    "inter_pair_idle_seconds": 1.0,
+    "idle_boundaries": 3,
+    "observed_responses": ["HTTP/1.0 200 OK"]
+  },
+  "pcap": {
+    "logical_path": "data/lab/experiment_e/adaptation/pcap/normal/expe-normal-n-a3.pcap",
+    "size_bytes": 9630,
+    "sha256": "5d071121feeeec4e6edd1a44778138668ade340bd2f14dfce14c0305a9a5b3b7",
+    "packet_count": 87,
+    "packets_captured": 87,
+    "packets_received_by_filter": 87,
+    "packets_dropped_by_kernel": 0,
+    "offline_packet_count": 87,
+    "identity_verification_basis": "operator-supplied tcpdump, stat, sha256sum, and offline tcpdump evidence; PCAP bytes were not transferred into this workspace"
+  },
+  "packet_evidence": {
+    "expected_source_destination_present": true,
+    "tcp_8080_present": true,
+    "concurrent_connection_pairs_visible": true,
+    "observed_source_port_pairs": {
+      "2026-09-09T08:23:54Z": [57590, 57592],
+      "2026-09-09T08:23:55Z": [42322, 42334]
+    },
+    "http_get_root_present": true,
+    "http_200_present": true,
+    "tcp_handshakes_and_teardown_present": true,
+    "capture_process_remaining_after_shutdown": false
+  },
+  "successful_capture_privilege": "tcpdump was run directly without sudo on enp0s3",
+  "prohibited_operations": {
+    "cicflowmeter_run": false,
+    "inference_run": false,
+    "model_trained": false,
+    "evaluation_run": false
+  }
+}

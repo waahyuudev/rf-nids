@@ -129,6 +129,23 @@ def test_live_preflight_records_pass_without_authorizing_capture() -> None:
         ExperimentEConfig.model_validate(bad)
 
 
+def test_e3_provenance_amendment_preserves_historical_digest() -> None:
+    config = load_experiment_e_config(ROOT / "config/experiment_e.yaml")
+    assert config.e3_provenance_amendment is not None
+    assert config.cicflowmeter_v3.image_digest == (
+        "sha256:0227c7280e586d54144b9bb11b2a6b5d4b1c4ba9bc7c44199fa312a6b829caab"
+    )
+    assert config.e3_provenance_amendment.approved_replacement_image_digest == (
+        "sha256:b12b3a4a4218968aba2436685a4eb113473e5681de70705409e834e4613a879b"
+    )
+    bad = config.model_dump()
+    bad["e3_provenance_amendment"]["historical_required_image_digest"] = (
+        "sha256:b12b3a4a4218968aba2436685a4eb113473e5681de70705409e834e4613a879b"
+    )
+    with pytest.raises(ValidationError, match="preserve the historical"):
+        ExperimentEConfig.model_validate(bad)
+
+
 def test_preregistration_keeps_original_topology_and_records_a1() -> None:
     plan = load_preregistration(PREREG)
     assert plan["topology"]["target"]["ip"] == "172.30.50.10"

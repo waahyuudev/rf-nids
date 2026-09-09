@@ -1,0 +1,79 @@
+{
+  "schema": "experiment_e_e2_scientific_session_manifest",
+  "schema_version": 1,
+  "experiment_code": "EXPERIMENT_E",
+  "phase": "E2_SCIENTIFIC_COLLECTION",
+  "session_id": "expe-normal-n-a2",
+  "capture_id": "expe-normal-capture-n-a2",
+  "role": "adaptation",
+  "class": "Normal",
+  "scenario_id": "normal-mixed-local-content",
+  "validation_status": "PASS",
+  "preregistration_match": {
+    "session_id": true,
+    "capture_id": true,
+    "role": true,
+    "class": true,
+    "scenario_id": true,
+    "procedure": "nine deterministic GET requests across /, /etc/os-release, and /proc/version with varied 0.4-1.2-second idle intervals"
+  },
+  "live_topology_match": {
+    "source_host": "ubuntu-traffic",
+    "source_ip": "10.10.10.2",
+    "observer_host": "ubuntu-nids",
+    "capture_interface": "enp0s3",
+    "capture_filter": "host 10.10.20.2",
+    "target_host": "ubuntu-target",
+    "target_ip": "10.10.20.2",
+    "target_service": "http://10.10.20.2:8080/"
+  },
+  "timing_utc": {
+    "capture_start": "2026-09-09T08:19:12Z",
+    "traffic_start": "2026-09-09T08:20:01Z",
+    "traffic_end": "2026-09-09T08:20:08Z",
+    "capture_end": "2026-09-09T08:20:43Z",
+    "capture_duration_seconds": 91,
+    "traffic_duration_seconds": 7
+  },
+  "target_preparation": {
+    "owned_target_paths": [
+      "~/rf-nids-target/index.html",
+      "~/rf-nids-target/etc/os-release",
+      "~/rf-nids-target/proc/version"
+    ],
+    "all_urls_verified_reachable_before_scientific_capture": true
+  },
+  "traffic_procedure": {
+    "generator": "curl",
+    "request_count": 9,
+    "paths": ["/", "/etc/os-release", "/proc/version"],
+    "idle_intervals_seconds": [0.4, 1.2, 0.6, 1.0, 0.8, 0.5, 1.1, 0.7],
+    "observed_responses": ["HTTP/1.0 200 OK"]
+  },
+  "pcap": {
+    "logical_path": "data/lab/experiment_e/adaptation/pcap/normal/expe-normal-n-a2.pcap",
+    "size_bytes": 10547,
+    "sha256": "bf854829f55f8c3bf8d7fef19966669b82af3619459e564d97478614d581fa76",
+    "packet_count": 92,
+    "packets_captured": 92,
+    "packets_received_by_filter": 92,
+    "packets_dropped_by_kernel": 0,
+    "offline_packet_count": 92,
+    "identity_verification_basis": "operator-supplied tcpdump, stat, sha256sum, and offline tcpdump evidence; PCAP bytes were not transferred into this workspace"
+  },
+  "packet_evidence": {
+    "expected_source_destination_present": true,
+    "tcp_8080_present": true,
+    "http_get_paths_present": ["/", "/etc/os-release", "/proc/version"],
+    "http_200_present": true,
+    "tcp_handshakes_and_teardown_present": true,
+    "capture_process_remaining_after_shutdown": false
+  },
+  "successful_capture_privilege": "/usr/bin/tcpdump cap_net_admin,cap_net_raw=eip; tcpdump was run directly without sudo",
+  "prohibited_operations": {
+    "cicflowmeter_run": false,
+    "inference_run": false,
+    "model_trained": false,
+    "evaluation_run": false
+  }
+}

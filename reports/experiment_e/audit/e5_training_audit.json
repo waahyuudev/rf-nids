@@ -1,0 +1,107 @@
+{
+  "candidate": {
+    "estimator_classes": [
+      "DDoS",
+      "Normal",
+      "PortScan"
+    ],
+    "metadata_path": "models/experiment_e/random_forest_rf_v3_candidate_metadata.json",
+    "metadata_sha256": "30b6bdf2a6cb2d60e2be36d4db1e124d71504393081b229e6d94da7e70322cbc",
+    "model_path": "models/experiment_e/random_forest_rf_v3_candidate.joblib",
+    "model_sha256": "6b01c7b3923c1a6bd471862d011f8f5b88a31378e51d1dde082bd2e72bedef86",
+    "model_size_bytes": 279532,
+    "n_estimators": 200,
+    "n_features_in": 78,
+    "status": "CANDIDATE / NOT_ACTIVE",
+    "version": "rf-v3.0-candidate"
+  },
+  "e6_offline_validation_scientifically_authorized": true,
+  "environment": {
+    "joblib": "1.5.3",
+    "numpy": "2.5.2",
+    "platform": "macOS-26.0-arm64-arm-64bit",
+    "python": "3.12.14",
+    "scikit_learn": "1.9.0"
+  },
+  "evidence": {
+    "audit": "reports/experiment_e/audit/e5_training_audit.json",
+    "diagnostics": "reports/experiment_e/analysis/e5_training_diagnostics.json"
+  },
+  "integrity_gate": {
+    "authorized_dataset": {
+      "dataset_sha256": "f716404391467b267cca2f989762c2d4740127a4e7dd11afe956e7e8940b2284",
+      "feature_sha256": "9338f50fc3e7efc78d678cc65ab38d428a7f6912ed9467a2b99a449a7c8e3c13",
+      "lineage_sha256": "950868cc0e5f8943e7eb03dba544d535d4d20e74a018facf48dcb7ebcb38ecd9",
+      "manifest_sha256": "fb2ba80d300a8e52fc3f441fca0d6b319be60633cc97f65f0f48e603428bfa0e"
+    },
+    "class_counts": {
+      "DDoS": 3081,
+      "Normal": 94,
+      "PortScan": 2581
+    },
+    "exact_78_feature_order": true,
+    "experiment_d_final_test_absent": true,
+    "final_test_sources_absent": true,
+    "lineage": {
+      "lineage_rows": 5756,
+      "lineage_unique_identities": 5756
+    },
+    "only_target_label": "ground_truth_class",
+    "rows": 5756,
+    "validation_sources_absent": true
+  },
+  "limitations": [
+    "Class imbalance remains substantial (Normal=94).",
+    "P-A3 contributes 25 rows; E4 retained its independent session signal.",
+    "DDoS is historical Experiment D adaptation-only data.",
+    "Candidate has not been validated; E5 contains no validation or final-test performance evidence."
+  ],
+  "post_training_regression": {
+    "e1_validation_rerun": true,
+    "e3_integrity_evidence": true,
+    "e4_dataset_integrity": true,
+    "feature_identity_78": true,
+    "final_test_seal": true,
+    "frozen_experiment_d_baseline": true,
+    "rf_v2_artifact_hash_integrity": true
+  },
+  "reproducibility": {
+    "estimator_classes_match": true,
+    "fixed_subset": {
+      "dataset_sha256": "f716404391467b267cca2f989762c2d4740127a4e7dd11afe956e7e8940b2284",
+      "rows": 60,
+      "selection": "row indices 0,97,194,..."
+    },
+    "hyperparameters_match": true,
+    "method": "reload the sole serialized candidate and compare deterministic fixed-subset outputs",
+    "predictions_match": true,
+    "probabilities_match": true,
+    "second_model_fit_performed": false,
+    "serialized_hash_note": "Only one serialization was produced; cross-serialization hash equality was intentionally not asserted.",
+    "status": "PASS",
+    "tree_count_match": true,
+    "tree_random_states_match": true
+  },
+  "rf_parameters": {
+    "bootstrap": false,
+    "class_weight": "balanced",
+    "criterion": "gini",
+    "max_depth": null,
+    "max_features": "log2",
+    "min_samples_leaf": 4,
+    "min_samples_split": 5,
+    "n_estimators": 200,
+    "n_jobs": -1,
+    "random_state": 42
+  },
+  "schema": "experiment_e_e5_training_audit",
+  "schema_version": 1,
+  "status": "PASS",
+  "training": {
+    "ended_utc": "2026-09-09T09:43:49.137733+00:00",
+    "fitting_duration_seconds": 0.12449791701510549,
+    "seed": 42,
+    "started_utc": "2026-09-09T09:43:49.013228+00:00"
+  },
+  "verdict": "PASS"
+}
