@@ -1,0 +1,48 @@
+experiment_code: EXPERIMENT_E
+experiment_name: PortScan Runtime Adaptation
+phase: E1_SCAFFOLD_AND_PREREGISTRATION
+purpose: >-
+  Test whether adaptation with newly captured Normal and PortScan traffic from the
+  isolated three-VM runtime lab improves generalization to independently captured,
+  unseen runtime PortScan sessions while retaining the three-class model contract.
+baseline_rf_v2:
+  artifact: models/experiment_d/random_forest_rf_v2.joblib
+  artifact_sha256: fb13a71a0287054d2630bf07529f113a153ba08d8f6835a605b04493408b8a31
+  scientific_metadata: models/experiment_d/random_forest_rf_v2_metadata.json
+  scientific_metadata_sha256: 0bef82122fbebede27cd14f9dae925f4f48f3f1700c4b6c46ae29f238731e2c2
+  runtime_metadata: models/experiment_d/random_forest_rf_v2_runtime_metadata.json
+  runtime_metadata_sha256: 1c97466a9c987b161e516557d41e63c428d987129f39dcdeb6a735c9097443c0
+cicflowmeter_v3:
+  repository: https://github.com/ahlashkari/CICFlowMeter
+  commit: a26aae27f21d165ff30b4b28e75124a5f9b4b2c4
+  source_archive_sha256: 78f13b2d474e5a669a367aef610d597cf86bc338088ffdd72228671bdca364c7
+  image_tag: rf-nids-cicflowmeter-v3:a26aae27
+  image_digest: sha256:0227c7280e586d54144b9bb11b2a6b5d4b1c4ba9bc7c44199fa312a6b829caab
+adapter:
+  identity: CICFLOWMETER_V3_CICIDS2017_MODEL_ADAPTER
+  version: 1.0.0
+  crosswalk: reports/tables/cicflowmeter_v3_78_feature_crosswalk.csv
+  crosswalk_sha256: 66e517cdcea217f19de4d0a2cd45302ede999388393f539fb8ca4a2c68b74cf4
+feature_contract:
+  count: 78
+  ordered_names_sha256: 9338f50fc3e7efc78d678cc65ab38d428a7f6912ed9467a2b99a449a7c8e3c13
+classes: [Normal, DDoS, PortScan]
+new_lab_classes: [Normal, PortScan]
+random_state: 42
+allowed_data_roles: [adaptation, validation, final_test]
+forbidden_data_roles:
+  - experiment_d_final_test_for_fitting
+  - experiment_d_final_test_for_adaptation
+  - experiment_d_final_test_for_hyperparameter_selection
+  - experiment_d_final_test_for_validation
+forbidden_source_roots:
+  - data/lab/experiment_d/final_test
+  - reports/experiment_d/final_test
+output_roots:
+  data: data/lab/experiment_e
+  models: models/experiment_e
+  reports: reports/experiment_e
+create_new_only: true
+row_split_policy: session_membership_only_no_post_extraction_redistribution
+final_test_policy:
+  sealed_from: [fitting, adaptation, tuning, preprocessing_fit, feature_selection, threshold_selection, model_selection, validation]

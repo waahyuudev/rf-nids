@@ -1,0 +1,28 @@
+{
+  "experiment_code": "EXPERIMENT_E",
+  "phase": "E1_SCAFFOLD_AND_PREREGISTRATION",
+  "status": "PREREGISTERED_NO_TRAFFIC_COLLECTED",
+  "preregistered_at": "2026-09-09T13:45:57+07:00",
+  "split_unit": "capture_session",
+  "row_redistribution_after_extraction": false,
+  "model_blind_final_test": true,
+  "topology": {
+    "network": "owned isolated virtual lab 172.30.50.0/24",
+    "source": {"hostname": "experiment-e-source", "ip": "172.30.50.20"},
+    "target": {"hostname": "experiment-e-target", "ip": "172.30.50.10", "http_port": 8080},
+    "observer": {"hostname": "experiment-e-observer", "interface": "eth0"},
+    "external_or_public_targets_allowed": false
+  },
+  "sessions": [
+    {"class": "Normal", "role": "adaptation", "session_id": "expe-normal-n-a1", "capture_id": "expe-normal-capture-n-a1", "scenario_id": "normal-sequential-small-http", "generator": "curl", "command_config": "six sequential GET requests to http://172.30.50.10:8080/ with 0.8 second intervals"},
+    {"class": "Normal", "role": "adaptation", "session_id": "expe-normal-n-a2", "capture_id": "expe-normal-capture-n-a2", "scenario_id": "normal-mixed-local-content", "generator": "curl", "command_config": "repeat GET requests to /, /etc/os-release, and /proc/version on http://172.30.50.10:8080 with 0.4-1.2 second intervals"},
+    {"class": "Normal", "role": "adaptation", "session_id": "expe-normal-n-a3", "capture_id": "expe-normal-capture-n-a3", "scenario_id": "normal-modest-concurrent-pairs", "generator": "curl", "command_config": "four pairs of concurrent GET requests to http://172.30.50.10:8080/ with 1.0 second intervals between pairs"},
+    {"class": "Normal", "role": "validation", "session_id": "expe-normal-n-v1", "capture_id": "expe-normal-capture-n-v1", "scenario_id": "normal-validation-variable-idle", "generator": "curl", "command_config": "eight independent GET requests to local target paths with predetermined 0.3, 1.1, 0.6, 1.4, 0.5, 0.9, and 1.2 second intervals"},
+    {"class": "Normal", "role": "final_test", "session_id": "expe-normal-n-f1", "capture_id": "expe-normal-capture-n-f1", "scenario_id": "normal-final-small-browse-sequence", "generator": "curl", "command_config": "independent local-only sequence of ten small GET requests with mixed sequential and paired requests; keep sealed until final evaluation"},
+    {"class": "PortScan", "role": "adaptation", "session_id": "expe-portscan-p-a1", "capture_id": "expe-portscan-capture-p-a1", "scenario_id": "portscan-connect-low-range-moderate", "generator": "Nmap", "command_config": "nmap -n -Pn -sT -T3 -p 1-500 172.30.50.10"},
+    {"class": "PortScan", "role": "adaptation", "session_id": "expe-portscan-p-a2", "capture_id": "expe-portscan-capture-p-a2", "scenario_id": "portscan-syn-mid-range-slow", "generator": "Nmap", "command_config": "nmap -n -Pn -sS -T2 -p 501-1500 172.30.50.10"},
+    {"class": "PortScan", "role": "adaptation", "session_id": "expe-portscan-p-a3", "capture_id": "expe-portscan-capture-p-a3", "scenario_id": "portscan-connect-selected-fast", "generator": "Nmap", "command_config": "nmap -n -Pn -sT -T4 -p 21,22,25,53,80,110,143,443,445,3306,5432,8000-8010,8080,8443 172.30.50.10"},
+    {"class": "PortScan", "role": "validation", "session_id": "expe-portscan-p-v1", "capture_id": "expe-portscan-capture-p-v1", "scenario_id": "portscan-validation-syn-broad-moderate", "generator": "Nmap", "command_config": "nmap -n -Pn -sS -T3 -p 1501-3000 172.30.50.10"},
+    {"class": "PortScan", "role": "final_test", "session_id": "expe-portscan-p-f1", "capture_id": "expe-portscan-capture-p-f1", "scenario_id": "portscan-final-connect-disjoint-range", "generator": "Nmap", "command_config": "nmap -n -Pn -sT -T2 -p 3001-5000 172.30.50.10; keep capture sealed until final evaluation"}
+  ]
+}
