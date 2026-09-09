@@ -32,7 +32,7 @@ class InferenceEngine:
         extra_feature_policy: Literal["reject", "ignore"] | None = None,
         verify_model_hash: bool = True,
     ) -> None:
-        self.metadata = self._load_metadata(metadata_path)
+        self.metadata = self._normalize_demo_metadata(self._load_metadata(metadata_path))
         self.feature_names = list(self.metadata["feature_names"])
         if self.metadata.get("feature_count", len(self.feature_names)) != len(self.feature_names):
             raise ValueError("Model metadata feature_count does not match feature_names")
@@ -61,15 +61,29 @@ class InferenceEngine:
             if actual_hash != self.metadata["model_sha256"]:
                 raise ValueError("Active model SHA-256 does not match metadata")
         loaded = joblib.load(model_path)
-        if not isinstance(loaded, Pipeline):
-            raise ValueError("Active model must be a Scikit-learn Pipeline")
-        self.model: Pipeline = loaded
+        if not isinstance(loaded, Pipeline) and not all(hasattr(loaded, name) for name in ("predict", "predict_proba", "classes_")):
+            raise ValueError("Runtime model must support predict, predict_proba, and classes_")
+        self.model = loaded
+        if getattr(self.model, "n_features_in_", len(self.feature_names)) != len(self.feature_names):
+            raise ValueError("Model n_features_in_ does not match runtime metadata")
         model_features = list(getattr(self.model, "feature_names_in_", self.feature_names))
         if model_features != self.feature_names:
             raise ValueError("Model feature order does not match metadata")
         declared_classes = self.metadata.get("class_names")
         if declared_classes and [str(value) for value in self.model.classes_] != sorted(declared_classes):
             raise ValueError("Model classes do not match runtime metadata")
+
+    @staticmethod
+    def _normalize_demo_metadata(metadata: dict[str, Any]) -> dict[str, Any]:
+        """Translate only the allowlisted Experiment E candidate for runtime display."""
+        if metadata.get("version") != "rf-v3.0-candidate":
+            return metadata
+        if metadata.get("status") != "CANDIDATE / NOT_ACTIVE":
+            raise ValueError("RF-v3 demo metadata must remain CANDIDATE / NOT_ACTIVE")
+        return {**metadata, "model_version": "rf-v3.0-candidate",
+                "model_name": "RF-NIDS Random Forest — Experiment E Demo",
+                "algorithm": "Random Forest", "class_names": metadata.get("classes_declared_order"),
+                "parameters": metadata.get("rf_parameters"), "extra_feature_policy": "reject"}
 
     @staticmethod
     def _load_metadata(path: Path) -> dict[str, Any]:

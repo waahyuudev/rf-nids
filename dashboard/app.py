@@ -17,6 +17,7 @@ from dashboard.auth import (
     token_from,
 )
 from dashboard.config import DashboardConfig
+from dashboard.demo import DEMO_BANNER
 from dashboard.components.sidebar import render_sidebar
 from dashboard.components.styles import apply_styles, render_header
 from dashboard.pages import alerts, dataset, evaluation, model_info, monitoring, overview, predictions
@@ -101,6 +102,8 @@ if logout:
     clear_auth(st.session_state)
     st.rerun()
 render_header(online)
+if config.demo_model_version:
+    st.warning(DEMO_BANNER)
 
 
 @st.fragment(run_every=config.refresh_seconds if auto_refresh else None)

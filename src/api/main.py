@@ -67,7 +67,7 @@ from src.api.schemas import (
     TimelinePoint,
     UserInfo,
 )
-from src.api.service import metadata_metrics, persist_predictions, sync_active_model
+from src.api.service import metadata_metrics, persist_predictions, register_inactive_model, sync_active_model
 from src.api.monitoring import (
     MonitoringConflict,
     MonitoringService,
@@ -268,8 +268,10 @@ def create_app(
             settings.model_path, settings.model_metadata_path
         )
         with application.state.session_factory() as db:
-            application.state.model_record = sync_active_model(
-                db, application.state.inference.metadata
+            application.state.model_record = (
+                register_inactive_model(db, application.state.inference.metadata)
+                if settings.demo_model_version else
+                sync_active_model(db, application.state.inference.metadata)
             )
             collector = (
                 collector_factory()
@@ -383,11 +385,9 @@ def create_app(
         summary="Active model presentation metadata",
     )
     def active_model(request: Request, db: Db, _: AdminUser):
-        row = db.scalar(
-            select(ModelRecord)
-            .where(ModelRecord.is_active.is_(True))
-            .order_by(ModelRecord.id.desc())
-        )
+        row = (request.app.state.model_record if request.app.state.settings.demo_model_version else db.scalar(
+            select(ModelRecord).where(ModelRecord.is_active.is_(True)).order_by(ModelRecord.id.desc())
+        ))
         if row is None:
             raise HTTPException(404, "No active model")
         metadata = request.app.state.inference.metadata

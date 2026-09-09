@@ -60,6 +60,8 @@ services:
       CAPTURE_WINDOW_SECONDS: "${CAPTURE_WINDOW_SECONDS:-10}"
       CAPTURE_STOP_TIMEOUT_SECONDS: "${CAPTURE_STOP_TIMEOUT_SECONDS:-15}"
       EXTRACTION_TIMEOUT_SECONDS: "${EXTRACTION_TIMEOUT_SECONDS:-120}"
+      # Empty by default; only the exact allowlisted candidate is accepted by Settings.
+      RF_NIDS_DEMO_MODEL: "${RF_NIDS_DEMO_MODEL:-}"
     stop_grace_period: 180s
     volumes:
       - ./src:/app/src
