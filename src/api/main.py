@@ -11,7 +11,7 @@ from fastapi import Depends, FastAPI, HTTPException, Query, Request, status
 from fastapi.responses import JSONResponse, Response
 from sqlalchemy import case, func, or_, select, text
 from sqlalchemy.exc import SQLAlchemyError
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, selectinload
 
 from src.api.database import Base, configure_database, get_db
 from src.api.auth import (
@@ -385,9 +385,18 @@ def create_app(
         summary="Active model presentation metadata",
     )
     def active_model(request: Request, db: Db, _: AdminUser):
-        row = (request.app.state.model_record if request.app.state.settings.demo_model_version else db.scalar(
-            select(ModelRecord).where(ModelRecord.is_active.is_(True)).order_by(ModelRecord.id.desc())
-        ))
+        statement = select(ModelRecord).options(selectinload(ModelRecord.experiment))
+        if request.app.state.settings.demo_model_version:
+            # The lifespan record is deliberately detached after registration.
+            # Re-query it in the request session before serializing relationships.
+            statement = statement.where(
+                ModelRecord.id == request.app.state.model_record.id
+            )
+        else:
+            statement = statement.where(ModelRecord.is_active.is_(True)).order_by(
+                ModelRecord.id.desc()
+            )
+        row = db.scalar(statement)
         if row is None:
             raise HTTPException(404, "No active model")
         metadata = request.app.state.inference.metadata

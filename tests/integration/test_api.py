@@ -881,6 +881,35 @@ def test_active_model_presentation_endpoint(client):
     assert body["parameters"] is None
 
 
+def test_demo_active_model_serializes_detached_record_experiment(client):
+    """Demo mode stores an inactive provenance record outside the request session."""
+    from dataclasses import replace
+
+    http, app = client
+    app.state.settings = replace(
+        app.state.settings, demo_model_version="rf-v3.0-candidate"
+    )
+    with app.state.session_factory() as db:
+        record = db.get(ModelRecord, app.state.model_record.id)
+        experiment = Experiment(
+            experiment_code="EXPERIMENT_E_DEMO",
+            experiment_name="Experiment E demonstration",
+            experiment_type="RUNTIME_DEMO",
+            status="CANDIDATE",
+        )
+        db.add(experiment)
+        db.flush()
+        record.experiment_id = experiment.id
+        record.is_active = False
+        db.commit()
+
+    # app.state.model_record is detached and has no loaded `experiment` relation.
+    response = http.get("/api/models/active")
+    assert response.status_code == 200
+    assert response.json()["experiment_code"] == "EXPERIMENT_E_DEMO"
+    assert response.json()["is_active"] is False
+
+
 def test_monitoring_empty_state_and_unpredicted_legacy_flow(client):
     http, app = client
     assert http.get("/api/traffic-flows").json() == []
