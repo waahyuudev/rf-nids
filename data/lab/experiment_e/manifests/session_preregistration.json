@@ -13,6 +13,35 @@
     "observer": {"hostname": "experiment-e-observer", "interface": "eth0"},
     "external_or_public_targets_allowed": false
   },
+  "topology_amendments": [
+    {
+      "amendment_id": "A1",
+      "status": "APPROVED",
+      "approved_at": "2026-09-09",
+      "scope": "documentation/configuration amendment only",
+      "traffic_captured_before_amendment": false,
+      "preregistered_topology_preserved": true,
+      "amended_topology": {
+        "architecture": "routed 3-VM design",
+        "source_segment": "10.10.10.0/24",
+        "nids_role": "Ubuntu NIDS between source and target segments",
+        "target_segment": "10.10.20.0/24",
+        "expected_generator": {"ip": "10.10.10.2", "status": "pending_live_verification"},
+        "expected_nids_source_side": {"ip": "10.10.10.1", "status": "documented_established_topology"},
+        "expected_nids_target_side": {"ip": "10.10.20.1", "status": "pending_live_verification"},
+        "expected_target": {"ip": "10.10.20.2", "status": "documented_established_topology_pending_live_verification"},
+        "expected_capture_interface": {"name": "enp0s3", "status": "pending_empirical_verification"},
+        "http_service_port": {"status": "pending_live_verification"}
+      },
+      "not_authorized": [
+        "traffic_capture",
+        "CICFlowMeter_extraction",
+        "inference",
+        "retraining",
+        "final_test_collection"
+      ]
+    }
+  ],
   "sessions": [
     {"class": "Normal", "role": "adaptation", "session_id": "expe-normal-n-a1", "capture_id": "expe-normal-capture-n-a1", "scenario_id": "normal-sequential-small-http", "generator": "curl", "command_config": "six sequential GET requests to http://172.30.50.10:8080/ with 0.8 second intervals"},
     {"class": "Normal", "role": "adaptation", "session_id": "expe-normal-n-a2", "capture_id": "expe-normal-capture-n-a2", "scenario_id": "normal-mixed-local-content", "generator": "curl", "command_config": "repeat GET requests to /, /etc/os-release, and /proc/version on http://172.30.50.10:8080 with 0.4-1.2 second intervals"},

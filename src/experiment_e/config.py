@@ -56,6 +56,43 @@ class FinalTestPolicy(BaseModel):
     sealed_from: list[str]
 
 
+class TopologyAmendment(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    amendment_id: str
+    status: str
+    approved_at: str
+    traffic_captured_before_amendment: bool
+    source_segment: str
+    nids_role: str
+    target_segment: str
+    expected_generator_ip: str
+    expected_generator_ip_status: str
+    expected_nids_source_side_ip: str
+    expected_nids_source_side_ip_status: str
+    expected_nids_target_side_ip: str
+    expected_nids_target_side_ip_status: str
+    expected_target_ip: str
+    expected_target_ip_status: str
+    expected_capture_interface: str
+    expected_capture_interface_status: str
+    http_service_port_status: str
+    final_test_collection_authorized: bool
+    traffic_capture_authorized: bool
+
+
+class LivePreflight(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    phase: str
+    status: str
+    evidence: str
+    verified_at: str
+    diagnostic_pcap_retained: bool
+    scientific_pcap_created: bool
+    recommended_capture_interface: str
+    rejected_capture_interfaces: list[str]
+    benign_target_service: str
+
+
 class ExperimentEConfig(BaseModel):
     model_config = ConfigDict(extra="forbid")
     experiment_code: str
@@ -76,6 +113,8 @@ class ExperimentEConfig(BaseModel):
     create_new_only: bool
     row_split_policy: str
     final_test_policy: FinalTestPolicy
+    topology_amendment: TopologyAmendment | None = None
+    live_preflight: LivePreflight | None = None
 
     @model_validator(mode="after")
     def protocol_is_locked(self) -> "ExperimentEConfig":
@@ -108,6 +147,34 @@ class ExperimentEConfig(BaseModel):
         )
         if self.output_roots != expected:
             raise ValueError("Experiment E output roots are not isolated")
+        if self.topology_amendment is not None:
+            amendment = self.topology_amendment
+            pending = (
+                amendment.expected_generator_ip_status,
+                amendment.expected_nids_target_side_ip_status,
+                amendment.expected_capture_interface_status,
+                amendment.http_service_port_status,
+            )
+            if amendment.amendment_id != "A1" or amendment.status != "APPROVED":
+                raise ValueError("unexpected Experiment E topology amendment")
+            if amendment.traffic_captured_before_amendment is not False:
+                raise ValueError("Experiment E traffic must not predate amendment A1")
+            if any(value != "pending_live_verification" for value in pending):
+                raise ValueError("amended topology must preserve pending live verification")
+            if amendment.traffic_capture_authorized or amendment.final_test_collection_authorized:
+                raise ValueError("topology amendment must not authorize collection")
+        if self.live_preflight is not None:
+            preflight = self.live_preflight
+            if preflight.phase != "E2_LIVE_3_VM_PREFLIGHT" or preflight.status != "PASS":
+                raise ValueError("unexpected Experiment E live preflight")
+            if preflight.diagnostic_pcap_retained or preflight.scientific_pcap_created:
+                raise ValueError("E2 live preflight must not retain diagnostic or scientific PCAPs")
+            if preflight.recommended_capture_interface != "enp0s3":
+                raise ValueError("unexpected Experiment E capture interface")
+            if "any" not in preflight.rejected_capture_interfaces:
+                raise ValueError("E2 live preflight must reject tcpdump any interface")
+            if preflight.benign_target_service != "http://10.10.20.2:8080/":
+                raise ValueError("unexpected Experiment E benign target service")
         return self
 
 

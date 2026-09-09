@@ -46,3 +46,34 @@ create_new_only: true
 row_split_policy: session_membership_only_no_post_extraction_redistribution
 final_test_policy:
   sealed_from: [fitting, adaptation, tuning, preprocessing_fit, feature_selection, threshold_selection, model_selection, validation]
+topology_amendment:
+  amendment_id: A1
+  status: APPROVED
+  approved_at: "2026-09-09"
+  traffic_captured_before_amendment: false
+  source_segment: 10.10.10.0/24
+  nids_role: Ubuntu NIDS routed between source and target segments
+  target_segment: 10.10.20.0/24
+  expected_generator_ip: 10.10.10.2
+  expected_generator_ip_status: pending_live_verification
+  expected_nids_source_side_ip: 10.10.10.1
+  expected_nids_source_side_ip_status: documented_established_topology
+  expected_nids_target_side_ip: 10.10.20.1
+  expected_nids_target_side_ip_status: pending_live_verification
+  expected_target_ip: 10.10.20.2
+  expected_target_ip_status: documented_established_topology_pending_live_verification
+  expected_capture_interface: enp0s3
+  expected_capture_interface_status: pending_live_verification
+  http_service_port_status: pending_live_verification
+  final_test_collection_authorized: false
+  traffic_capture_authorized: false
+live_preflight:
+  phase: E2_LIVE_3_VM_PREFLIGHT
+  status: PASS
+  evidence: reports/experiment_e/audit/e2_live_preflight_topology.json
+  verified_at: "2026-09-09T07:15:49Z"
+  diagnostic_pcap_retained: false
+  scientific_pcap_created: false
+  recommended_capture_interface: enp0s3
+  rejected_capture_interfaces: [any]
+  benign_target_service: http://10.10.20.2:8080/
