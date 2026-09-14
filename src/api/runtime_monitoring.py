@@ -328,12 +328,13 @@ class RuntimeWorker:
         self.pipeline.request_stop()
         self.thread.join(timeout)
         if self.thread.is_alive():
-            self.pipeline.force_stop()
-            self.thread.join(10)
-        if self.thread.is_alive():
-            raise RuntimePipelineError("Runtime worker did not stop before timeout")
+            # The current bounded capture or final extraction/commit owns graceful
+            # shutdown.  A synchronous HTTP wait expiring is not evidence of a
+            # runtime failure and must not preempt that final window.
+            return False
         if self.failure:
             raise RuntimePipelineError(self.failure)
+        return True
 
     def _set_processing_state(self, state: str | None) -> None:
         with self.session_factory() as db:
@@ -511,15 +512,6 @@ class RuntimeWorker:
             failure = str(exc)[:2000] or exc.__class__.__name__
             self.failure = failure
             logger.exception("monitoring_worker_failed session=%s", self.session_id)
-            with self.session_factory() as db:
-                row = db.get(MonitoringSession, self.session_id)
-                if row and row.status not in ("STOPPING", "STOPPED"):
-                    row.status = "FAILED"
-                    row.last_error = failure
-                    row.stopped_at = datetime.now(timezone.utc)
-                    row.runtime_handle = None
-                    row.processing_state = None
-                    db.commit()
         finally:
             self._set_processing_state(None)
             self.on_exit(self.session_id, failure)
@@ -585,18 +577,22 @@ class RuntimeCollectorController:
             self._workers[handle] = worker
         return handle
 
-    def stop(self, runtime_handle: str | None) -> None:
+    def stop(self, runtime_handle: str | None) -> bool:
         with self._lock:
             worker = self._workers.get(runtime_handle)
         if worker is None:
-            raise RuntimePipelineError("Runtime worker handle is unavailable")
+            # The exit callback may win the race after STOPPING is committed.
+            # Its persisted terminal state is authoritative in that case.
+            return True
         timeout = max(
             self.settings.capture_stop_timeout_seconds,
             getattr(self.settings, "extraction_timeout_seconds", 120.0) + 20.0,
         )
-        worker.stop(timeout)
-        with self._lock:
-            self._workers.pop(runtime_handle, None)
+        stopped = worker.stop(timeout)
+        if stopped:
+            with self._lock:
+                self._workers.pop(runtime_handle, None)
+        return stopped
 
     def status(self, runtime_handle: str | None) -> str:
         with self._lock:
@@ -614,3 +610,18 @@ class RuntimeCollectorController:
 
     def _on_exit(self, session_id, failure):
         logger.info("monitoring_worker_exit session=%s failed=%s", session_id, bool(failure))
+        with self.session_factory() as db:
+            row = db.get(MonitoringSession, session_id)
+            if row is not None:
+                # The worker is authoritative: a clean exit after a requested
+                # stop completes STOPPING -> STOPPED even if an API wait expired.
+                row.status = "FAILED" if failure else "STOPPED"
+                row.last_error = failure
+                row.stopped_at = datetime.now(timezone.utc)
+                row.runtime_handle = None
+                row.processing_state = None
+                db.commit()
+        with self._lock:
+            for handle, worker in list(self._workers.items()):
+                if worker.session_id == session_id:
+                    self._workers.pop(handle, None)

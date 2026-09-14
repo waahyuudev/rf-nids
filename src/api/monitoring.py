@@ -69,13 +69,19 @@ class MonitoringService:
         ).all()
         now = datetime.now(timezone.utc)
         for row in rows:
+            # A STOPPING worker may have already completed its final flush before
+            # the API restart.  We cannot prove failure from a lost in-memory
+            # handle, so preserve its non-terminal lifecycle state.
+            if row.status == "STOPPING":
+                continue
             row.status = "FAILED"
             row.stopped_at = now
             row.last_error = "API restarted; the prior in-memory controller cannot be recovered."
             row.runtime_handle = None
-        if rows:
+        reconciled = sum(row.status != "STOPPING" for row in rows)
+        if reconciled:
             db.commit()
-        return len(rows)
+        return reconciled
 
     def start(
         self, db: Session, *, target_ip: str, interface_name: str, user: User,
@@ -156,18 +162,34 @@ class MonitoringService:
         row = self.active(db)
         if row is None:
             raise MonitoringConflict("No active monitoring session")
-        row.status = "STOPPING"
-        db.flush()
+        if row.status != "STOPPING":
+            row.status = "STOPPING"
+            # Make STOPPING visible to the worker before waiting.  Holding this
+            # transaction during join previously prevented worker finalization.
+            db.commit()
+            db.refresh(row)
         try:
-            self.collector.stop(row.runtime_handle)
-            row.status = "STOPPED"
-            row.last_error = None
+            stopped = self.collector.stop(row.runtime_handle)
         except Exception as exc:
+            # A confirmed worker failure is terminal; an ordinary wait expiry is
+            # represented by a false return below and remains STOPPING.
             row.status = "FAILED"
             row.last_error = str(exc)[:2000] or exc.__class__.__name__
-        row.runtime_handle = None
-        row.processing_state = None
-        row.stopped_at = datetime.now(timezone.utc)
-        db.commit()
+            row.runtime_handle = None
+            row.processing_state = None
+            row.stopped_at = datetime.now(timezone.utc)
+            db.commit()
+        else:
+            # Test/lifecycle collectors predate the boolean contract and return
+            # None for an immediately completed stop.
+            if stopped is not False:
+                db.refresh(row)
+                if row.status == "STOPPING":
+                    row.status = "STOPPED"
+                    row.last_error = None
+                    row.runtime_handle = None
+                    row.processing_state = None
+                    row.stopped_at = datetime.now(timezone.utc)
+                    db.commit()
         db.refresh(row)
         return row

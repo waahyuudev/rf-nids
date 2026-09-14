@@ -427,6 +427,35 @@ def test_stop_during_extraction_allows_flush_until_forced_timeout(tmp_path, monk
     assert process.poll() is not None
 
 
+def test_worker_stop_timeout_keeps_graceful_flush_running():
+    class StillFlushingThread:
+        def join(self, timeout):
+            assert timeout == 3
+
+        def is_alive(self):
+            return True
+
+    class Pipeline:
+        def __init__(self):
+            self.stop_requested = False
+            self.force_requested = False
+
+        def request_stop(self):
+            self.stop_requested = True
+
+        def force_stop(self):
+            self.force_requested = True
+
+    worker = RuntimeWorker.__new__(RuntimeWorker)
+    worker.stop_event = threading.Event()
+    worker.thread = StillFlushingThread()
+    worker.pipeline = Pipeline()
+    worker.failure = None
+    assert worker.stop(3) is False
+    assert worker.stop_event.is_set() and worker.pipeline.stop_requested
+    assert not worker.pipeline.force_requested
+
+
 def test_worker_reuses_v3_adapter_persists_prediction_and_real_counters(tmp_path):
     engine = build_engine(f"sqlite:///{tmp_path / 'runtime.db'}")
     Base.metadata.create_all(engine)
@@ -497,6 +526,35 @@ def test_worker_reuses_v3_adapter_persists_prediction_and_real_counters(tmp_path
         assert db.scalar(select(func.count(Alert.id))) == 0
         assert row.latest_processing_at is not None
         assert worker.pipeline.capture_calls == 1
+    engine.dispose()
+
+
+@pytest.mark.parametrize(("failure", "expected"), [(None, "STOPPED"), ("capture failed", "FAILED")])
+def test_worker_exit_is_authoritative_for_terminal_session_state(tmp_path, failure, expected):
+    engine = build_engine(f"sqlite:///{tmp_path / 'terminal.db'}")
+    Base.metadata.create_all(engine)
+    sessions = sessionmaker(bind=engine, expire_on_commit=False)
+    with sessions() as db:
+        model = ModelRecord(model_name="RF", model_version="v1", algorithm="RF", is_active=True)
+        db.add(model)
+        db.flush()
+        row = MonitoringSession(target_ip="192.168.128.2", interface_name="test0",
+                                model_id=model.id, status="STOPPING", runtime_handle="handle")
+        db.add(row)
+        db.commit()
+        session_id = row.id
+    runtime_root = tmp_path / "data/runtime/monitoring"
+    runtime_root.mkdir(parents=True)
+    settings = SimpleNamespace(runtime_monitoring_root=runtime_root, project_root=tmp_path)
+    controller = RuntimeCollectorController(
+        session_factory=sessions, inference=object(), settings=settings,
+    )
+    controller._on_exit(session_id, failure)
+    with sessions() as db:
+        row = db.get(MonitoringSession, session_id)
+        assert row.status == expected
+        assert row.runtime_handle is None
+        assert row.last_error == failure
     engine.dispose()
 
 

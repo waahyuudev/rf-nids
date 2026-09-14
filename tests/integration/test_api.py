@@ -473,6 +473,63 @@ def test_stale_monitoring_session_reconciliation(client):
         assert "API restarted" in row.last_error
 
 
+def test_stop_timeout_remains_stopping_until_clean_worker_exit(client):
+    http, app = client
+    names, _ = list_capture_interfaces()
+    interface_name = names[0]["name"] if names else "test-interface"
+
+    class DelayedCollector:
+        mode = "RUNTIME_V3"
+
+        def start(self, *, session_id, **_):
+            self.session_id = session_id
+            return f"delayed:{session_id}"
+
+        def stop(self, _):
+            return False  # synchronous API wait expired; worker is still flushing
+
+        def clean_exit(self):
+            # This mirrors RuntimeCollectorController._on_exit's worker-owned
+            # terminal write without re-running a worker in an API fixture.
+            with app.state.session_factory() as db:
+                row = db.get(MonitoringSession, self.session_id)
+                row.status = "STOPPED"
+                row.last_error = None
+                row.runtime_handle = None
+                row.processing_state = None
+                row.stopped_at = datetime.now(timezone.utc)
+                db.commit()
+
+    collector = DelayedCollector()
+    app.state.monitoring_service.collector = collector
+    started = http.post("/api/monitoring/start", json={
+        "target_ip": "192.168.128.2", "interface_name": interface_name
+    }).json()
+    stopping = http.post("/api/monitoring/stop")
+    assert stopping.status_code == 200
+    assert stopping.json()["status"] == "STOPPING"
+    # A repeat request only re-signals the same worker; it does not start another.
+    assert http.post("/api/monitoring/stop").json()["status"] == "STOPPING"
+    collector.clean_exit()
+    final = http.get(f"/api/monitoring/sessions/{started['id']}").json()
+    assert final["status"] == "STOPPED"
+
+
+def test_stopping_session_is_not_failed_by_startup_reconciliation(client):
+    _, app = client
+    with app.state.session_factory() as db:
+        model = db.scalar(select(ModelRecord).where(ModelRecord.is_active.is_(True)))
+        user = db.scalar(select(User))
+        row = MonitoringSession(target_ip="192.168.128.2", interface_name="test0",
+                                model_id=model.id, created_by_user_id=user.id,
+                                status="STOPPING", runtime_handle="flushing")
+        db.add(row)
+        db.commit()
+        assert app.state.monitoring_service.reconcile_stale_sessions(db) == 0
+        db.refresh(row)
+        assert row.status == "STOPPING"
+
+
 def test_runtime_prediction_preserves_monitoring_model_and_alert_provenance(client):
     http, app = client
     names, _ = list_capture_interfaces()
