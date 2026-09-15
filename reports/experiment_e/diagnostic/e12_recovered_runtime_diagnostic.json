@@ -1,0 +1,938 @@
+{
+  "anomalous_records": {
+    "exceptional_raw_rows": [
+      {
+        "Dst IP": "10.10.10.13",
+        "Dst Port": 42564,
+        "Flow ID": "10.10.10.13-10.10.20.2-42564-8080-6",
+        "Protocol": 6,
+        "Src IP": "10.10.20.2",
+        "Src Port": 8080,
+        "Timestamp": "13/09/2026 07:49:43",
+        "raw_row_index": 777,
+        "relevant_features": {
+          "flow_duration": 326.0,
+          "flow_packets_s": 9202.4541015625,
+          "total_backward_packets": 1.0,
+          "total_fwd_packets": 2.0
+        }
+      },
+      {
+        "Dst IP": "8.0.6.4",
+        "Dst Port": 0,
+        "Flow ID": "8.0.6.4-8.6.0.1-0-0-0",
+        "Protocol": 0,
+        "Src IP": "8.6.0.1",
+        "Src Port": 0,
+        "Timestamp": "13/09/2026 07:49:48",
+        "raw_row_index": 791,
+        "relevant_features": {
+          "flow_duration": 1249.0,
+          "flow_packets_s": 1601.281005859375,
+          "total_backward_packets": 0.0,
+          "total_fwd_packets": 2.0
+        }
+      }
+    ],
+    "finding_8_6_0_1": "Genuinely present in the recovered raw captured/extracted flow (raw row 791); why this extractor-visible representation occurred is unresolved from these artifacts alone."
+  },
+  "artifact_integrity": {
+    "pcap_sha256": "8bfa65f4d4e395044016dab174477781e1e14416b9059207e559614fd6fb3509",
+    "raw_columns": 84,
+    "raw_rows": 802,
+    "raw_sha256": "3a6b58afcda68baae9d620afa6f9c0e286589253827836b61cb021bbc6d7432b",
+    "runtime_artifact_807_lineage": "PASS"
+  },
+  "distribution_shift": {
+    "all_feature_statistics_csv": "reports/experiment_e/diagnostic/e12_feature_distribution_comparison.csv",
+    "ranking_method": "robust median distance: absolute median difference divided by historical DDoS median absolute deviation; pooled-SD value retained as secondary scale-aware check",
+    "reference_ddos_count": 3081,
+    "top_10_shifted_features": [
+      {
+        "absolute_median_difference": 32567.89121875,
+        "feature": "flow_bytes_s",
+        "pooled_standardized_median_difference": 0.40139775711590564,
+        "robust_median_distance": 208.2738829814447
+      },
+      {
+        "absolute_median_difference": 185.0,
+        "feature": "bwd_packet_length_max",
+        "pooled_standardized_median_difference": 1.9866817165984654,
+        "robust_median_distance": 26.428571428571427
+      },
+      {
+        "absolute_median_difference": 185.0,
+        "feature": "max_packet_length",
+        "pooled_standardized_median_difference": 1.9866817165984654,
+        "robust_median_distance": 26.428571428571427
+      },
+      {
+        "absolute_median_difference": 210.0,
+        "feature": "total_length_of_bwd_packets",
+        "pooled_standardized_median_difference": 1.9297174196146003,
+        "robust_median_distance": 14.0
+      },
+      {
+        "absolute_median_difference": 210.0,
+        "feature": "subflow_bwd_bytes",
+        "pooled_standardized_median_difference": 1.9297174196146003,
+        "robust_median_distance": 14.0
+      },
+      {
+        "absolute_median_difference": 74.16199,
+        "feature": "bwd_packet_length_std",
+        "pooled_standardized_median_difference": 1.746582523083036,
+        "robust_median_distance": 8.020425797911459
+      },
+      {
+        "absolute_median_difference": 54.204147,
+        "feature": "packet_length_std",
+        "pooled_standardized_median_difference": 1.7288022504215255,
+        "robust_median_distance": 7.122116157820324
+      },
+      {
+        "absolute_median_difference": 18.0,
+        "feature": "fwd_iat_min",
+        "pooled_standardized_median_difference": 0.07948088215239059,
+        "robust_median_distance": 6.0
+      },
+      {
+        "absolute_median_difference": 84.0,
+        "feature": "fwd_packet_length_max",
+        "pooled_standardized_median_difference": 1.9904631099218466,
+        "robust_median_distance": 5.6
+      },
+      {
+        "absolute_median_difference": 136.0,
+        "feature": "bwd_header_length",
+        "pooled_standardized_median_difference": 2.0065937813331414,
+        "robust_median_distance": 4.25
+      }
+    ]
+  },
+  "e12_gate": "PASS",
+  "high_p_ddos_flows": [
+    {
+      "P(DDoS)": 0.3737159910000096,
+      "P(Normal)": 0.6235027268835378,
+      "P(PortScan)": 0.0027812821164528937,
+      "destination_ip": "10.10.20.2",
+      "destination_port": 8080,
+      "feature_values_vs_session_and_ddos_median": {
+        "bwd_header_length": {
+          "ddos_median": 168.0,
+          "session_median": 32.0,
+          "value": 168.0
+        },
+        "bwd_packet_length_max": {
+          "ddos_median": 185.0,
+          "session_median": 0.0,
+          "value": 185.0
+        },
+        "bwd_packet_length_std": {
+          "ddos_median": 74.16199,
+          "session_median": 0.0,
+          "value": 80.26518249511719
+        },
+        "flow_bytes_s": {
+          "ddos_median": 156.3705,
+          "session_median": 32724.26171875,
+          "value": 150857.71875
+        },
+        "fwd_iat_min": {
+          "ddos_median": 3.0,
+          "session_median": 21.0,
+          "value": 4.0
+        },
+        "fwd_packet_length_max": {
+          "ddos_median": 84.0,
+          "session_median": 0.0,
+          "value": 79.0
+        },
+        "max_packet_length": {
+          "ddos_median": 185.0,
+          "session_median": 0.0,
+          "value": 185.0
+        },
+        "packet_length_std": {
+          "ddos_median": 54.204147,
+          "session_median": 0.0,
+          "value": 60.324031829833984
+        },
+        "subflow_bwd_bytes": {
+          "ddos_median": 210.0,
+          "session_median": 0.0,
+          "value": 220.0
+        },
+        "total_length_of_bwd_packets": {
+          "ddos_median": 210.0,
+          "session_median": 0.0,
+          "value": 220.0
+        }
+      },
+      "predicted_class": "Normal",
+      "prediction_id": 4349,
+      "reconstructed_row_index": 459,
+      "source_ip": "10.10.10.13",
+      "source_port": 42766,
+      "traffic_flow_id": 4349
+    },
+    {
+      "P(DDoS)": 0.36212096604232336,
+      "P(Normal)": 0.6158651762990388,
+      "P(PortScan)": 0.022013857658638253,
+      "destination_ip": "10.10.20.2",
+      "destination_port": 8080,
+      "feature_values_vs_session_and_ddos_median": {
+        "bwd_header_length": {
+          "ddos_median": 168.0,
+          "session_median": 32.0,
+          "value": 136.0
+        },
+        "bwd_packet_length_max": {
+          "ddos_median": 185.0,
+          "session_median": 0.0,
+          "value": 185.0
+        },
+        "bwd_packet_length_std": {
+          "ddos_median": 74.16199,
+          "session_median": 0.0,
+          "value": 88.22320556640625
+        },
+        "flow_bytes_s": {
+          "ddos_median": 156.3705,
+          "session_median": 32724.26171875,
+          "value": 111692.1953125
+        },
+        "fwd_iat_min": {
+          "ddos_median": 3.0,
+          "session_median": 21.0,
+          "value": 4.0
+        },
+        "fwd_packet_length_max": {
+          "ddos_median": 84.0,
+          "session_median": 0.0,
+          "value": 79.0
+        },
+        "max_packet_length": {
+          "ddos_median": 185.0,
+          "session_median": 0.0,
+          "value": 185.0
+        },
+        "packet_length_std": {
+          "ddos_median": 54.204147,
+          "session_median": 0.0,
+          "value": 57.93413162231445
+        },
+        "subflow_bwd_bytes": {
+          "ddos_median": 210.0,
+          "session_median": 0.0,
+          "value": 220.0
+        },
+        "total_length_of_bwd_packets": {
+          "ddos_median": 210.0,
+          "session_median": 0.0,
+          "value": 220.0
+        }
+      },
+      "predicted_class": "Normal",
+      "prediction_id": 4145,
+      "reconstructed_row_index": 255,
+      "source_ip": "10.10.10.13",
+      "source_port": 42564,
+      "traffic_flow_id": 4145
+    },
+    {
+      "P(DDoS)": 0.3322188381632386,
+      "P(Normal)": 0.6626312505611992,
+      "P(PortScan)": 0.005149911275562389,
+      "destination_ip": "10.10.20.2",
+      "destination_port": 8080,
+      "feature_values_vs_session_and_ddos_median": {
+        "bwd_header_length": {
+          "ddos_median": 168.0,
+          "session_median": 32.0,
+          "value": 168.0
+        },
+        "bwd_packet_length_max": {
+          "ddos_median": 185.0,
+          "session_median": 0.0,
+          "value": 185.0
+        },
+        "bwd_packet_length_std": {
+          "ddos_median": 74.16199,
+          "session_median": 0.0,
+          "value": 80.26518249511719
+        },
+        "flow_bytes_s": {
+          "ddos_median": 156.3705,
+          "session_median": 32724.26171875,
+          "value": 112153.0390625
+        },
+        "fwd_iat_min": {
+          "ddos_median": 3.0,
+          "session_median": 21.0,
+          "value": 7.0
+        },
+        "fwd_packet_length_max": {
+          "ddos_median": 84.0,
+          "session_median": 0.0,
+          "value": 79.0
+        },
+        "max_packet_length": {
+          "ddos_median": 185.0,
+          "session_median": 0.0,
+          "value": 185.0
+        },
+        "packet_length_std": {
+          "ddos_median": 54.204147,
+          "session_median": 0.0,
+          "value": 60.324031829833984
+        },
+        "subflow_bwd_bytes": {
+          "ddos_median": 210.0,
+          "session_median": 0.0,
+          "value": 220.0
+        },
+        "total_length_of_bwd_packets": {
+          "ddos_median": 210.0,
+          "session_median": 0.0,
+          "value": 220.0
+        }
+      },
+      "predicted_class": "Normal",
+      "prediction_id": 3935,
+      "reconstructed_row_index": 45,
+      "source_ip": "10.10.10.11",
+      "source_port": 51368,
+      "traffic_flow_id": 3935
+    },
+    {
+      "P(DDoS)": 0.30370316935003305,
+      "P(Normal)": 0.5179908961713818,
+      "P(PortScan)": 0.1783059344785875,
+      "destination_ip": "10.10.20.2",
+      "destination_port": 8080,
+      "feature_values_vs_session_and_ddos_median": {
+        "bwd_header_length": {
+          "ddos_median": 168.0,
+          "session_median": 32.0,
+          "value": 0.0
+        },
+        "bwd_packet_length_max": {
+          "ddos_median": 185.0,
+          "session_median": 0.0,
+          "value": 0.0
+        },
+        "bwd_packet_length_std": {
+          "ddos_median": 74.16199,
+          "session_median": 0.0,
+          "value": 0.0
+        },
+        "flow_bytes_s": {
+          "ddos_median": 156.3705,
+          "session_median": 32724.26171875,
+          "value": 0.0
+        },
+        "fwd_iat_min": {
+          "ddos_median": 3.0,
+          "session_median": 21.0,
+          "value": 1.0
+        },
+        "fwd_packet_length_max": {
+          "ddos_median": 84.0,
+          "session_median": 0.0,
+          "value": 0.0
+        },
+        "max_packet_length": {
+          "ddos_median": 185.0,
+          "session_median": 0.0,
+          "value": 0.0
+        },
+        "packet_length_std": {
+          "ddos_median": 54.204147,
+          "session_median": 0.0,
+          "value": 0.0
+        },
+        "subflow_bwd_bytes": {
+          "ddos_median": 210.0,
+          "session_median": 0.0,
+          "value": 0.0
+        },
+        "total_length_of_bwd_packets": {
+          "ddos_median": 210.0,
+          "session_median": 0.0,
+          "value": 0.0
+        }
+      },
+      "predicted_class": "Normal",
+      "prediction_id": 3946,
+      "reconstructed_row_index": 56,
+      "source_ip": "10.10.10.13",
+      "source_port": 42338,
+      "traffic_flow_id": 3946
+    },
+    {
+      "P(DDoS)": 0.30370316935003305,
+      "P(Normal)": 0.5179908961713818,
+      "P(PortScan)": 0.1783059344785875,
+      "destination_ip": "10.10.20.2",
+      "destination_port": 8080,
+      "feature_values_vs_session_and_ddos_median": {
+        "bwd_header_length": {
+          "ddos_median": 168.0,
+          "session_median": 32.0,
+          "value": 0.0
+        },
+        "bwd_packet_length_max": {
+          "ddos_median": 185.0,
+          "session_median": 0.0,
+          "value": 0.0
+        },
+        "bwd_packet_length_std": {
+          "ddos_median": 74.16199,
+          "session_median": 0.0,
+          "value": 0.0
+        },
+        "flow_bytes_s": {
+          "ddos_median": 156.3705,
+          "session_median": 32724.26171875,
+          "value": 0.0
+        },
+        "fwd_iat_min": {
+          "ddos_median": 3.0,
+          "session_median": 21.0,
+          "value": 1.0
+        },
+        "fwd_packet_length_max": {
+          "ddos_median": 84.0,
+          "session_median": 0.0,
+          "value": 0.0
+        },
+        "max_packet_length": {
+          "ddos_median": 185.0,
+          "session_median": 0.0,
+          "value": 0.0
+        },
+        "packet_length_std": {
+          "ddos_median": 54.204147,
+          "session_median": 0.0,
+          "value": 0.0
+        },
+        "subflow_bwd_bytes": {
+          "ddos_median": 210.0,
+          "session_median": 0.0,
+          "value": 0.0
+        },
+        "total_length_of_bwd_packets": {
+          "ddos_median": 210.0,
+          "session_median": 0.0,
+          "value": 0.0
+        }
+      },
+      "predicted_class": "Normal",
+      "prediction_id": 3968,
+      "reconstructed_row_index": 78,
+      "source_ip": "10.10.10.13",
+      "source_port": 42380,
+      "traffic_flow_id": 3968
+    },
+    {
+      "P(DDoS)": 0.30370316935003305,
+      "P(Normal)": 0.5179908961713818,
+      "P(PortScan)": 0.1783059344785875,
+      "destination_ip": "10.10.20.2",
+      "destination_port": 8080,
+      "feature_values_vs_session_and_ddos_median": {
+        "bwd_header_length": {
+          "ddos_median": 168.0,
+          "session_median": 32.0,
+          "value": 0.0
+        },
+        "bwd_packet_length_max": {
+          "ddos_median": 185.0,
+          "session_median": 0.0,
+          "value": 0.0
+        },
+        "bwd_packet_length_std": {
+          "ddos_median": 74.16199,
+          "session_median": 0.0,
+          "value": 0.0
+        },
+        "flow_bytes_s": {
+          "ddos_median": 156.3705,
+          "session_median": 32724.26171875,
+          "value": 0.0
+        },
+        "fwd_iat_min": {
+          "ddos_median": 3.0,
+          "session_median": 21.0,
+          "value": 1.0
+        },
+        "fwd_packet_length_max": {
+          "ddos_median": 84.0,
+          "session_median": 0.0,
+          "value": 0.0
+        },
+        "max_packet_length": {
+          "ddos_median": 185.0,
+          "session_median": 0.0,
+          "value": 0.0
+        },
+        "packet_length_std": {
+          "ddos_median": 54.204147,
+          "session_median": 0.0,
+          "value": 0.0
+        },
+        "subflow_bwd_bytes": {
+          "ddos_median": 210.0,
+          "session_median": 0.0,
+          "value": 0.0
+        },
+        "total_length_of_bwd_packets": {
+          "ddos_median": 210.0,
+          "session_median": 0.0,
+          "value": 0.0
+        }
+      },
+      "predicted_class": "Normal",
+      "prediction_id": 4121,
+      "reconstructed_row_index": 231,
+      "source_ip": "10.10.10.12",
+      "source_port": 56792,
+      "traffic_flow_id": 4121
+    },
+    {
+      "P(DDoS)": 0.30370316935003305,
+      "P(Normal)": 0.5179908961713818,
+      "P(PortScan)": 0.1783059344785875,
+      "destination_ip": "10.10.20.2",
+      "destination_port": 8080,
+      "feature_values_vs_session_and_ddos_median": {
+        "bwd_header_length": {
+          "ddos_median": 168.0,
+          "session_median": 32.0,
+          "value": 0.0
+        },
+        "bwd_packet_length_max": {
+          "ddos_median": 185.0,
+          "session_median": 0.0,
+          "value": 0.0
+        },
+        "bwd_packet_length_std": {
+          "ddos_median": 74.16199,
+          "session_median": 0.0,
+          "value": 0.0
+        },
+        "flow_bytes_s": {
+          "ddos_median": 156.3705,
+          "session_median": 32724.26171875,
+          "value": 0.0
+        },
+        "fwd_iat_min": {
+          "ddos_median": 3.0,
+          "session_median": 21.0,
+          "value": 1.0
+        },
+        "fwd_packet_length_max": {
+          "ddos_median": 84.0,
+          "session_median": 0.0,
+          "value": 0.0
+        },
+        "max_packet_length": {
+          "ddos_median": 185.0,
+          "session_median": 0.0,
+          "value": 0.0
+        },
+        "packet_length_std": {
+          "ddos_median": 54.204147,
+          "session_median": 0.0,
+          "value": 0.0
+        },
+        "subflow_bwd_bytes": {
+          "ddos_median": 210.0,
+          "session_median": 0.0,
+          "value": 0.0
+        },
+        "total_length_of_bwd_packets": {
+          "ddos_median": 210.0,
+          "session_median": 0.0,
+          "value": 0.0
+        }
+      },
+      "predicted_class": "Normal",
+      "prediction_id": 4218,
+      "reconstructed_row_index": 328,
+      "source_ip": "10.10.10.11",
+      "source_port": 51718,
+      "traffic_flow_id": 4218
+    },
+    {
+      "P(DDoS)": 0.30370316935003305,
+      "P(Normal)": 0.5179908961713818,
+      "P(PortScan)": 0.1783059344785875,
+      "destination_ip": "10.10.20.2",
+      "destination_port": 8080,
+      "feature_values_vs_session_and_ddos_median": {
+        "bwd_header_length": {
+          "ddos_median": 168.0,
+          "session_median": 32.0,
+          "value": 0.0
+        },
+        "bwd_packet_length_max": {
+          "ddos_median": 185.0,
+          "session_median": 0.0,
+          "value": 0.0
+        },
+        "bwd_packet_length_std": {
+          "ddos_median": 74.16199,
+          "session_median": 0.0,
+          "value": 0.0
+        },
+        "flow_bytes_s": {
+          "ddos_median": 156.3705,
+          "session_median": 32724.26171875,
+          "value": 0.0
+        },
+        "fwd_iat_min": {
+          "ddos_median": 3.0,
+          "session_median": 21.0,
+          "value": 1.0
+        },
+        "fwd_packet_length_max": {
+          "ddos_median": 84.0,
+          "session_median": 0.0,
+          "value": 0.0
+        },
+        "max_packet_length": {
+          "ddos_median": 185.0,
+          "session_median": 0.0,
+          "value": 0.0
+        },
+        "packet_length_std": {
+          "ddos_median": 54.204147,
+          "session_median": 0.0,
+          "value": 0.0
+        },
+        "subflow_bwd_bytes": {
+          "ddos_median": 210.0,
+          "session_median": 0.0,
+          "value": 0.0
+        },
+        "total_length_of_bwd_packets": {
+          "ddos_median": 210.0,
+          "session_median": 0.0,
+          "value": 0.0
+        }
+      },
+      "predicted_class": "Normal",
+      "prediction_id": 4373,
+      "reconstructed_row_index": 483,
+      "source_ip": "10.10.10.12",
+      "source_port": 57080,
+      "traffic_flow_id": 4373
+    },
+    {
+      "P(DDoS)": 0.30370316935003305,
+      "P(Normal)": 0.5179908961713818,
+      "P(PortScan)": 0.1783059344785875,
+      "destination_ip": "10.10.20.2",
+      "destination_port": 8080,
+      "feature_values_vs_session_and_ddos_median": {
+        "bwd_header_length": {
+          "ddos_median": 168.0,
+          "session_median": 32.0,
+          "value": 0.0
+        },
+        "bwd_packet_length_max": {
+          "ddos_median": 185.0,
+          "session_median": 0.0,
+          "value": 0.0
+        },
+        "bwd_packet_length_std": {
+          "ddos_median": 74.16199,
+          "session_median": 0.0,
+          "value": 0.0
+        },
+        "flow_bytes_s": {
+          "ddos_median": 156.3705,
+          "session_median": 32724.26171875,
+          "value": 0.0
+        },
+        "fwd_iat_min": {
+          "ddos_median": 3.0,
+          "session_median": 21.0,
+          "value": 1.0
+        },
+        "fwd_packet_length_max": {
+          "ddos_median": 84.0,
+          "session_median": 0.0,
+          "value": 0.0
+        },
+        "max_packet_length": {
+          "ddos_median": 185.0,
+          "session_median": 0.0,
+          "value": 0.0
+        },
+        "packet_length_std": {
+          "ddos_median": 54.204147,
+          "session_median": 0.0,
+          "value": 0.0
+        },
+        "subflow_bwd_bytes": {
+          "ddos_median": 210.0,
+          "session_median": 0.0,
+          "value": 0.0
+        },
+        "total_length_of_bwd_packets": {
+          "ddos_median": 210.0,
+          "session_median": 0.0,
+          "value": 0.0
+        }
+      },
+      "predicted_class": "Normal",
+      "prediction_id": 4429,
+      "reconstructed_row_index": 539,
+      "source_ip": "10.10.10.11",
+      "source_port": 51982,
+      "traffic_flow_id": 4429
+    },
+    {
+      "P(DDoS)": 0.30370316935003305,
+      "P(Normal)": 0.5179908961713818,
+      "P(PortScan)": 0.1783059344785875,
+      "destination_ip": "10.10.20.2",
+      "destination_port": 8080,
+      "feature_values_vs_session_and_ddos_median": {
+        "bwd_header_length": {
+          "ddos_median": 168.0,
+          "session_median": 32.0,
+          "value": 0.0
+        },
+        "bwd_packet_length_max": {
+          "ddos_median": 185.0,
+          "session_median": 0.0,
+          "value": 0.0
+        },
+        "bwd_packet_length_std": {
+          "ddos_median": 74.16199,
+          "session_median": 0.0,
+          "value": 0.0
+        },
+        "flow_bytes_s": {
+          "ddos_median": 156.3705,
+          "session_median": 32724.26171875,
+          "value": 0.0
+        },
+        "fwd_iat_min": {
+          "ddos_median": 3.0,
+          "session_median": 21.0,
+          "value": 1.0
+        },
+        "fwd_packet_length_max": {
+          "ddos_median": 84.0,
+          "session_median": 0.0,
+          "value": 0.0
+        },
+        "max_packet_length": {
+          "ddos_median": 185.0,
+          "session_median": 0.0,
+          "value": 0.0
+        },
+        "packet_length_std": {
+          "ddos_median": 54.204147,
+          "session_median": 0.0,
+          "value": 0.0
+        },
+        "subflow_bwd_bytes": {
+          "ddos_median": 210.0,
+          "session_median": 0.0,
+          "value": 0.0
+        },
+        "total_length_of_bwd_packets": {
+          "ddos_median": 210.0,
+          "session_median": 0.0,
+          "value": 0.0
+        }
+      },
+      "predicted_class": "Normal",
+      "prediction_id": 4446,
+      "reconstructed_row_index": 556,
+      "source_ip": "10.10.10.12",
+      "source_port": 57128,
+      "traffic_flow_id": 4446
+    }
+  ],
+  "integrity": {
+    "after": {
+      "data/lab/experiment_e/datasets/experiment_e_training_candidate.csv": "f716404391467b267cca2f989762c2d4740127a4e7dd11afe956e7e8940b2284",
+      "models/experiment_d/random_forest_rf_v2.joblib": "fb13a71a0287054d2630bf07529f113a153ba08d8f6835a605b04493408b8a31",
+      "models/experiment_d/random_forest_rf_v2_metadata.json": "0bef82122fbebede27cd14f9dae925f4f48f3f1700c4b6c46ae29f238731e2c2",
+      "models/experiment_e/random_forest_rf_v3_candidate.joblib": "6b01c7b3923c1a6bd471862d011f8f5b88a31378e51d1dde082bd2e72bedef86",
+      "models/experiment_e/random_forest_rf_v3_candidate_metadata.json": "30b6bdf2a6cb2d60e2be36d4db1e124d71504393081b229e6d94da7e70322cbc",
+      "reports/experiment_e/diagnostic/e11_ddos_failure_diagnostic.json": "364e709bd5411f2965bef2c667d7d32d03c723537ffc5845315733e0d11b75a0",
+      "reports/experiment_e/diagnostic/e11_ddos_failure_diagnostic_summary.md": "2b318a98ab81ea1314fc85adeaf01ce369f16b564810d010eac2f55f6418e66c",
+      "reports/experiment_e/recovery/e12/session_11_window_000003.pcap": "8bfa65f4d4e395044016dab174477781e1e14416b9059207e559614fd6fb3509",
+      "reports/experiment_e/recovery/e12/session_11_window_000003_raw.csv": "3a6b58afcda68baae9d620afa6f9c0e286589253827836b61cb021bbc6d7432b",
+      "reports/experiment_e/runtime_exports/e10/alerts_10_11.csv": "3ffd850fe6026a970c5a1905d2dbdf100c98baa90ae20f6e3dd24a240d8906d0",
+      "reports/experiment_e/runtime_exports/e10/runtime_artifacts_10_11.csv": "866599c533f544920081f0be9d552ebfe800d22bb9c575ac4220936057fbd2ef",
+      "reports/experiment_e/runtime_exports/e10/session_10.csv": "cfae66a1761bfc9735b6fb6a2e7f6918d094b1d1e1956ac7ebec4167f417c633",
+      "reports/experiment_e/runtime_exports/e10/session_10_predictions.csv": "e5efa0226263726ee774573c34cb1adc707ad8328d1b4855fd4ae62bba878306",
+      "reports/experiment_e/runtime_exports/e10/session_11.csv": "94d91254c7ddf6ad545682ca3122755ea62a895323ce12f2f6630f881c0be683",
+      "reports/experiment_e/runtime_exports/e10/session_11_predictions.csv": "6b32c471752f6f0397c0e3be80078cba04d61e69268f2532fc9965c3ae55894d",
+      "reports/tables/cicflowmeter_v3_78_feature_crosswalk.csv": "66e517cdcea217f19de4d0a2cd45302ede999388393f539fb8ca4a2c68b74cf4"
+    },
+    "before": {
+      "data/lab/experiment_e/datasets/experiment_e_training_candidate.csv": "f716404391467b267cca2f989762c2d4740127a4e7dd11afe956e7e8940b2284",
+      "models/experiment_d/random_forest_rf_v2.joblib": "fb13a71a0287054d2630bf07529f113a153ba08d8f6835a605b04493408b8a31",
+      "models/experiment_d/random_forest_rf_v2_metadata.json": "0bef82122fbebede27cd14f9dae925f4f48f3f1700c4b6c46ae29f238731e2c2",
+      "models/experiment_e/random_forest_rf_v3_candidate.joblib": "6b01c7b3923c1a6bd471862d011f8f5b88a31378e51d1dde082bd2e72bedef86",
+      "models/experiment_e/random_forest_rf_v3_candidate_metadata.json": "30b6bdf2a6cb2d60e2be36d4db1e124d71504393081b229e6d94da7e70322cbc",
+      "reports/experiment_e/diagnostic/e11_ddos_failure_diagnostic.json": "364e709bd5411f2965bef2c667d7d32d03c723537ffc5845315733e0d11b75a0",
+      "reports/experiment_e/diagnostic/e11_ddos_failure_diagnostic_summary.md": "2b318a98ab81ea1314fc85adeaf01ce369f16b564810d010eac2f55f6418e66c",
+      "reports/experiment_e/recovery/e12/session_11_window_000003.pcap": "8bfa65f4d4e395044016dab174477781e1e14416b9059207e559614fd6fb3509",
+      "reports/experiment_e/recovery/e12/session_11_window_000003_raw.csv": "3a6b58afcda68baae9d620afa6f9c0e286589253827836b61cb021bbc6d7432b",
+      "reports/experiment_e/runtime_exports/e10/alerts_10_11.csv": "3ffd850fe6026a970c5a1905d2dbdf100c98baa90ae20f6e3dd24a240d8906d0",
+      "reports/experiment_e/runtime_exports/e10/runtime_artifacts_10_11.csv": "866599c533f544920081f0be9d552ebfe800d22bb9c575ac4220936057fbd2ef",
+      "reports/experiment_e/runtime_exports/e10/session_10.csv": "cfae66a1761bfc9735b6fb6a2e7f6918d094b1d1e1956ac7ebec4167f417c633",
+      "reports/experiment_e/runtime_exports/e10/session_10_predictions.csv": "e5efa0226263726ee774573c34cb1adc707ad8328d1b4855fd4ae62bba878306",
+      "reports/experiment_e/runtime_exports/e10/session_11.csv": "94d91254c7ddf6ad545682ca3122755ea62a895323ce12f2f6630f881c0be683",
+      "reports/experiment_e/runtime_exports/e10/session_11_predictions.csv": "6b32c471752f6f0397c0e3be80078cba04d61e69268f2532fc9965c3ae55894d",
+      "reports/tables/cicflowmeter_v3_78_feature_crosswalk.csv": "66e517cdcea217f19de4d0a2cd45302ede999388393f539fb8ca4a2c68b74cf4"
+    },
+    "unchanged": true
+  },
+  "limitations": [
+    "One recovered Session 11 window; no new traffic or rerun.",
+    "One anomalous export tuple prevents universal row-level linkage proof.",
+    "Distribution distances describe association, not causation.",
+    "No retraining, threshold change, DB write, activation, or promotion was performed."
+  ],
+  "mode": "diagnostic-only; frozen recovered evidence; no DB writes",
+  "reconstruction": {
+    "adapter_provenance": {
+      "adapter_identity": "CICFLOWMETER_V3_CICIDS2017_MODEL_ADAPTER",
+      "adapter_version": "1.0.0",
+      "artifact_reproduction_fields": [
+        "fin_flag_count",
+        "syn_flag_count",
+        "rst_flag_count",
+        "psh_flag_count",
+        "ack_flag_count",
+        "urg_flag_count",
+        "cwe_flag_count",
+        "ece_flag_count",
+        "fwd_header_length.1"
+      ],
+      "cicflowmeter_v3_commit": "a26aae27f21d165ff30b4b28e75124a5f9b4b2c4",
+      "cicflowmeter_v3_image_digest": "sha256:0227c7280e586d54144b9bb11b2a6b5d4b1c4ba9bc7c44199fa312a6b829caab",
+      "crosswalk_path": "reports/tables/cicflowmeter_v3_78_feature_crosswalk.csv",
+      "crosswalk_sha256": "66e517cdcea217f19de4d0a2cd45302ede999388393f539fb8ca4a2c68b74cf4",
+      "imputation_performed": false,
+      "non_finite_after": {
+        "nan": 16,
+        "negative_infinity": 0,
+        "positive_infinity": 0,
+        "total": 16
+      },
+      "non_finite_before": {
+        "nan": 8,
+        "negative_infinity": 0,
+        "positive_infinity": 8,
+        "total": 16
+      },
+      "output_feature_count": 78,
+      "output_row_count": 802,
+      "raw_input_path": "/Users/wahyudev/Wahyudev/ai_projects/rf_nids/reports/experiment_e/recovery/e12/session_11_window_000003_raw.csv",
+      "raw_input_sha256": "3a6b58afcda68baae9d620afa6f9c0e286589253827836b61cb021bbc6d7432b",
+      "raw_row_count": 802,
+      "schema_validation": "PASS"
+    },
+    "lineage_file": "reports/experiment_e/recovery/e12/session_11_model_input_lineage.json",
+    "matrix_sha256": "710d8eea4ff99ddc9c695055ebb17959e44a3bdbc652c3ee1d11ea2cb4bbf29f",
+    "matrix_shape": [
+      802,
+      78
+    ]
+  },
+  "rf_v2_identical_flow": {
+    "class_counts": {
+      "DDoS": 5,
+      "Normal": 797,
+      "PortScan": 0
+    },
+    "probability_summary": {
+      "DDoS": {
+        "max": 0.546508632643415,
+        "mean": 0.10064668506132157,
+        "median": 0.007335642905769766,
+        "min": 0.0,
+        "q1": 0.0,
+        "q3": 0.1900249848704188,
+        "standard_deviation": 0.10666606155120252
+      },
+      "Normal": {
+        "max": 1.0,
+        "mean": 0.8734995529942119,
+        "median": 0.9719633007547381,
+        "min": 0.43035638565473355,
+        "q1": 0.7569650037354752,
+        "q3": 1.0,
+        "standard_deviation": 0.13068570036280736
+      },
+      "PortScan": {
+        "max": 0.07677085114202896,
+        "mean": 0.025853761944466567,
+        "median": 0.012493298665746196,
+        "min": 0.0,
+        "q1": 0.0,
+        "q3": 0.04986873095719484,
+        "standard_deviation": 0.026723027559635036
+      }
+    },
+    "vs_rf_v3": {
+      "changed_away_from_ddos": 5,
+      "changed_toward_ddos": 0,
+      "class_agreement": 797,
+      "class_disagreement": 5,
+      "mean_absolute_probability_shift": {
+        "DDoS": 0.10296838217404161,
+        "Normal": 0.14056005786095263,
+        "PortScan": 0.03764169271157806
+      }
+    }
+  },
+  "rf_v3_reproducibility": {
+    "class_agreement_count": 802,
+    "mismatch_count": 0,
+    "offline_count": 802,
+    "persisted_count": 802,
+    "probabilities_outside_tolerance": 0,
+    "probability_max_absolute_difference": {
+      "DDoS": 2.7755575615628914e-17,
+      "Normal": 3.3306690738754696e-16,
+      "PortScan": 5.551115123125783e-17
+    },
+    "probability_mean_absolute_difference": {
+      "DDoS": 8.057163276824946e-19,
+      "Normal": 2.893224590357328e-17,
+      "PortScan": 1.154499570202769e-19
+    },
+    "row_lineage": "C. universal exact row-level linkage is insufficient: 801/802 exported metadata tuples match the raw rows, but anomalous raw row 791 differs from its exported tuple. Positional class/probability comparison is reported as strong reproducibility evidence, not forced universal row identity.",
+    "tolerance": 1e-12,
+    "tolerance_justification": "persisted JSON decimal serialization may round IEEE-754 values"
+  },
+  "root_cause_categories": {
+    "EXTRACTOR_PROVENANCE_MISMATCH": "NOT_SUPPORTED: artifact 807 hashes and pinned extractor identity match E10 export.",
+    "FEATURE_SCHEMA_MISMATCH": "NOT_SUPPORTED: raw 84 columns adapt exactly to locked ordered 78 features.",
+    "INSUFFICIENT_EVIDENCE": "NOT_SUPPORTED for reconstruction/reproducibility; remaining causal interpretation is limited to this recovered window.",
+    "MODEL_CLASS_BOUNDARY_LIMITATION": "PARTIALLY_SUPPORTED: the most DDoS-like reconstructed vectors remain predominantly Normal; overlap is not established globally.",
+    "MODEL_LOADING_OR_ORDERING_ERROR": "NOT_SUPPORTED: exact positional persisted/offline class and probability reproduction.",
+    "RUNTIME_DISTRIBUTION_SHIFT": "SUPPORTED: normalized 78-feature comparison shows substantial shift; see ranking.",
+    "WORKLOAD_NOT_REPRESENTATIVE_OF_TRAINED_DDOS": "PARTIALLY_SUPPORTED: recovered controlled HTTP vectors differ materially from frozen historical DDoS, but causality is not proven."
+  },
+  "schema": "experiment_e_e12_recovered_runtime_diagnostic",
+  "schema_version": 1,
+  "scientific_decision": "ROOT_CAUSE_PARTIALLY_SUPPORTED",
+  "scientific_interpretation": "Frozen RF-v3 produces the observed Normal classifications on the recovered vectors; the 801 matching rows plus exact positional numerical agreement strongly reduce model-loading/order explanations. Distribution/workload findings are diagnostic rather than causal proof."
+}

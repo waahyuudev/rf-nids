@@ -1,0 +1,409 @@
+{
+  "alerts": {
+    "exported_alert_count": 0,
+    "matches_session_counters": true,
+    "severity_distribution": {}
+  },
+  "analysis_mode": "read-only frozen-export analysis",
+  "experiment_identifier": "E10",
+  "generated_at_utc": "2026-09-14T02:38:40.561361+00:00",
+  "inputs": {
+    "files": {
+      "alerts_10_11.csv": {
+        "matches_manifest": true,
+        "sha256": "3ffd850fe6026a970c5a1905d2dbdf100c98baa90ae20f6e3dd24a240d8906d0"
+      },
+      "runtime_artifacts_10_11.csv": {
+        "matches_manifest": true,
+        "sha256": "866599c533f544920081f0be9d552ebfe800d22bb9c575ac4220936057fbd2ef"
+      },
+      "session_10.csv": {
+        "matches_manifest": true,
+        "sha256": "cfae66a1761bfc9735b6fb6a2e7f6918d094b1d1e1956ac7ebec4167f417c633"
+      },
+      "session_10_predictions.csv": {
+        "matches_manifest": true,
+        "sha256": "e5efa0226263726ee774573c34cb1adc707ad8328d1b4855fd4ae62bba878306"
+      },
+      "session_11.csv": {
+        "matches_manifest": true,
+        "sha256": "94d91254c7ddf6ad545682ca3122755ea62a895323ce12f2f6630f881c0be683"
+      },
+      "session_11_predictions.csv": {
+        "matches_manifest": true,
+        "sha256": "6b32c471752f6f0397c0e3be80078cba04d61e69268f2532fc9965c3ae55894d"
+      }
+    },
+    "manifest_sha256": "7ae2d8477fed7a40d4f65c0a7157cc859917285a41fd75ddb106d0e8fa2b8890"
+  },
+  "integrity": {
+    "historical_hashes_before": {
+      "models/experiment_d/random_forest_rf_v2.joblib": "fb13a71a0287054d2630bf07529f113a153ba08d8f6835a605b04493408b8a31",
+      "models/experiment_e/random_forest_rf_v3_candidate.joblib": "6b01c7b3923c1a6bd471862d011f8f5b88a31378e51d1dde082bd2e72bedef86",
+      "models/experiment_e/random_forest_rf_v3_candidate_metadata.json": "30b6bdf2a6cb2d60e2be36d4db1e124d71504393081b229e6d94da7e70322cbc",
+      "reports/experiment_e/analysis/e8_final_comparison.json": "9a031c84ae2e363925f3a8b84e3b33be0c2e5e4dc009ab30dccc67b9037c3fda",
+      "reports/experiment_e/audit/e8_scientific_decision.json": "629f76a16c326bda3a36d8a41bf0c85c495e7edbdb91679861af43f5fa938b3a",
+      "reports/experiment_e/evaluation/e6_offline_validation.json": "66722d430c112e222a5e767086294dc8f27b658ac92e34bbc6eca7e69572093d",
+      "reports/experiment_e/runtime_validation/e7_runtime_validation.json": "0c655a51dee12b3610180eaf5145f9e06a720622a33ce8e204419a87f9eca640"
+    },
+    "no_session_or_historical_evidence_modified": true,
+    "no_training_or_threshold_change_performed": true
+  },
+  "limitations": [
+    "The four logical source IP identities originated from one physical ubuntu-traffic VM and are not four independent attack hosts.",
+    "This is controlled multi-source DDoS-like runtime traffic, not a real distributed DDoS attack.",
+    "The scoped DDoS-like detection rate is not universal DDoS recall.",
+    "Two of 802 exported Session 11 predictions do not have destination 10.10.20.2:8080; one is target-to-source response-direction traffic and one has anomalous 8.x endpoint fields. They remain in the frozen valid-prediction denominator and are reported explicitly.",
+    "The frozen export lacks exact feature vectors, so RF-v2 cannot be re-inferred on identical Session 11 flows."
+  ],
+  "model_verification": {
+    "candidate_artifact_sha256": "6b01c7b3923c1a6bd471862d011f8f5b88a31378e51d1dde082bd2e72bedef86",
+    "candidate_metadata_sha256": "30b6bdf2a6cb2d60e2be36d4db1e124d71504393081b229e6d94da7e70322cbc",
+    "candidate_status": "CANDIDATE / NOT_ACTIVE",
+    "feature_count": 78,
+    "feature_order_sha256": "9338f50fc3e7efc78d678cc65ab38d428a7f6912ed9467a2b99a449a7c8e3c13",
+    "session_model_version": "rf-v3.0-candidate"
+  },
+  "rf_v2_identical_flow_comparison": {
+    "available": false,
+    "reason": "The export contains prediction-level fields and runtime artifact paths/hashes, but no preserved Session 11 78-feature vectors or source CSV/PCAP payloads from which exact vectors can be reproducibly reconstructed.",
+    "statement": "RF-v2 identical-flow comparison unavailable from the frozen E10 runtime export."
+  },
+  "schema": "experiment_e_e10_runtime_validation_analysis",
+  "schema_version": 1,
+  "scientific_interpretation": {
+    "basis": "0 of 802 valid Session 11 predictions were classified DDoS.",
+    "decision": "NOT_SUPPORTED",
+    "e8_more_validation_required": "reinforced",
+    "e9_promotion_authorized": false,
+    "recommended_next_step": "Diagnose the 802 preserved Session 11 feature vectors against the locked 78-feature contract and conduct a new preregistered, bounded DDoS-like runtime validation after a justified remediation; do not promote from E10.",
+    "scope": "RF-v3 performance on the scoped E10 controlled multi-source DDoS-like runtime workload only"
+  },
+  "session_10": {
+    "analysis": {
+      "capture_interfaces": [
+        "enp0s3"
+      ],
+      "confidence_score": {
+        "max": 0.999667826429953,
+        "mean": 0.9888941443797822,
+        "median": 0.9870045202016365,
+        "min": 0.9797056747147009
+      },
+      "matches_session_flow_count": true,
+      "matches_session_prediction_count": true,
+      "model_ids": [
+        "4"
+      ],
+      "model_versions": [
+        "rf-v3.0-candidate"
+      ],
+      "prediction_distribution": {
+        "DDoS": 0,
+        "Normal": 18,
+        "PortScan": 0
+      },
+      "probability_representation": "class_probabilities JSON with Normal, DDoS, and PortScan keys on every exported prediction",
+      "probability_statistics": {
+        "P(DDoS)": {
+          "max": 0.020275766650672863,
+          "mean": 0.005813800149225858,
+          "median": 0.004788929590339676,
+          "min": 0.000313614935420809
+        },
+        "P(Normal)": {
+          "max": 0.999667826429953,
+          "mean": 0.9888941443797822,
+          "median": 0.9870045202016365,
+          "min": 0.9797056747147009
+        },
+        "P(PortScan)": {
+          "max": 0.014046738356829163,
+          "mean": 0.00529205547099189,
+          "median": 0.004763119694232562,
+          "min": 1.855863462625439e-05
+        }
+      },
+      "valid_prediction_count": 18
+    },
+    "metadata": {
+      "alert_count": "0",
+      "artifact_sha256": "6b01c7b3923c1a6bd471862d011f8f5b88a31378e51d1dde082bd2e72bedef86",
+      "extractor_identity": "sha256:b12b3a4a4218968aba2436685a4eb113473e5681de70705409e834e4613a879b",
+      "extractor_name": "CICFlowMeter V3",
+      "extractor_version": "a26aae27f21d165ff30b4b28e75124a5f9b4b2c4",
+      "flow_count": "18",
+      "interface_name": "enp0s3",
+      "model_version": "rf-v3.0-candidate",
+      "prediction_count": "18",
+      "session_id": "10",
+      "started_at": "2026-09-13 18:42:30.745146+00",
+      "status": "STOPPED",
+      "stopped_at": "2026-09-13 18:43:12.124079+00",
+      "target_ip": "10.10.20.2"
+    },
+    "runtime_artifacts": {
+      "adapted_rows_total": 18,
+      "committed_windows": [
+        {
+          "adapted_row_count": 6,
+          "artifact_id": "802",
+          "committed_at": "2026-09-13 18:42:53.996138+00",
+          "csv_relative_path": "flows/window-000002/window-000002.pcap_ISCX.csv",
+          "csv_sha256": "4b780840818951dffe2401f83b1da56bec0032fb569b2581bde442396fa7beb8",
+          "csv_size": 3971,
+          "extracted_row_count": 6,
+          "extractor_identity": "sha256:b12b3a4a4218968aba2436685a4eb113473e5681de70705409e834e4613a879b",
+          "pcap_relative_path": "pcap/window-000002.pcap",
+          "pcap_sha256": "f001ba5071e73b22b4de6a6dd61bc67dae949eea85257f26a416681057a3a97e",
+          "pcap_size": 3429,
+          "window_number": 2
+        },
+        {
+          "adapted_row_count": 12,
+          "artifact_id": "803",
+          "committed_at": "2026-09-13 18:43:07.291772+00",
+          "csv_relative_path": "flows/window-000003/window-000003.pcap_ISCX.csv",
+          "csv_sha256": "547fd0eea712a9281cec575ec5caca0da61cbd6c41cea4f12d3ccdb154128098",
+          "csv_size": 6844,
+          "extracted_row_count": 12,
+          "extractor_identity": "sha256:b12b3a4a4218968aba2436685a4eb113473e5681de70705409e834e4613a879b",
+          "pcap_relative_path": "pcap/window-000003.pcap",
+          "pcap_sha256": "b529b13b6ec766d10a5c969bc3555a7453bacc3d4d18b6a22ae349f3d3345b63",
+          "pcap_size": 6834,
+          "window_number": 3
+        }
+      ],
+      "extracted_rows_total": 18,
+      "non_committed_windows": [
+        {
+          "error_message": "No traffic observed in capture window",
+          "error_stage": "NO_TRAFFIC",
+          "state": "FAILED",
+          "window_number": 1
+        },
+        {
+          "error_message": "No traffic observed in capture window",
+          "error_stage": "NO_TRAFFIC",
+          "state": "FAILED",
+          "window_number": 4
+        }
+      ],
+      "state_distribution": {
+        "COMMITTED": 2,
+        "FAILED": 2
+      },
+      "window_count": 4
+    },
+    "scoped_normal_classification_rate": {
+      "denominator_valid_predictions": 18,
+      "numerator_normal_predictions": 18,
+      "rate": 1.0
+    }
+  },
+  "session_11": {
+    "analysis": {
+      "capture_interfaces": [
+        "enp0s3"
+      ],
+      "confidence_score": {
+        "max": 0.9985579367664232,
+        "mean": 0.9447957626310927,
+        "median": 0.9561954057974273,
+        "min": 0.5110612419373073
+      },
+      "matches_session_flow_count": true,
+      "matches_session_prediction_count": true,
+      "model_ids": [
+        "4"
+      ],
+      "model_versions": [
+        "rf-v3.0-candidate"
+      ],
+      "prediction_distribution": {
+        "DDoS": 0,
+        "Normal": 802,
+        "PortScan": 0
+      },
+      "probability_representation": "class_probabilities JSON with Normal, DDoS, and PortScan keys on every exported prediction",
+      "probability_statistics": {
+        "P(DDoS)": {
+          "max": 0.3737159910000096,
+          "mean": 0.0411605212869711,
+          "median": 0.035102179661223906,
+          "min": 0.0003439394724877165
+        },
+        "P(Normal)": {
+          "max": 0.9985579367664232,
+          "mean": 0.9447957626310927,
+          "median": 0.9561954057974273,
+          "min": 0.5110612419373073
+        },
+        "P(PortScan)": {
+          "max": 0.22751593173475915,
+          "mean": 0.014043716081936174,
+          "median": 0.008206550208023586,
+          "min": 0.00011623235524930599
+        }
+      },
+      "valid_prediction_count": 802
+    },
+    "expected_logical_source_distribution": {
+      "10.10.10.11": 200,
+      "10.10.10.12": 200,
+      "10.10.10.13": 200,
+      "10.10.10.14": 200
+    },
+    "metadata": {
+      "alert_count": "0",
+      "artifact_sha256": "6b01c7b3923c1a6bd471862d011f8f5b88a31378e51d1dde082bd2e72bedef86",
+      "extractor_identity": "sha256:b12b3a4a4218968aba2436685a4eb113473e5681de70705409e834e4613a879b",
+      "extractor_name": "CICFlowMeter V3",
+      "extractor_version": "a26aae27f21d165ff30b4b28e75124a5f9b4b2c4",
+      "flow_count": "802",
+      "interface_name": "enp0s3",
+      "model_version": "rf-v3.0-candidate",
+      "prediction_count": "802",
+      "session_id": "11",
+      "started_at": "2026-09-13 19:49:21.552198+00",
+      "status": "STOPPED",
+      "stopped_at": "2026-09-13 19:51:40.872685+00",
+      "target_ip": "10.10.20.2"
+    },
+    "runtime_artifacts": {
+      "adapted_rows_total": 802,
+      "committed_windows": [
+        {
+          "adapted_row_count": 802,
+          "artifact_id": "807",
+          "committed_at": "2026-09-13 19:50:35.753193+00",
+          "csv_relative_path": "flows/window-000003/window-000003.pcap_ISCX.csv",
+          "csv_sha256": "3a6b58afcda68baae9d620afa6f9c0e286589253827836b61cb021bbc6d7432b",
+          "csv_size": 378258,
+          "extracted_row_count": 802,
+          "extractor_identity": "sha256:b12b3a4a4218968aba2436685a4eb113473e5681de70705409e834e4613a879b",
+          "pcap_relative_path": "pcap/window-000003.pcap",
+          "pcap_sha256": "8bfa65f4d4e395044016dab174477781e1e14416b9059207e559614fd6fb3509",
+          "pcap_size": 455288,
+          "window_number": 3
+        }
+      ],
+      "extracted_rows_total": 802,
+      "non_committed_windows": [
+        {
+          "error_message": "No traffic observed in capture window",
+          "error_stage": "NO_TRAFFIC",
+          "state": "FAILED",
+          "window_number": 1
+        },
+        {
+          "error_message": "No traffic observed in capture window",
+          "error_stage": "NO_TRAFFIC",
+          "state": "FAILED",
+          "window_number": 2
+        },
+        {
+          "error_message": "No traffic observed in capture window",
+          "error_stage": "NO_TRAFFIC",
+          "state": "FAILED",
+          "window_number": 4
+        },
+        {
+          "error_message": "No traffic observed in capture window",
+          "error_stage": "NO_TRAFFIC",
+          "state": "FAILED",
+          "window_number": 5
+        },
+        {
+          "error_message": "No traffic observed in capture window",
+          "error_stage": "NO_TRAFFIC",
+          "state": "FAILED",
+          "window_number": 6
+        },
+        {
+          "error_message": "No traffic observed in capture window",
+          "error_stage": "NO_TRAFFIC",
+          "state": "FAILED",
+          "window_number": 7
+        },
+        {
+          "error_message": "No traffic observed in capture window",
+          "error_stage": "NO_TRAFFIC",
+          "state": "FAILED",
+          "window_number": 8
+        },
+        {
+          "error_message": "No traffic observed in capture window",
+          "error_stage": "NO_TRAFFIC",
+          "state": "FAILED",
+          "window_number": 9
+        },
+        {
+          "error_message": "No traffic observed in capture window",
+          "error_stage": "NO_TRAFFIC",
+          "state": "FAILED",
+          "window_number": 10
+        }
+      ],
+      "state_distribution": {
+        "COMMITTED": 1,
+        "FAILED": 9
+      },
+      "window_count": 10
+    },
+    "scoped_ddos_like_detection_rate": {
+      "denominator_valid_predictions": 802,
+      "not_universal_ddos_recall": true,
+      "numerator_ddos_predictions": 0,
+      "rate": 0.0
+    },
+    "source_ip_distribution": {
+      "10.10.10.11": 200,
+      "10.10.10.12": 200,
+      "10.10.10.13": 200,
+      "10.10.10.14": 200,
+      "10.10.20.2": 1,
+      "8.6.0.1": 1
+    },
+    "target_scope": {
+      "expected_destination": "10.10.20.2:8080",
+      "outside_expected_destination_records": [
+        {
+          "destination_ip": "10.10.10.13",
+          "destination_port": "42564",
+          "prediction_id": "4667",
+          "protocol": "6",
+          "source_ip": "10.10.20.2",
+          "source_port": "8080"
+        },
+        {
+          "destination_ip": "8.0.6.4",
+          "destination_port": "0",
+          "prediction_id": "4681",
+          "protocol": "",
+          "source_ip": "8.6.0.1",
+          "source_port": "0"
+        }
+      ],
+      "rows_outside_expected_destination_scope": 2,
+      "rows_with_expected_destination": 800,
+      "rows_with_target_as_either_endpoint": 801
+    }
+  },
+  "topology_and_scope": {
+    "capture_interface": "enp0s3",
+    "distributed_attack_claim": false,
+    "ground_truth_session_10": "controlled Normal HTTP traffic",
+    "ground_truth_session_11": "controlled multi-source DDoS-like runtime traffic",
+    "logical_source_identities": [
+      "10.10.10.11",
+      "10.10.10.12",
+      "10.10.10.13",
+      "10.10.10.14"
+    ],
+    "maximum_generated_requests": 400,
+    "observer": "ubuntu-nids",
+    "target": "10.10.20.2:8080",
+    "traffic_generator": "one ubuntu-traffic VM"
+  }
+}

@@ -1,0 +1,12 @@
+Experiment: E12 Evidence Recovery
+Source Session: 11
+Artifact root: /app/data/runtime/monitoring/11-0207bcc6698347a5b77e32057fd59c73
+Committed window: 3
+Raw CSV source: flows/window-000003/window-000003.pcap_ISCX.csv
+PCAP source: pcap/window-000003.pcap
+Extracted rows: 802
+Adapted rows: 802
+Raw columns: 84
+Purpose: recover exact frozen Session 11 runtime evidence for diagnostic analysis only.
+No traffic was regenerated.
+No model, threshold, feature contract, or historical evidence was modified.

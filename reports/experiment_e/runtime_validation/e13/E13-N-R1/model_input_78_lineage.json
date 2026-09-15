@@ -1,0 +1,198 @@
+{
+  "adapter": {
+    "adapter_identity": "CICFLOWMETER_V3_CICIDS2017_MODEL_ADAPTER",
+    "adapter_version": "1.0.0",
+    "artifact_reproduction_fields": [
+      "fin_flag_count",
+      "syn_flag_count",
+      "rst_flag_count",
+      "psh_flag_count",
+      "ack_flag_count",
+      "urg_flag_count",
+      "cwe_flag_count",
+      "ece_flag_count",
+      "fwd_header_length.1"
+    ],
+    "cicflowmeter_v3_commit": "a26aae27f21d165ff30b4b28e75124a5f9b4b2c4",
+    "cicflowmeter_v3_image_digest": "sha256:0227c7280e586d54144b9bb11b2a6b5d4b1c4ba9bc7c44199fa312a6b829caab",
+    "crosswalk_path": "reports/tables/cicflowmeter_v3_78_feature_crosswalk.csv",
+    "crosswalk_sha256": "66e517cdcea217f19de4d0a2cd45302ede999388393f539fb8ca4a2c68b74cf4",
+    "imputation_performed": false,
+    "non_finite_after": {
+      "nan": 0,
+      "negative_infinity": 0,
+      "positive_infinity": 0,
+      "total": 0
+    },
+    "non_finite_before": {
+      "nan": 0,
+      "negative_infinity": 0,
+      "positive_infinity": 0,
+      "total": 0
+    },
+    "output_feature_count": 78,
+    "output_row_count": 32,
+    "raw_input_path": "/Users/wahyudev/Wahyudev/ai_projects/rf_nids/reports/experiment_e/runtime_validation/e13/E13-N-R1",
+    "raw_input_sha256": "e62dc303c2db97fa3372320f5a8e6b62752de40e92e49f826ad396493cddceb3",
+    "raw_row_count": 32,
+    "schema_validation": "PASS"
+  },
+  "feature_contract": {
+    "count": 78,
+    "feature_order_sha256": "9338f50fc3e7efc78d678cc65ab38d428a7f6912ed9467a2b99a449a7c8e3c13"
+  },
+  "matrix_sha256": "c607793f0d334a51ebfbd71c61cbbc357234bb1bad9846bec34fb896aa401172",
+  "no_imputation_by_adapter": true,
+  "no_traffic_regenerated": true,
+  "profile": "E13-N-R1",
+  "row_lineage": [
+    {
+      "raw_row_index": 1,
+      "source_window": 2
+    },
+    {
+      "raw_row_index": 2,
+      "source_window": 2
+    },
+    {
+      "raw_row_index": 3,
+      "source_window": 2
+    },
+    {
+      "raw_row_index": 4,
+      "source_window": 2
+    },
+    {
+      "raw_row_index": 5,
+      "source_window": 2
+    },
+    {
+      "raw_row_index": 6,
+      "source_window": 2
+    },
+    {
+      "raw_row_index": 1,
+      "source_window": 3
+    },
+    {
+      "raw_row_index": 2,
+      "source_window": 3
+    },
+    {
+      "raw_row_index": 3,
+      "source_window": 3
+    },
+    {
+      "raw_row_index": 4,
+      "source_window": 3
+    },
+    {
+      "raw_row_index": 5,
+      "source_window": 3
+    },
+    {
+      "raw_row_index": 6,
+      "source_window": 3
+    },
+    {
+      "raw_row_index": 7,
+      "source_window": 3
+    },
+    {
+      "raw_row_index": 8,
+      "source_window": 3
+    },
+    {
+      "raw_row_index": 9,
+      "source_window": 3
+    },
+    {
+      "raw_row_index": 10,
+      "source_window": 3
+    },
+    {
+      "raw_row_index": 11,
+      "source_window": 3
+    },
+    {
+      "raw_row_index": 12,
+      "source_window": 3
+    },
+    {
+      "raw_row_index": 13,
+      "source_window": 3
+    },
+    {
+      "raw_row_index": 14,
+      "source_window": 3
+    },
+    {
+      "raw_row_index": 15,
+      "source_window": 3
+    },
+    {
+      "raw_row_index": 16,
+      "source_window": 3
+    },
+    {
+      "raw_row_index": 17,
+      "source_window": 3
+    },
+    {
+      "raw_row_index": 18,
+      "source_window": 3
+    },
+    {
+      "raw_row_index": 1,
+      "source_window": 4
+    },
+    {
+      "raw_row_index": 2,
+      "source_window": 4
+    },
+    {
+      "raw_row_index": 3,
+      "source_window": 4
+    },
+    {
+      "raw_row_index": 4,
+      "source_window": 4
+    },
+    {
+      "raw_row_index": 5,
+      "source_window": 4
+    },
+    {
+      "raw_row_index": 6,
+      "source_window": 4
+    },
+    {
+      "raw_row_index": 7,
+      "source_window": 4
+    },
+    {
+      "raw_row_index": 8,
+      "source_window": 4
+    }
+  ],
+  "windows": [
+    {
+      "raw_csv": "window-000002_raw_84.csv",
+      "raw_csv_sha256": "1f66b9c97166e24c4113226436fb028c9eb0074fd1327613c6a643d0f22de002",
+      "row_count": 6,
+      "window_number": 2
+    },
+    {
+      "raw_csv": "window-000003_raw_84.csv",
+      "raw_csv_sha256": "671d2cc807bdb48ff41b2eb70272edfd5c9a8f4b817e8afae024fc5a372dc71a",
+      "row_count": 18,
+      "window_number": 3
+    },
+    {
+      "raw_csv": "window-000004_raw_84.csv",
+      "raw_csv_sha256": "ac254e8023424f4dfe639149751bbe35b9946c63d38d25d8e2d2c0a6b708fbb8",
+      "row_count": 8,
+      "window_number": 4
+    }
+  ]
+}

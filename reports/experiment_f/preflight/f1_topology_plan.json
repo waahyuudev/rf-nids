@@ -1,0 +1,87 @@
+{
+  "design_consistency_audit": {
+    "conflict_warning": "10.10.10.11-.14 were historical logical identities, not proof of currently free addresses. Live address/ARP/VM inventory checks must pass before assignment.",
+    "historical_reusable_conditional": [
+      "ubuntu-nids at 10.10.10.1 and 10.10.20.1, with scientific capture enp0s3",
+      "ubuntu-target at 10.10.20.2:8080"
+    ],
+    "new_required": [
+      "ubuntu-traffic-1",
+      "ubuntu-traffic-2",
+      "ubuntu-traffic-3",
+      "ubuntu-traffic-4"
+    ],
+    "not_reusable_as_generators": [
+      "historical ubuntu-traffic at 10.10.10.2",
+      "the E10/E13 one-VM logical-source design"
+    ]
+  },
+  "independence_gate": {
+    "fail_rule": "Any repeated machine-id/VM UUID, shared OS instance/namespace, or alias-only identity is INVALID.",
+    "pass_rule": "Four distinct VM identities and MAC addresses map one-to-one to the four experiment IPs; each is separately provisioned.",
+    "required_per_generator": [
+      "hostname",
+      "machine-id/VM UUID",
+      "experiment NIC MAC address",
+      "experiment IP",
+      "routing table",
+      "VM inventory record"
+    ]
+  },
+  "ip_allocation": [
+    {
+      "experiment_ip": "10.10.10.11/24",
+      "gateway": "10.10.10.1",
+      "node": "ubuntu-traffic-1",
+      "role": "independent generator"
+    },
+    {
+      "experiment_ip": "10.10.10.12/24",
+      "gateway": "10.10.10.1",
+      "node": "ubuntu-traffic-2",
+      "role": "independent generator"
+    },
+    {
+      "experiment_ip": "10.10.10.13/24",
+      "gateway": "10.10.10.1",
+      "node": "ubuntu-traffic-3",
+      "role": "independent generator"
+    },
+    {
+      "experiment_ip": "10.10.10.14/24",
+      "gateway": "10.10.10.1",
+      "node": "ubuntu-traffic-4",
+      "role": "independent generator"
+    },
+    {
+      "node": "ubuntu-nids",
+      "role": "router/observer",
+      "scientific_capture_interface": "enp0s3",
+      "source_ip": "10.10.10.1/24",
+      "target_ip": "10.10.20.1/24"
+    },
+    {
+      "experiment_ip": "10.10.20.2/24",
+      "gateway": "10.10.20.1",
+      "node": "ubuntu-target",
+      "service": "owned HTTP :8080"
+    }
+  ],
+  "not_authorized": [
+    "F2 traffic collection",
+    "DDoS/PortScan/load generation",
+    "RF-v4 training or creation",
+    "runtime DB writes",
+    "model/threshold changes"
+  ],
+  "routing_requirements": [
+    "Each generator has a route to 10.10.20.0/24 via 10.10.10.1.",
+    "ubuntu-nids has IP forwarding enabled and routes between 10.10.10.0/24 and 10.10.20.0/24.",
+    "ubuntu-target return route for 10.10.10.0/24 is via 10.10.20.1.",
+    "Management network, if used, is a separate NIC/subnet and is not a scientific capture or traffic route.",
+    "Scientific observation is only ubuntu-nids enp0s3; never `any` and no duplicate capture."
+  ],
+  "schema": "experiment_f_f1_topology_plan",
+  "status": "PENDING_OPERATOR_VALIDATION",
+  "version": 1
+}

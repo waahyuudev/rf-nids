@@ -1,0 +1,94 @@
+{
+  "dataset_composition": {
+    "DDoS_allowed": [
+      "frozen historical DDoS adaptation/training evidence",
+      "new fully eligible F-ADAPTATION ground-truth DDoS only"
+    ],
+    "Normal_allowed": [
+      "eligible historical adaptation Normal",
+      "new F-ADAPTATION Normal only"
+    ],
+    "PortScan_allowed": [
+      "eligible historical PortScan",
+      "validated Experiment E runtime PortScan adaptation evidence",
+      "optional new F-ADAPTATION PortScan only if preregistered"
+    ],
+    "forbidden": [
+      "Experiment D sealed final-test",
+      "all F-VALIDATION and F-FINAL material",
+      "E10/E13 automatically relabeled DDoS profiles",
+      "duplicate flows",
+      "capture/session relatives across splits",
+      "unverified or missing-provenance material"
+    ]
+  },
+  "ddos_labeling": {
+    "eligibility_all": [
+      "approved F2 profile and bounded limits recorded before execution",
+      "four independent generator VM identities each verified",
+      "controlled target ownership and source-to-target route verified",
+      "synchronized named session window with observer visibility on enp0s3",
+      "source/destination tuple and timestamps match PCAP, generator logs, and workload manifest",
+      "PCAP and raw 84-column CSV hashes, extractor/adapter provenance, session ID and lineage ID recorded",
+      "request/connection counts and generator-level evidence retained; target-side logs retained when available",
+      "explicit signed/immutable labeling manifest exists"
+    ],
+    "invalidators": [
+      "model prediction used as label source",
+      "logical aliases on one VM",
+      "missing/contradictory source identity, hashes, window, logs, or provenance",
+      "out-of-scope endpoint, uncontrolled target, routing/observer failure"
+    ],
+    "label": "DDoS",
+    "rule": "All eligibility conditions are required; no silent imputation, inferred label, or partial-evidence relabeling."
+  },
+  "deviations": {
+    "ABORTED": "Safety, routing, target, or generator failure; stop workload, preserve evidence, no label/dataset use.",
+    "INVALID": "Evidence/label/integrity/split/source mismatch, empty/partial capture, extractor/checksum/row-count failure; exclude from scientific dataset and preserve record.",
+    "PASS": "All required evidence and gates pass.",
+    "PASS_WITH_DOCUMENTED_LIMITATION": "Non-label-affecting limitation, preregistered and accepted before analysis; never used to waive split, identity, checksum, or ground-truth rules.",
+    "no_silent_correction": true
+  },
+  "evidence_per_capture": [
+    "PCAP/hash",
+    "84-column raw CSV/hash",
+    "exact ordered 78 matrix/hash",
+    "adapter/crosswalk and extractor identities",
+    "model identity when inference occurs",
+    "capture interface/source/target/session/split/label/timestamps/profile",
+    "generator logs and counts; target evidence where available",
+    "predictions/probabilities/alerts/DB exports where applicable",
+    "immutable lineage manifest"
+  ],
+  "profiles": {
+    "DDoS": "New bounded distributed HTTP workload from the four independent generators only; F0 supplies no execution commands.",
+    "Normal": "Representative bounded benign HTTP, explicitly logged, no concurrent DDoS/PortScan in its window.",
+    "PortScan": "Representative approved runtime PortScan profile preserving the evidence class that remediated RF-v2; bounded, controlled, separately labeled."
+  },
+  "schema": "experiment_f_f0_ground_truth_design",
+  "split_plan": {
+    "minimum_sessions_per_class_per_split": 3,
+    "separation": "No session, PCAP hash, raw CSV hash, lineage ID, capture relative, or duplicate flow identity may cross splits. Final remains sealed/unseen until candidate freeze.",
+    "splits": [
+      "F-ADAPTATION",
+      "F-VALIDATION",
+      "F-FINAL"
+    ],
+    "why": "Three independent smaller sessions per class/split provide minimal replication and permit per-session reporting; one large capture is insufficient."
+  },
+  "topology": {
+    "independence": "Each traffic generator is a separately provisioned VM and network stack; IP aliases, shared namespaces, and a single generator acting as multiple sources are invalid.",
+    "isolation": "Private UTM lab only; no public/corporate routes; explicit deny/verification before capture.",
+    "nodes": {
+      "ubuntu-nids_egress_capture": "10.10.20.1/24, enp0s3",
+      "ubuntu-nids_ingress": "10.10.10.1/24",
+      "ubuntu-target": "10.10.20.2:8080/24",
+      "ubuntu-traffic-1": "10.10.10.11/24",
+      "ubuntu-traffic-2": "10.10.10.12/24",
+      "ubuntu-traffic-3": "10.10.10.13/24",
+      "ubuntu-traffic-4": "10.10.10.14/24"
+    },
+    "routing": "Each independent generator routes only to the controlled target via ubuntu-nids. ubuntu-nids forwards between lab subnets and captures at enp0s3; it is observer/router, not a generator."
+  },
+  "version": 1
+}

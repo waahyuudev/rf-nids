@@ -1,0 +1,1317 @@
+{
+  "distribution_shift": {
+    "available": false,
+    "statement": "Session 11-versus-historical-DDoS feature distribution shift and top shifted features are unavailable because exact Session 11 feature vectors cannot be reproducibly reconstructed.",
+    "top_10_shifted_features": []
+  },
+  "e11_gate": "PASS_WITH_DOCUMENTED_LIMITATION",
+  "generated_at_utc": "2026-09-14T02:52:26.097843+00:00",
+  "historical_ddos_reference": {
+    "feature_statistics": {
+      "ack_flag_count": {
+        "max": 1.0,
+        "mean": 0.5037325543654657,
+        "median": 1.0,
+        "min": 0.0,
+        "q1": 0.0,
+        "q3": 1.0,
+        "standard_deviation": 0.5000672278261327
+      },
+      "act_data_pkt_fwd": {
+        "max": 5.0,
+        "mean": 0.5034079844206426,
+        "median": 1.0,
+        "min": 0.0,
+        "q1": 0.0,
+        "q3": 1.0,
+        "standard_deviation": 0.5084398776099496
+      },
+      "active_max": {
+        "max": 0.0,
+        "mean": 0.0,
+        "median": 0.0,
+        "min": 0.0,
+        "q1": 0.0,
+        "q3": 0.0,
+        "standard_deviation": 0.0
+      },
+      "active_mean": {
+        "max": 0.0,
+        "mean": 0.0,
+        "median": 0.0,
+        "min": 0.0,
+        "q1": 0.0,
+        "q3": 0.0,
+        "standard_deviation": 0.0
+      },
+      "active_min": {
+        "max": 0.0,
+        "mean": 0.0,
+        "median": 0.0,
+        "min": 0.0,
+        "q1": 0.0,
+        "q3": 0.0,
+        "standard_deviation": 0.0
+      },
+      "active_std": {
+        "max": 0.0,
+        "mean": 0.0,
+        "median": 0.0,
+        "min": 0.0,
+        "q1": 0.0,
+        "q3": 0.0,
+        "standard_deviation": 0.0
+      },
+      "average_packet_size": {
+        "max": 42.0,
+        "mean": 15.201159108730929,
+        "median": 24.5,
+        "min": 0.0,
+        "q1": 0.0,
+        "q3": 29.4,
+        "standard_deviation": 15.20982220595539
+      },
+      "avg_bwd_segment_size": {
+        "max": 45.0,
+        "mean": 21.49691658552418,
+        "median": 35.0,
+        "min": 0.0,
+        "q1": 0.0,
+        "q3": 42.0,
+        "standard_deviation": 21.48262829384585
+      },
+      "avg_fwd_segment_size": {
+        "max": 42.0,
+        "mean": 8.90819771015904,
+        "median": 14.0,
+        "min": 0.0,
+        "q1": 0.0,
+        "q3": 16.8,
+        "standard_deviation": 8.965506424651322
+      },
+      "bwd_avg_bulk_rate": {
+        "max": 0.0,
+        "mean": 0.0,
+        "median": 0.0,
+        "min": 0.0,
+        "q1": 0.0,
+        "q3": 0.0,
+        "standard_deviation": 0.0
+      },
+      "bwd_avg_bytes_bulk": {
+        "max": 0.0,
+        "mean": 0.0,
+        "median": 0.0,
+        "min": 0.0,
+        "q1": 0.0,
+        "q3": 0.0,
+        "standard_deviation": 0.0
+      },
+      "bwd_avg_packets_bulk": {
+        "max": 0.0,
+        "mean": 0.0,
+        "median": 0.0,
+        "min": 0.0,
+        "q1": 0.0,
+        "q3": 0.0,
+        "standard_deviation": 0.0
+      },
+      "bwd_header_length": {
+        "max": 200.0,
+        "mean": 100.33625446283673,
+        "median": 168.0,
+        "min": 32.0,
+        "q1": 32.0,
+        "q3": 168.0,
+        "standard_deviation": 68.22313381203789
+      },
+      "bwd_iat_max": {
+        "max": 1896419.0,
+        "mean": 11800.058098020123,
+        "median": 840.0,
+        "min": 0.0,
+        "q1": 0.0,
+        "q3": 2348.0,
+        "standard_deviation": 136705.8511728748
+      },
+      "bwd_iat_mean": {
+        "max": 418061.25,
+        "mean": 2544.7244725738396,
+        "median": 288.0,
+        "min": 0.0,
+        "q1": 0.0,
+        "q3": 734.0,
+        "standard_deviation": 27804.38197662653
+      },
+      "bwd_iat_min": {
+        "max": 646.0,
+        "mean": 9.166179811749432,
+        "median": 7.0,
+        "min": 0.0,
+        "q1": 0.0,
+        "q3": 11.0,
+        "standard_deviation": 21.00240335610647
+      },
+      "bwd_iat_std": {
+        "max": 847760.6,
+        "mean": 5344.82242851996,
+        "median": 370.7797,
+        "min": 0.0,
+        "q1": 0.0,
+        "q3": 1109.4423,
+        "standard_deviation": 61467.98630958792
+      },
+      "bwd_iat_total": {
+        "max": 1899499.0,
+        "mean": 12143.240506329113,
+        "median": 1152.0,
+        "min": 0.0,
+        "q1": 0.0,
+        "q3": 2936.0,
+        "standard_deviation": 137122.99013119
+      },
+      "bwd_packet_length_max": {
+        "max": 192.0,
+        "mean": 93.84842583576761,
+        "median": 185.0,
+        "min": 0.0,
+        "q1": 0.0,
+        "q3": 185.0,
+        "standard_deviation": 93.67938589940015
+      },
+      "bwd_packet_length_mean": {
+        "max": 45.0,
+        "mean": 21.49691658552418,
+        "median": 35.0,
+        "min": 0.0,
+        "q1": 0.0,
+        "q3": 42.0,
+        "standard_deviation": 21.48262829384585
+      },
+      "bwd_packet_length_min": {
+        "max": 0.0,
+        "mean": 0.0,
+        "median": 0.0,
+        "min": 0.0,
+        "q1": 0.0,
+        "q3": 0.0,
+        "standard_deviation": 0.0
+      },
+      "bwd_packet_length_std": {
+        "max": 83.40863,
+        "mean": 40.835750863356054,
+        "median": 74.16199,
+        "min": 0.0,
+        "q1": 0.0,
+        "q3": 80.669075,
+        "standard_deviation": 40.76342722026139
+      },
+      "bwd_packets_s": {
+        "max": 1000000.0,
+        "mean": 284935.74702558166,
+        "median": 3863.9875,
+        "min": 0.0,
+        "q1": 1694.9153,
+        "q3": 500000.0,
+        "standard_deviation": 368600.1294539611
+      },
+      "bwd_psh_flags": {
+        "max": 0.0,
+        "mean": 0.0,
+        "median": 0.0,
+        "min": 0.0,
+        "q1": 0.0,
+        "q3": 0.0,
+        "standard_deviation": 0.0
+      },
+      "bwd_urg_flags": {
+        "max": 0.0,
+        "mean": 0.0,
+        "median": 0.0,
+        "min": 0.0,
+        "q1": 0.0,
+        "q3": 0.0,
+        "standard_deviation": 0.0
+      },
+      "cwe_flag_count": {
+        "max": 0.0,
+        "mean": 0.0,
+        "median": 0.0,
+        "min": 0.0,
+        "q1": 0.0,
+        "q3": 0.0,
+        "standard_deviation": 0.0
+      },
+      "destination_port": {
+        "max": 8080.0,
+        "mean": 8080.0,
+        "median": 8080.0,
+        "min": 8080.0,
+        "q1": 8080.0,
+        "q3": 8080.0,
+        "standard_deviation": 0.0
+      },
+      "down_up_ratio": {
+        "max": 1.0,
+        "mean": 0.9977280103862383,
+        "median": 1.0,
+        "min": 0.0,
+        "q1": 1.0,
+        "q3": 1.0,
+        "standard_deviation": 0.047618942239078796
+      },
+      "ece_flag_count": {
+        "max": 0.0,
+        "mean": 0.0,
+        "median": 0.0,
+        "min": 0.0,
+        "q1": 0.0,
+        "q3": 0.0,
+        "standard_deviation": 0.0
+      },
+      "fin_flag_count": {
+        "max": 0.0,
+        "mean": 0.0,
+        "median": 0.0,
+        "min": 0.0,
+        "q1": 0.0,
+        "q3": 0.0,
+        "standard_deviation": 0.0
+      },
+      "flow_bytes_s": {
+        "max": 320610.7,
+        "mean": 54135.21678091913,
+        "median": 156.3705,
+        "min": 0.0,
+        "q1": 0.0,
+        "q3": 103176.023,
+        "standard_deviation": 61690.29515054004
+      },
+      "flow_duration": {
+        "max": 2678474.0,
+        "mean": 14807.178513469653,
+        "median": 1277.0,
+        "min": 0.0,
+        "q1": 2.0,
+        "q3": 2948.0,
+        "standard_deviation": 153182.49079424568
+      },
+      "flow_iat_max": {
+        "max": 1896416.0,
+        "mean": 13412.385913664395,
+        "median": 884.0,
+        "min": 0.0,
+        "q1": 2.0,
+        "q3": 2351.0,
+        "standard_deviation": 141955.5788473896
+      },
+      "flow_iat_mean": {
+        "max": 368113.5,
+        "mean": 1517.5759926257708,
+        "median": 141.88889,
+        "min": 0.0,
+        "q1": 2.0,
+        "q3": 327.55554,
+        "standard_deviation": 16218.279742930063
+      },
+      "flow_iat_min": {
+        "max": 35.0,
+        "mean": 2.061668289516391,
+        "median": 1.0,
+        "min": 0.0,
+        "q1": 1.0,
+        "q3": 2.0,
+        "standard_deviation": 3.1347592041262926
+      },
+      "flow_iat_std": {
+        "max": 571698.44,
+        "mean": 4212.261233674132,
+        "median": 304.05664,
+        "min": 0.0,
+        "q1": 0.0,
+        "q3": 789.49994,
+        "standard_deviation": 43916.91394717501
+      },
+      "flow_packets_s": {
+        "max": 2000000.0,
+        "mean": 570241.4446625258,
+        "median": 7824.726,
+        "min": 3.3956919,
+        "q1": 3390.9804999999997,
+        "q3": 1000000.0,
+        "standard_deviation": 737296.7119277783
+      },
+      "fwd_avg_bulk_rate": {
+        "max": 0.0,
+        "mean": 0.0,
+        "median": 0.0,
+        "min": 0.0,
+        "q1": 0.0,
+        "q3": 0.0,
+        "standard_deviation": 0.0
+      },
+      "fwd_avg_bytes_bulk": {
+        "max": 0.0,
+        "mean": 0.0,
+        "median": 0.0,
+        "min": 0.0,
+        "q1": 0.0,
+        "q3": 0.0,
+        "standard_deviation": 0.0
+      },
+      "fwd_avg_packets_bulk": {
+        "max": 0.0,
+        "mean": 0.0,
+        "median": 0.0,
+        "min": 0.0,
+        "q1": 0.0,
+        "q3": 0.0,
+        "standard_deviation": 0.0
+      },
+      "fwd_header_length": {
+        "max": 336.0,
+        "mean": 100.5309964297306,
+        "median": 168.0,
+        "min": 32.0,
+        "q1": 32.0,
+        "q3": 168.0,
+        "standard_deviation": 68.4508622929592
+      },
+      "fwd_header_length.1": {
+        "max": 336.0,
+        "mean": 100.5309964297306,
+        "median": 168.0,
+        "min": 32.0,
+        "q1": 32.0,
+        "q3": 168.0,
+        "standard_deviation": 68.4508622929592
+      },
+      "fwd_iat_max": {
+        "max": 1896417.0,
+        "mean": 13415.672833495619,
+        "median": 841.0,
+        "min": 0.0,
+        "q1": 0.0,
+        "q3": 2364.0,
+        "standard_deviation": 141955.63841573274
+      },
+      "fwd_iat_mean": {
+        "max": 490818.0,
+        "mean": 3007.30623498864,
+        "median": 274.5,
+        "min": 0.0,
+        "q1": 0.0,
+        "q3": 654.25,
+        "standard_deviation": 30892.81811566692
+      },
+      "fwd_iat_min": {
+        "max": 88.0,
+        "mean": 3.6504381694255112,
+        "median": 3.0,
+        "min": 0.0,
+        "q1": 0.0,
+        "q3": 5.0,
+        "standard_deviation": 5.849922907375013
+      },
+      "fwd_iat_std": {
+        "max": 847822.06,
+        "mean": 6012.932743992212,
+        "median": 410.4448,
+        "min": 0.0,
+        "q1": 0.0,
+        "q3": 1154.1385,
+        "standard_deviation": 63215.34621221054
+      },
+      "fwd_iat_total": {
+        "max": 2676737.0,
+        "mean": 14639.822460240182,
+        "median": 1098.0,
+        "min": 0.0,
+        "q1": 0.0,
+        "q3": 2617.0,
+        "standard_deviation": 153161.46128087025
+      },
+      "fwd_packet_length_max": {
+        "max": 99.0,
+        "mean": 44.53456669912366,
+        "median": 84.0,
+        "min": 0.0,
+        "q1": 0.0,
+        "q3": 84.0,
+        "standard_deviation": 44.71800738657192
+      },
+      "fwd_packet_length_mean": {
+        "max": 42.0,
+        "mean": 8.90819771015904,
+        "median": 14.0,
+        "min": 0.0,
+        "q1": 0.0,
+        "q3": 16.8,
+        "standard_deviation": 8.965506424651322
+      },
+      "fwd_packet_length_min": {
+        "max": 0.0,
+        "mean": 0.0,
+        "median": 0.0,
+        "min": 0.0,
+        "q1": 0.0,
+        "q3": 0.0,
+        "standard_deviation": 0.0
+      },
+      "fwd_packet_length_std": {
+        "max": 48.307053,
+        "mean": 19.9046938876988,
+        "median": 34.29286,
+        "min": 0.0,
+        "q1": 0.0,
+        "q3": 37.56594,
+        "standard_deviation": 19.991522949515133
+      },
+      "fwd_packets_s": {
+        "max": 1000000.0,
+        "mean": 284935.53044141777,
+        "median": 3863.9875,
+        "min": 0.0,
+        "q1": 1694.9153,
+        "q3": 500000.0,
+        "standard_deviation": 368600.2951055814
+      },
+      "fwd_psh_flags": {
+        "max": 0.0,
+        "mean": 0.0,
+        "median": 0.0,
+        "min": 0.0,
+        "q1": 0.0,
+        "q3": 0.0,
+        "standard_deviation": 0.0
+      },
+      "fwd_urg_flags": {
+        "max": 0.0,
+        "mean": 0.0,
+        "median": 0.0,
+        "min": 0.0,
+        "q1": 0.0,
+        "q3": 0.0,
+        "standard_deviation": 0.0
+      },
+      "idle_max": {
+        "max": 0.0,
+        "mean": 0.0,
+        "median": 0.0,
+        "min": 0.0,
+        "q1": 0.0,
+        "q3": 0.0,
+        "standard_deviation": 0.0
+      },
+      "idle_mean": {
+        "max": 0.0,
+        "mean": 0.0,
+        "median": 0.0,
+        "min": 0.0,
+        "q1": 0.0,
+        "q3": 0.0,
+        "standard_deviation": 0.0
+      },
+      "idle_min": {
+        "max": 0.0,
+        "mean": 0.0,
+        "median": 0.0,
+        "min": 0.0,
+        "q1": 0.0,
+        "q3": 0.0,
+        "standard_deviation": 0.0
+      },
+      "idle_std": {
+        "max": 0.0,
+        "mean": 0.0,
+        "median": 0.0,
+        "min": 0.0,
+        "q1": 0.0,
+        "q3": 0.0,
+        "standard_deviation": 0.0
+      },
+      "init_win_bytes_backward": {
+        "max": 65160.0,
+        "mean": 106.25478740668613,
+        "median": 64.0,
+        "min": 63.0,
+        "q1": 64.0,
+        "q3": 64.0,
+        "standard_deviation": 1658.261236625119
+      },
+      "init_win_bytes_forward": {
+        "max": 64240.0,
+        "mean": 31911.955858487505,
+        "median": 63.0,
+        "min": 63.0,
+        "q1": 63.0,
+        "q3": 64240.0,
+        "standard_deviation": 32092.81448019772
+      },
+      "max_packet_length": {
+        "max": 192.0,
+        "mean": 93.84842583576761,
+        "median": 185.0,
+        "min": 0.0,
+        "q1": 0.0,
+        "q3": 185.0,
+        "standard_deviation": 93.67938589940015
+      },
+      "min_packet_length": {
+        "max": 0.0,
+        "mean": 0.0,
+        "median": 0.0,
+        "min": 0.0,
+        "q1": 0.0,
+        "q3": 0.0,
+        "standard_deviation": 0.0
+      },
+      "min_seg_size_forward": {
+        "max": 32.0,
+        "mean": 32.0,
+        "median": 32.0,
+        "min": 32.0,
+        "q1": 32.0,
+        "q3": 32.0,
+        "standard_deviation": 0.0
+      },
+      "packet_length_mean": {
+        "max": 39.375,
+        "mean": 13.821969430379745,
+        "median": 22.615385,
+        "min": 0.0,
+        "q1": 0.0,
+        "q3": 26.727272,
+        "standard_deviation": 13.8295898097697
+      },
+      "packet_length_std": {
+        "max": 61.814827,
+        "mean": 29.77968752093476,
+        "median": 54.204147,
+        "min": 0.0,
+        "q1": 0.0,
+        "q3": 58.35082,
+        "standard_deviation": 29.741544624392127
+      },
+      "packet_length_variance": {
+        "max": 3821.0728,
+        "mean": 1771.102094677053,
+        "median": 2938.0898,
+        "min": 0.0,
+        "q1": 0.0,
+        "q3": 3404.818,
+        "standard_deviation": 1773.2761380946968
+      },
+      "psh_flag_count": {
+        "max": 1.0,
+        "mean": 0.49626744563453423,
+        "median": 0.0,
+        "min": 0.0,
+        "q1": 0.0,
+        "q3": 1.0,
+        "standard_deviation": 0.5000672278261327
+      },
+      "rst_flag_count": {
+        "max": 0.0,
+        "mean": 0.0,
+        "median": 0.0,
+        "min": 0.0,
+        "q1": 0.0,
+        "q3": 0.0,
+        "standard_deviation": 0.0
+      },
+      "subflow_bwd_bytes": {
+        "max": 225.0,
+        "mean": 107.67770204479065,
+        "median": 210.0,
+        "min": 0.0,
+        "q1": 0.0,
+        "q3": 210.0,
+        "standard_deviation": 107.56575904475147
+      },
+      "subflow_bwd_packets": {
+        "max": 6.0,
+        "mean": 3.0100616682895165,
+        "median": 5.0,
+        "min": 1.0,
+        "q1": 1.0,
+        "q3": 5.0,
+        "standard_deviation": 2.0071857995357894
+      },
+      "subflow_fwd_bytes": {
+        "max": 420.0,
+        "mean": 44.74001947419669,
+        "median": 84.0,
+        "min": 0.0,
+        "q1": 0.0,
+        "q3": 84.0,
+        "standard_deviation": 45.44198083213002
+      },
+      "subflow_fwd_packets": {
+        "max": 10.0,
+        "mean": 3.015579357351509,
+        "median": 5.0,
+        "min": 1.0,
+        "q1": 1.0,
+        "q3": 5.0,
+        "standard_deviation": 2.0133686469985075
+      },
+      "syn_flag_count": {
+        "max": 0.0,
+        "mean": 0.0,
+        "median": 0.0,
+        "min": 0.0,
+        "q1": 0.0,
+        "q3": 0.0,
+        "standard_deviation": 0.0
+      },
+      "total_backward_packets": {
+        "max": 6.0,
+        "mean": 3.0100616682895165,
+        "median": 5.0,
+        "min": 1.0,
+        "q1": 1.0,
+        "q3": 5.0,
+        "standard_deviation": 2.0071857995357894
+      },
+      "total_fwd_packets": {
+        "max": 10.0,
+        "mean": 3.015579357351509,
+        "median": 5.0,
+        "min": 1.0,
+        "q1": 1.0,
+        "q3": 5.0,
+        "standard_deviation": 2.0133686469985075
+      },
+      "total_length_of_bwd_packets": {
+        "max": 225.0,
+        "mean": 107.67770204479065,
+        "median": 210.0,
+        "min": 0.0,
+        "q1": 0.0,
+        "q3": 210.0,
+        "standard_deviation": 107.56575904475147
+      },
+      "total_length_of_fwd_packets": {
+        "max": 420.0,
+        "mean": 44.74001947419669,
+        "median": 84.0,
+        "min": 0.0,
+        "q1": 0.0,
+        "q3": 84.0,
+        "standard_deviation": 45.44198083213002
+      },
+      "urg_flag_count": {
+        "max": 1.0,
+        "mean": 0.5037325543654657,
+        "median": 1.0,
+        "min": 0.0,
+        "q1": 0.0,
+        "q3": 1.0,
+        "standard_deviation": 0.5000672278261327
+      }
+    },
+    "lineage_path": "data/lab/experiment_e/datasets/experiment_e_training_candidate_lineage.csv",
+    "lineage_sha256": "950868cc0e5f8943e7eb03dba544d535d4d20e74a018facf48dcb7ebcb38ecd9",
+    "manifest_sha256": "fb2ba80d300a8e52fc3f441fca0d6b319be60633cc97f65f0f48e603428bfa0e",
+    "path": "data/lab/experiment_e/datasets/experiment_e_training_candidate.csv",
+    "provenance": {
+      "eligibility": "EXPERIMENT_D adaptation-only controlled ground-truth sessions; no final-test or evaluation source was read",
+      "manifest": "data/lab/experiment_d/adaptation/manifests/labeled_flow_manifest.json"
+    },
+    "row_count": 3081,
+    "selection_rule": {
+      "experiment_e_portscan": "per-session cap 501; P-A1 all 501, P-A2 deterministically capped from 1042 to 501, P-A3 all 25",
+      "historical_ddos": "per-session cap 1027 across each of three Experiment D adaptation sessions",
+      "historical_normal_and_portscan": "all eligible adaptation rows retained",
+      "random_seed": 42,
+      "ranking": "sha256(experiment-e-e4|seed|source_csv_sha256|source_session_id|source_row_index)",
+      "row_oversampling": false
+    },
+    "sha256": "f716404391467b267cca2f989762c2d4740127a4e7dd11afe956e7e8940b2284",
+    "source": "Exact RF-v3 E4 frozen training candidate rows with ground_truth_class=DDoS"
+  },
+  "integrity": {
+    "database_rows": "not modified; analysis used frozen CSV exports only",
+    "historical_hashes_before": {
+      "models/experiment_d/random_forest_rf_v2.joblib": "fb13a71a0287054d2630bf07529f113a153ba08d8f6835a605b04493408b8a31",
+      "models/experiment_e/random_forest_rf_v3_candidate.joblib": "6b01c7b3923c1a6bd471862d011f8f5b88a31378e51d1dde082bd2e72bedef86",
+      "models/experiment_e/random_forest_rf_v3_candidate_metadata.json": "30b6bdf2a6cb2d60e2be36d4db1e124d71504393081b229e6d94da7e70322cbc",
+      "reports/experiment_e/analysis/e10_runtime_validation_analysis.json": "a0f85f3110df012359fef7203065e5f70c6b766ef1c8fab1a9397b7452d013ac",
+      "reports/experiment_e/analysis/e10_runtime_validation_summary.md": "46965a316be329e4732addbb32b58139ffb53210f0c13740d7cc77dd01b59b70",
+      "reports/experiment_e/analysis/e8_final_comparison.json": "9a031c84ae2e363925f3a8b84e3b33be0c2e5e4dc009ab30dccc67b9037c3fda",
+      "reports/experiment_e/audit/e8_scientific_decision.json": "629f76a16c326bda3a36d8a41bf0c85c495e7edbdb91679861af43f5fa938b3a",
+      "reports/experiment_e/evaluation/e6_offline_validation.json": "66722d430c112e222a5e767086294dc8f27b658ac92e34bbc6eca7e69572093d",
+      "reports/experiment_e/runtime_validation/e7_runtime_validation.json": "0c655a51dee12b3610180eaf5145f9e06a720622a33ce8e204419a87f9eca640"
+    },
+    "locked_feature_contract": {
+      "count": 78,
+      "order_sha256": "9338f50fc3e7efc78d678cc65ab38d428a7f6912ed9467a2b99a449a7c8e3c13",
+      "unchanged": true
+    },
+    "no_training_or_threshold_change": true
+  },
+  "limitations": [
+    "No Session 11 exact model-input vectors, raw CSV, PCAP, or traffic_flows.raw_features were preserved in the authoritative export.",
+    "Global RandomForest feature_importances_ are not causal explanations.",
+    "The four logical sources originated from one physical generator VM; E10 is not a real distributed DDoS experiment.",
+    "No traffic, rerun, retraining, threshold change, or model promotion was performed."
+  ],
+  "mode": "diagnostic-only; read-only frozen evidence",
+  "model_behavior": {
+    "global_rf_v3_feature_importances": [
+      {
+        "feature": "destination_port",
+        "importance": 0.09430721889721984
+      },
+      {
+        "feature": "init_win_bytes_backward",
+        "importance": 0.08238062609347915
+      },
+      {
+        "feature": "bwd_header_length",
+        "importance": 0.06250341530507887
+      },
+      {
+        "feature": "fwd_iat_min",
+        "importance": 0.05042218855784125
+      },
+      {
+        "feature": "fwd_header_length.1",
+        "importance": 0.0434779868895128
+      },
+      {
+        "feature": "fwd_header_length",
+        "importance": 0.041545186276681884
+      },
+      {
+        "feature": "flow_iat_min",
+        "importance": 0.04036345949985461
+      },
+      {
+        "feature": "total_fwd_packets",
+        "importance": 0.03461966748616634
+      },
+      {
+        "feature": "min_seg_size_forward",
+        "importance": 0.03444650699236145
+      },
+      {
+        "feature": "init_win_bytes_forward",
+        "importance": 0.033251725712975334
+      },
+      {
+        "feature": "fwd_iat_max",
+        "importance": 0.029324657911538432
+      },
+      {
+        "feature": "flow_iat_max",
+        "importance": 0.02661986802143546
+      },
+      {
+        "feature": "ack_flag_count",
+        "importance": 0.026338732891232203
+      },
+      {
+        "feature": "fwd_iat_mean",
+        "importance": 0.0244994275104146
+      },
+      {
+        "feature": "psh_flag_count",
+        "importance": 0.022470528553312656
+      },
+      {
+        "feature": "average_packet_size",
+        "importance": 0.02199893071712588
+      },
+      {
+        "feature": "packet_length_mean",
+        "importance": 0.02158584900739938
+      },
+      {
+        "feature": "packet_length_std",
+        "importance": 0.020345577572169208
+      },
+      {
+        "feature": "flow_packets_s",
+        "importance": 0.01873985258434765
+      },
+      {
+        "feature": "flow_iat_mean",
+        "importance": 0.01770396921054521
+      },
+      {
+        "feature": "flow_duration",
+        "importance": 0.015621384672220143
+      },
+      {
+        "feature": "packet_length_variance",
+        "importance": 0.014440906580910247
+      },
+      {
+        "feature": "subflow_fwd_packets",
+        "importance": 0.013393937955514565
+      },
+      {
+        "feature": "fwd_iat_total",
+        "importance": 0.013323391512931956
+      },
+      {
+        "feature": "total_backward_packets",
+        "importance": 0.013056925634689659
+      },
+      {
+        "feature": "urg_flag_count",
+        "importance": 0.012719727893256521
+      },
+      {
+        "feature": "fwd_iat_std",
+        "importance": 0.012346774392683037
+      },
+      {
+        "feature": "bwd_packets_s",
+        "importance": 0.011707825759193116
+      },
+      {
+        "feature": "subflow_bwd_packets",
+        "importance": 0.011455992689459734
+      },
+      {
+        "feature": "fwd_packets_s",
+        "importance": 0.010527064384066562
+      },
+      {
+        "feature": "avg_fwd_segment_size",
+        "importance": 0.010087740791046153
+      },
+      {
+        "feature": "flow_iat_std",
+        "importance": 0.009040352583495283
+      },
+      {
+        "feature": "bwd_packet_length_std",
+        "importance": 0.008626755474509125
+      },
+      {
+        "feature": "fwd_packet_length_max",
+        "importance": 0.008494738670137688
+      },
+      {
+        "feature": "bwd_iat_std",
+        "importance": 0.008333519276647978
+      },
+      {
+        "feature": "fwd_packet_length_mean",
+        "importance": 0.008180618171637415
+      },
+      {
+        "feature": "bwd_packet_length_mean",
+        "importance": 0.008046537067419004
+      },
+      {
+        "feature": "fwd_packet_length_std",
+        "importance": 0.007686705669894725
+      },
+      {
+        "feature": "subflow_fwd_bytes",
+        "importance": 0.007559536216103683
+      },
+      {
+        "feature": "bwd_iat_max",
+        "importance": 0.006644976274842201
+      },
+      {
+        "feature": "down_up_ratio",
+        "importance": 0.005215562744841388
+      },
+      {
+        "feature": "bwd_iat_min",
+        "importance": 0.005149025087535485
+      },
+      {
+        "feature": "max_packet_length",
+        "importance": 0.004960647431513983
+      },
+      {
+        "feature": "bwd_iat_total",
+        "importance": 0.003852860008381813
+      },
+      {
+        "feature": "total_length_of_fwd_packets",
+        "importance": 0.0037977271983761322
+      },
+      {
+        "feature": "avg_bwd_segment_size",
+        "importance": 0.003291506498312267
+      },
+      {
+        "feature": "flow_bytes_s",
+        "importance": 0.0032907586504436386
+      },
+      {
+        "feature": "bwd_iat_mean",
+        "importance": 0.003210287720841175
+      },
+      {
+        "feature": "total_length_of_bwd_packets",
+        "importance": 0.003161619115420371
+      },
+      {
+        "feature": "subflow_bwd_bytes",
+        "importance": 0.00302287825424594
+      },
+      {
+        "feature": "bwd_packet_length_max",
+        "importance": 0.002138696415110632
+      },
+      {
+        "feature": "act_data_pkt_fwd",
+        "importance": 0.00042145571003239794
+      },
+      {
+        "feature": "active_max",
+        "importance": 7.329161512288922e-05
+      },
+      {
+        "feature": "idle_mean",
+        "importance": 3.6528768221993465e-05
+      },
+      {
+        "feature": "active_mean",
+        "importance": 3.441297997205699e-05
+      },
+      {
+        "feature": "idle_min",
+        "importance": 3.420161092893613e-05
+      },
+      {
+        "feature": "active_min",
+        "importance": 3.388885989482789e-05
+      },
+      {
+        "feature": "idle_max",
+        "importance": 3.386396945283219e-05
+      },
+      {
+        "feature": "fwd_packet_length_min",
+        "importance": 0.0
+      },
+      {
+        "feature": "bwd_packet_length_min",
+        "importance": 0.0
+      },
+      {
+        "feature": "fwd_psh_flags",
+        "importance": 0.0
+      },
+      {
+        "feature": "bwd_psh_flags",
+        "importance": 0.0
+      },
+      {
+        "feature": "fwd_urg_flags",
+        "importance": 0.0
+      },
+      {
+        "feature": "bwd_urg_flags",
+        "importance": 0.0
+      },
+      {
+        "feature": "min_packet_length",
+        "importance": 0.0
+      },
+      {
+        "feature": "fin_flag_count",
+        "importance": 0.0
+      },
+      {
+        "feature": "syn_flag_count",
+        "importance": 0.0
+      },
+      {
+        "feature": "rst_flag_count",
+        "importance": 0.0
+      },
+      {
+        "feature": "cwe_flag_count",
+        "importance": 0.0
+      },
+      {
+        "feature": "ece_flag_count",
+        "importance": 0.0
+      },
+      {
+        "feature": "fwd_avg_bytes_bulk",
+        "importance": 0.0
+      },
+      {
+        "feature": "fwd_avg_packets_bulk",
+        "importance": 0.0
+      },
+      {
+        "feature": "fwd_avg_bulk_rate",
+        "importance": 0.0
+      },
+      {
+        "feature": "bwd_avg_bytes_bulk",
+        "importance": 0.0
+      },
+      {
+        "feature": "bwd_avg_packets_bulk",
+        "importance": 0.0
+      },
+      {
+        "feature": "bwd_avg_bulk_rate",
+        "importance": 0.0
+      },
+      {
+        "feature": "active_std",
+        "importance": 0.0
+      },
+      {
+        "feature": "idle_std",
+        "importance": 0.0
+      }
+    ],
+    "importance_vs_shift_comparison": "unavailable because Session 11 feature-shift statistics are unavailable; feature importances are non-causal global model properties.",
+    "offline_rf_v3_prediction_reproducibility": {
+      "available": false,
+      "mismatch_count": null,
+      "reason": "Exact Session 11 vectors are unavailable; no offline inference was run."
+    },
+    "persisted_session_11_distribution": {
+      "DDoS": 0,
+      "Normal": 802,
+      "PortScan": 0
+    },
+    "top_10_highest_p_ddos_persisted_rows": [
+      {
+        "P(DDoS)": 0.3737159910000096,
+        "P(Normal)": 0.6235027268835378,
+        "P(PortScan)": 0.0027812821164528937,
+        "destination_ip": "10.10.20.2",
+        "destination_port": 8080,
+        "feature_values_vs_session_median": "unavailable: exact Session 11 feature vectors are absent",
+        "predicted_label": "Normal",
+        "prediction_id": 4349,
+        "runtime_artifact_id": 807,
+        "source_ip": "10.10.10.13",
+        "traffic_flow_id": 4349
+      },
+      {
+        "P(DDoS)": 0.36212096604232336,
+        "P(Normal)": 0.6158651762990388,
+        "P(PortScan)": 0.022013857658638253,
+        "destination_ip": "10.10.20.2",
+        "destination_port": 8080,
+        "feature_values_vs_session_median": "unavailable: exact Session 11 feature vectors are absent",
+        "predicted_label": "Normal",
+        "prediction_id": 4145,
+        "runtime_artifact_id": 807,
+        "source_ip": "10.10.10.13",
+        "traffic_flow_id": 4145
+      },
+      {
+        "P(DDoS)": 0.3322188381632386,
+        "P(Normal)": 0.6626312505611992,
+        "P(PortScan)": 0.005149911275562389,
+        "destination_ip": "10.10.20.2",
+        "destination_port": 8080,
+        "feature_values_vs_session_median": "unavailable: exact Session 11 feature vectors are absent",
+        "predicted_label": "Normal",
+        "prediction_id": 3935,
+        "runtime_artifact_id": 807,
+        "source_ip": "10.10.10.11",
+        "traffic_flow_id": 3935
+      },
+      {
+        "P(DDoS)": 0.30370316935003305,
+        "P(Normal)": 0.5179908961713818,
+        "P(PortScan)": 0.1783059344785875,
+        "destination_ip": "10.10.20.2",
+        "destination_port": 8080,
+        "feature_values_vs_session_median": "unavailable: exact Session 11 feature vectors are absent",
+        "predicted_label": "Normal",
+        "prediction_id": 4429,
+        "runtime_artifact_id": 807,
+        "source_ip": "10.10.10.11",
+        "traffic_flow_id": 4429
+      },
+      {
+        "P(DDoS)": 0.30370316935003305,
+        "P(Normal)": 0.5179908961713818,
+        "P(PortScan)": 0.17830593447858745,
+        "destination_ip": "10.10.20.2",
+        "destination_port": 8080,
+        "feature_values_vs_session_median": "unavailable: exact Session 11 feature vectors are absent",
+        "predicted_label": "Normal",
+        "prediction_id": 4218,
+        "runtime_artifact_id": 807,
+        "source_ip": "10.10.10.11",
+        "traffic_flow_id": 4218
+      },
+      {
+        "P(DDoS)": 0.30370316935003305,
+        "P(Normal)": 0.5179908961713818,
+        "P(PortScan)": 0.1783059344785875,
+        "destination_ip": "10.10.20.2",
+        "destination_port": 8080,
+        "feature_values_vs_session_median": "unavailable: exact Session 11 feature vectors are absent",
+        "predicted_label": "Normal",
+        "prediction_id": 4373,
+        "runtime_artifact_id": 807,
+        "source_ip": "10.10.10.12",
+        "traffic_flow_id": 4373
+      },
+      {
+        "P(DDoS)": 0.30370316935003305,
+        "P(Normal)": 0.5179908961713818,
+        "P(PortScan)": 0.1783059344785875,
+        "destination_ip": "10.10.20.2",
+        "destination_port": 8080,
+        "feature_values_vs_session_median": "unavailable: exact Session 11 feature vectors are absent",
+        "predicted_label": "Normal",
+        "prediction_id": 4121,
+        "runtime_artifact_id": 807,
+        "source_ip": "10.10.10.12",
+        "traffic_flow_id": 4121
+      },
+      {
+        "P(DDoS)": 0.30370316935003305,
+        "P(Normal)": 0.5179908961713818,
+        "P(PortScan)": 0.1783059344785875,
+        "destination_ip": "10.10.20.2",
+        "destination_port": 8080,
+        "feature_values_vs_session_median": "unavailable: exact Session 11 feature vectors are absent",
+        "predicted_label": "Normal",
+        "prediction_id": 3946,
+        "runtime_artifact_id": 807,
+        "source_ip": "10.10.10.13",
+        "traffic_flow_id": 3946
+      },
+      {
+        "P(DDoS)": 0.30370316935003305,
+        "P(Normal)": 0.5179908961713818,
+        "P(PortScan)": 0.1783059344785875,
+        "destination_ip": "10.10.20.2",
+        "destination_port": 8080,
+        "feature_values_vs_session_median": "unavailable: exact Session 11 feature vectors are absent",
+        "predicted_label": "Normal",
+        "prediction_id": 4446,
+        "runtime_artifact_id": 807,
+        "source_ip": "10.10.10.12",
+        "traffic_flow_id": 4446
+      },
+      {
+        "P(DDoS)": 0.30370316935003305,
+        "P(Normal)": 0.5179908961713818,
+        "P(PortScan)": 0.1783059344785875,
+        "destination_ip": "10.10.20.2",
+        "destination_port": 8080,
+        "feature_values_vs_session_median": "unavailable: exact Session 11 feature vectors are absent",
+        "predicted_label": "Normal",
+        "prediction_id": 3968,
+        "runtime_artifact_id": 807,
+        "source_ip": "10.10.10.13",
+        "traffic_flow_id": 3968
+      }
+    ]
+  },
+  "recommended_next_step": "Preserve and checksum-export the exact Session 11 raw 84-column CSV and/or traffic_flows.raw_features with prediction/flow/artifact lineage, then reconstruct the locked 78-feature matrix and conduct the deferred reproducibility and same-flow diagnostic analyses before considering any remediation.",
+  "reconstruction_provenance": {
+    "adapter_transformation_path": "CICFlowMeter V3 raw 84-column CSV -> pinned CICFlowMeterV3ModelAdapter -> exact ordered 78-feature model input; adapter maps fields and converts +/-Infinity to NaN without fitting or imputation.",
+    "e3_a1_qualification": "approved replacement extractor digest b12... was byte-identical on nine non-final Experiment D adaptation reference PCAPs and accepted by the pinned adapter.",
+    "prediction_linkage_fields": [
+      "prediction_id",
+      "traffic_flow_id",
+      "runtime_artifact_id"
+    ],
+    "runtime_export_has_raw_features_column": false,
+    "session_11_committed_runtime_artifact": {
+      "artifact_id": 807,
+      "csv_payload_present_in_repository": false,
+      "csv_relative_path": "flows/window-000003/window-000003.pcap_ISCX.csv",
+      "csv_sha256": "3a6b58afcda68baae9d620afa6f9c0e286589253827836b61cb021bbc6d7432b",
+      "extractor_identity": "sha256:b12b3a4a4218968aba2436685a4eb113473e5681de70705409e834e4613a879b",
+      "pcap_sha256": "8bfa65f4d4e395044016dab174477781e1e14416b9059207e559614fd6fb3509"
+    }
+  },
+  "remediation_or_promotion_authorized": false,
+  "rf_v2_identical_flow_diagnostic": {
+    "available": false,
+    "statement": "RF-v2 identical-flow diagnostic comparison unavailable because exact E10 Session 11 model input vectors could not be reproducibly reconstructed."
+  },
+  "root_cause_categories": [
+    {
+      "category": "INSUFFICIENT_EVIDENCE",
+      "support": "Missing exact Session 11 raw/model-input feature payload prevents distribution-shift analysis, offline RF-v3 reproducibility, RF-v2 same-flow comparison, and causal discrimination among schema, workload, distribution, and class-boundary hypotheses."
+    }
+  ],
+  "schema": "experiment_e_e11_ddos_failure_diagnostic",
+  "schema_order_and_provenance_findings": {
+    "extractor_provenance_mismatch": "not established: Session 11 uses the E3-A1 approved b12... replacement extractor, which has a documented byte-identical compatibility gate on non-final adaptation references.",
+    "feature_schema_mismatch": "not established: no Session 11 vector payload exists to validate actual runtime values/order; the persisted model version/hash and 78-feature metadata contract match the candidate.",
+    "model_loading_or_ordering_error": "not established: persisted Session 11 model version and artifact hash match RF-v3 candidate, but offline prediction/order reproducibility cannot be tested without vectors."
+  },
+  "schema_version": 1,
+  "scientific_decision": "ROOT_CAUSE_UNRESOLVED",
+  "scientific_interpretation": "E10 establishes that RF-v3 did not detect this scoped controlled multi-source DDoS-like workload (0/802 DDoS predictions), but E11 cannot determine why from the preserved evidence. Runtime distribution shift, workload non-representativeness, and model class-boundary limitation remain hypotheses rather than supported root causes.",
+  "session_11_feature_reconstruction": {
+    "feature_count": null,
+    "feature_dataset_sha256": null,
+    "inspection": {
+      "committed_csv_relative_paths": [
+        "flows/window-000003/window-000003.pcap_ISCX.csv"
+      ],
+      "prediction_export_columns": [
+        "prediction_id",
+        "monitoring_session_id",
+        "predicted_label",
+        "confidence_score",
+        "class_probabilities",
+        "prediction_time",
+        "model_id",
+        "model_version",
+        "traffic_flow_id",
+        "capture_time",
+        "source_ip",
+        "source_port",
+        "destination_ip",
+        "destination_port",
+        "protocol",
+        "capture_session_id",
+        "capture_interface",
+        "pcap_segment",
+        "runtime_artifact_id"
+      ],
+      "raw_features_present": false,
+      "referenced_csv_payload_present": false,
+      "runtime_artifact_export_columns": [
+        "id",
+        "monitoring_session_id",
+        "artifact_key",
+        "window_number",
+        "state",
+        "pcap_relative_path",
+        "pcap_sha256",
+        "pcap_size",
+        "csv_relative_path",
+        "csv_sha256",
+        "csv_size",
+        "extractor_identity",
+        "extracted_row_count",
+        "adapted_row_count",
+        "error_stage",
+        "error_message",
+        "capture_started_at",
+        "capture_finished_at",
+        "extraction_finished_at",
+        "committed_at",
+        "created_at"
+      ]
+    },
+    "reason": "The frozen E10 export contains 802 prediction records and artifact hashes/relative paths, but not traffic_flows.raw_features, the committed raw 84-column CSV payload, PCAP payload, or exact model-input vectors. The referenced Session 11 CSV path is not present in this repository. Therefore an exact ordered 78-feature dataset cannot be reconstructed reproducibly.",
+    "recoverable": false,
+    "row_count": null
+  }
+}

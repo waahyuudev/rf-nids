@@ -1,0 +1,9 @@
+Experiment,Evidence,Supports,Against,Limitation,Scientific implication
+PortScan generalization,E6; E7,"RF-v3 recall 0.999334 (E6), 0.998336 (E7); RF-v2 0 in both",None within tested sessions,Narrow session coverage,PortScan remediation is supported in scope
+Normal preservation,E6; E7; E13-N-R1,Normal recall 1.0 (E6/E7); E13 32/32 Normal,None within tested profiles,Not universal Normal validation,Require preservation gate
+DDoS-like runtime sensitivity,E10; E13,RF-v3 0/802 E10; 2/801 D1; 4/1612 D2,Some DDoS predictions occur,"Controlled DDoS-like, not universal recall",Explicit DDoS objective required
+RF-v2→RF-v3 DDoS regression signal,E12; E13,"DDoS→Normal: 5 E12, 9 D1, 21 D2",RF-v3 has a small number of DDoS predictions,Not proof of universal degradation,Compare both baselines
+runtime/training distribution shift,E12; E13,All-78-feature robust diagnostics shift from E4; D2 not closer than D1,No causal mechanism isolated,Distribution association only,Do not assume workload represents training DDoS
+pipeline correctness,E12; E13,Exact E12 reproduction; locked E13 contract/hash gates pass,No contrary evidence,Does not rule out every unobserved deployment defect,Pipeline defect not primary explanation
+training-data representativeness,E10; E12; E13,Bounded one-VM logical-source workloads differ from E4 DDoS,Historical DDoS remains valid historical evidence,No directly equivalent new ground truth,Design new labeled sessions; do not relabel E10/E13
+evidence sufficiency,D; E6–E13,"Enough for a new research experiment, not promotion",E8 remains MORE_VALIDATION_REQUIRED,Unseen final evidence still required,"RFV4 experiment justified, promotion not authorized"

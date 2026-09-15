@@ -1,0 +1,21 @@
+{
+  "schema": "experiment_e13_preregistration",
+  "schema_version": 1,
+  "title": "Experiment E13 — Controlled DDoS-like Runtime Validation Preregistration",
+  "status": "PREREGISTRATION_ONLY_NOT_EXECUTED",
+  "e13_preregistration_gate": "PASS",
+  "scientific_goal": "Distinguish workload representativeness/distribution shift (H1) from RF-v3 Normal/DDoS decision-boundary sensitivity reduction (H2), without a causal conclusion absent results.",
+  "e12_context": {"gate": "PASS", "decision": "ROOT_CAUSE_PARTIALLY_SUPPORTED", "session_11_matrix_sha256": "710d8eea4ff99ddc9c695055ebb17959e44a3bdbc652c3ee1d11ea2cb4bbf29f", "rf_v3_status": "CANDIDATE / NOT ACTIVE", "promotion_authorized": false},
+  "scope": {"allowed_networks": ["10.10.10.0/24", "10.10.20.0/24"], "allowed_target": "10.10.20.2:8080", "capture_interface": "enp0s3", "excluded": ["any", "enp0s1", "management networks", "public addresses", "corporate networks"]},
+  "profiles": {
+    "E13-N-R1": {"purpose": "Normal control", "source": "10.10.10.2", "workload": "20–30 sequential HTTP requests", "bounds": {"concurrency": 1, "timeout_seconds": 10, "maximum_duration_seconds": 300}, "expected_profile_label": "Normal"},
+    "E13-D1-R1": {"purpose": "Low/moderate controlled multi-source DDoS-like profile", "logical_sources": ["10.10.10.11", "10.10.10.12", "10.10.10.13", "10.10.10.14"], "physical_generator_count": 1, "bounds": {"requests_per_source_max": 100, "requests_total_max": 400, "concurrency_total": 8, "timeout_seconds": 10, "maximum_duration_seconds": 300}},
+    "E13-D2-R1": {"purpose": "Higher-concurrency bounded controlled multi-source DDoS-like profile", "logical_sources": ["10.10.10.11", "10.10.10.12", "10.10.10.13", "10.10.10.14"], "physical_generator_count": 1, "bounds": {"requests_per_source_max": 200, "requests_total_max": 800, "concurrency_total": 32, "timeout_seconds": 10, "maximum_duration_seconds": 300}}
+  },
+  "terminology": "D1/D2 are controlled multi-source DDoS-like traffic from logical source identities on one physical VM; neither is a real DDoS nor a distributed attacker fleet.",
+  "evidence_preservation": {"directory_per_session": "reports/experiment_e/runtime_validation/e13/<profile>/", "preserve_before_cleanup": ["PCAP", "raw 84-column CSV", "exact ordered 78-feature matrix"], "required": ["capture.pcap", "raw_84.csv", "model_input_78.csv", "predictions.csv", "traffic_flows.csv", "runtime_artifacts.csv", "alerts.csv", "provenance.json", "SHA256SUMS"], "provenance_fields": ["model identity", "extractor identity", "feature-contract identity", "session metadata"]},
+  "analysis_plan": {"paired_models": ["frozen RF-v2", "frozen RF-v3 candidate"], "outputs": ["flow counts", "per-model class counts", "pairwise agreement", "Normal-to-DDoS and DDoS-to-Normal transitions", "probability distributions", "paired transition matrix"], "profile_labels": "experiment-level only; later report scoped detection rate, not universal DDoS recall", "distribution_references": ["frozen E4 DDoS", "E10 Session 11 vectors"], "distribution_metrics": ["min", "Q1", "median", "mean", "Q3", "max", "standard deviation", "robust normalized median difference", "standardized difference where valid", "top shifted features"], "feature_scope": "all 78 features"},
+  "decision_logic": {"A": "D2 closer to frozen DDoS and RF-v3 detects more DDoS-like flows: supports H1.", "B": "D1/D2 closer but RF-v3 remains Normal while RF-v2 detects DDoS: strengthens H2.", "C": "Both models fail despite closeness: may indicate broader lab-vs-training mismatch.", "D": "Neither profile approaches frozen DDoS: workload remains insufficient.", "constraint": "Do not force causal conclusion."},
+  "prohibitions": ["traffic execution during preregistration", "runtime configuration change", "monitoring start", "database writes", "retraining", "RF-v4", "threshold tuning", "feature mapping/contract change", "RF-v3 activation or promotion"],
+  "next_operator_gate": "A separate operator authorization must verify topology, target, capture interface, bounded command arguments, model/contract hashes, and empty dedicated evidence directories immediately before any execution."
+}

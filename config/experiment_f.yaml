@@ -1,0 +1,13 @@
+experiment_code: EXPERIMENT_F0
+title: RF-v4 Preregistration and Ground-Truth DDoS Design
+phase: DESIGN_PREREGISTRATION_ONLY
+status: NOT_AUTHORIZED_TO_EXECUTE
+traffic_execution_authorized: false
+training_authorized: false
+database_writes_authorized: false
+classes: [Normal, DDoS, PortScan]
+feature_contract: {count: 78, order_sha256: 9338f50fc3e7efc78d678cc65ab38d428a7f6912ed9467a2b99a449a7c8e3c13}
+extractor: {identity: CICFLOWMETER_V3_CICIDS2017_MODEL_ADAPTER, version: 1.0.0}
+random_state: 42
+minimum_sessions_per_class_per_split: 3
+next_authorized_phase: F1_TOPOLOGY_PREFLIGHT_ONLY
