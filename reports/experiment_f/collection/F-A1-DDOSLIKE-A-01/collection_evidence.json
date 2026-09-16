@@ -1,0 +1,82 @@
+{
+  "schema": "experiment_f_f2_a1_collection_evidence",
+  "session_id": "F-A1-DDOSLIKE-A-01",
+  "phase": "F2-A1 collection evidence and lineage recording only",
+  "decision": "F2_A1_COLLECTION_EVIDENCE_FAIL",
+  "manifest": {
+    "path": "reports/experiment_f/collection/manifests/f_a1_ddoslike_a_01_preexecution_manifest.json",
+    "expected_sha256": "05e7038204fcc0e52d6f7b2d772a0cef9ed87f8f721388fc8b0f1cbb8ff82749",
+    "observed_sha256": "05e7038204fcc0e52d6f7b2d772a0cef9ed87f8f721388fc8b0f1cbb8ff82749",
+    "status": "VALID"
+  },
+  "operator_observations": {
+    "locust_version": "2.46.5",
+    "python_version": "3.14.4",
+    "generator": "ubuntu-traffic / 10.10.10.2",
+    "target_url": "http://10.10.20.2:8080/",
+    "endpoint": "/",
+    "maximum_users": 4,
+    "spawn_rate_users_per_second": 1,
+    "maximum_duration_seconds": 60,
+    "wait_time_seconds": "1-2",
+    "request_timeout_seconds": 10,
+    "locust_exit_code": 0,
+    "terminal_summary_request_count": 155,
+    "final_stats_csv_request_count": 153,
+    "reported_final_stats": {
+      "failure_count": 0,
+      "median_response_time_ms": 8,
+      "average_response_time_ms": 9.173822614345637,
+      "min_response_time_ms": 3.498955999930331,
+      "max_response_time_ms": 33.486332000393304,
+      "requests_per_second": 2.586692509386199
+    },
+    "capture": {
+      "interface": "enp0s3",
+      "filter": "host 10.10.20.2 and tcp port 8080",
+      "packets_captured": 1553,
+      "packets_received_by_filter": 1553,
+      "packets_dropped_by_kernel": 0
+    }
+  },
+  "workload_provenance": {
+    "external_generator_side_path": "/home/wahyudev/rf-nids-f-tools/workloads/f_a1_ddoslike_a_01.py",
+    "sha256": "88c4f02b8ca06afe69eac9465b663d0089b69f7f00a7221b686f0bc7a4433aed",
+    "repository_copy": "NOT_CREATED"
+  },
+  "required_artifacts": {
+    "pcap": {
+      "path": "data/lab/experiment_f/adaptation/pcap/ddoslike/f-a1-ddoslike-a-01.pcap",
+      "expected_sha256": "71874ad8f9e6519548aeffc219bb64635f1cca24f1acdf8c9ebaef50ced01910",
+      "exists": false,
+      "observed_sha256": null,
+      "status": "MISSING"
+    },
+    "locust_evidence": [
+      {"path": "reports/experiment_f/collection/F-A1-DDOSLIKE-A-01/locust/f_a1_ddoslike_a_01_exceptions.csv", "expected_sha256": "3e73e8f665731ee4e45a6a91202a31b06999f2c53240f14aee2532e0e0b42b09", "exists": false, "observed_sha256": null, "status": "MISSING"},
+      {"path": "reports/experiment_f/collection/F-A1-DDOSLIKE-A-01/locust/f_a1_ddoslike_a_01_failures.csv", "expected_sha256": "51ba68968b591276c95496a6a9624797491ce4eb934b1f6392f44b95148fbb93", "exists": false, "observed_sha256": null, "status": "MISSING"},
+      {"path": "reports/experiment_f/collection/F-A1-DDOSLIKE-A-01/locust/f_a1_ddoslike_a_01_stats.csv", "expected_sha256": "f241d339bb8eddaf5a209f465248ece2f0d50ba7a6b3de18d02dd75d5ac0b66e", "exists": false, "observed_sha256": null, "status": "MISSING"},
+      {"path": "reports/experiment_f/collection/F-A1-DDOSLIKE-A-01/locust/f_a1_ddoslike_a_01_stats_history.csv", "expected_sha256": "0d596fc5c4bb9196ed7fed9d512d4b8c9d4638c4b660960542d92fd03a870112", "exists": false, "observed_sha256": null, "status": "MISSING"}
+    ]
+  },
+  "zero_failures_evidence": {
+    "status": "NOT_VERIFIABLE",
+    "reason": "The required failures.csv and exceptions.csv repository copies are absent, so their contents cannot be inspected. The operator-reported final-stat failure count of zero is preserved as an observation only."
+  },
+  "scope": {
+    "split": "F-ADAPTATION",
+    "model_class": "DDoS",
+    "experimental_ground_truth_scope": "controlled HTTP DDoS-like/load profile",
+    "no_genuine_distributed_ddos_claim": true
+  },
+  "eligibility": {
+    "eligible_for_validation": false,
+    "eligible_for_final": false,
+    "training_eligibility": "PENDING_EXTRACTION_AND_DATA_GATES"
+  },
+  "blocking_conditions": [
+    "Required PCAP is absent at the mandated repository path; its SHA256 cannot be confirmed.",
+    "All four required Locust evidence CSV copies are absent at the mandated repository paths; their SHA256 values cannot be confirmed.",
+    "Zero failures is not supported by inspection of the required failures and exceptions evidence."
+  ]
+}

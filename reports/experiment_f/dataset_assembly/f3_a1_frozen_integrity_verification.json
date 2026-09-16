@@ -1,0 +1,34 @@
+{
+  "schema": "experiment_f_f3_a1_post_assembly_frozen_integrity",
+  "version": 1,
+  "status": "PASS",
+  "verification_scope": "Post-assembly byte-integrity verification only; no validation/final data content, prediction, inference, traffic generation, or training was performed.",
+  "verified_sha256": {
+    "models/experiment_d/random_forest_rf_v2.joblib": "fb13a71a0287054d2630bf07529f113a153ba08d8f6835a605b04493408b8a31",
+    "models/experiment_e/random_forest_rf_v3_candidate.joblib": "6b01c7b3923c1a6bd471862d011f8f5b88a31378e51d1dde082bd2e72bedef86",
+    "models/experiment_e/random_forest_rf_v3_candidate_metadata.json": "30b6bdf2a6cb2d60e2be36d4db1e124d71504393081b229e6d94da7e70322cbc",
+    "reports/tables/cicflowmeter_v3_78_feature_crosswalk.csv": "66e517cdcea217f19de4d0a2cd45302ede999388393f539fb8ca4a2c68b74cf4",
+    "reports/experiment_d/final_test/dataset_audit.json": "a0a22100cd0c6b923349aa6e899c2221b84d64991ca7e20b0626d811879d88c1",
+    "reports/experiment_e/audit/e4_dataset_construction_audit.json": "69cc278d2a6139b7b2d2e9d4db3312fb3a3b06cf70381a719d542ec624e2b45c",
+    "reports/experiment_e/decision/e14_remediation_decision.json": "e5c11c39f7401fe89551d927b193978c59adc32bf7bb3052f619d225a595278e",
+    "config/experiment_f.yaml": "a501465a87367456fbdcda2504c38d4d8d974cc168c92a3bce6505c23d9fa65d",
+    "reports/experiment_f/preregistration/f0_preregistration.json": "dfc628b60bbd56ea0a78c4585ed28cfece2154b56fe101567b89e434e83d6cfb",
+    "reports/experiment_f/preregistration/f0_ground_truth_design.json": "0ffac32992a82d01bbd03de2108047a701e579392f492a794f2bf2b6991dbab4",
+    "reports/experiment_f/preregistration/f0_acceptance_gates.json": "0d82ea5e4c6384484f58a4d5f3e248d9a3996fd1259bdc46506f4490773e74b3",
+    "reports/experiment_f/amendments/f0_amendment_a1.json": "2116e1272ffc93dcaacfd105eb8f90afda10b2ccf5c2111ed2d2dd1179f6b95e",
+    "reports/experiment_f/amendments/f0_composition_amendment_a2.json": "24840ecd9973e4028c0dd382da90d1a467f0190a654abcd2fbd50af9baed6afb",
+    "reports/experiment_f/preflight/f1_a1_preflight_evidence.json": "a04fa37f5fccb32851d2a118316357d837aa7b61b1ad727b7a2e77a9711ddfd6",
+    "reports/experiment_f/data_gates/f2_a1_extraction_data_gate.json": "5e45cb8bbf8d0857345843f3a28e05c5d173f350528c3bee6b797e04783f43e0",
+    "reports/experiment_f/dataset_assembly/f3_a1_dataset_assembly_blocked.json": "2398f8298b55366347b2a6c07d04049ded07087911e4395695b71d55e7d72074"
+  },
+  "generated_candidate_artifacts_verified": {
+    "data/lab/experiment_f/datasets/rf_v4_candidate_01_training.csv": "a65c812494917b2e6d18153b784fd0505b84229f86b6a6916c59fa1187bd778d",
+    "data/lab/experiment_f/datasets/rf_v4_candidate_01_training_lineage.csv": "1ee2fdad6a9cb4321f6a85beb003e2eb2596518ddd9b54a7a9f151b1c65f4283",
+    "reports/experiment_f/dataset_assembly/rf_v4_candidate_01_training_input_freeze.json": "1e89b78779c15d2c9f9cd21ea89fd39c88275a888fd28fd7d08b8d62d5cf4142",
+    "reports/experiment_f/dataset_assembly/f3_a1_dataset_assembly_audit.json": "6dc316a4f27a39a4db81d3f0e787467236b2b4af42da87cacbb0524838464ee4",
+    "reports/experiment_f/dataset_assembly/f3_a1_dataset_assembly_summary.md": "717c66e37f268ac42dd112bf9e6250f001784af699da31a958f1036cea4640fd",
+    "reports/experiment_f/dataset_assembly/f3_a1_SHA256SUMS": "80d7d6ebbcc6802e2afdcacad0991c779bd2700a14ab43fb42c14264edb9d339"
+  },
+  "rf_v4_model_created": false,
+  "model_training_performed": false
+}

@@ -1,0 +1,69 @@
+{
+  "acceptance_gate_impact": "Metrics/gates retained; DDoS wording is limited to controlled HTTP DDoS-like scope.",
+  "current_thesis_scope": "Existing routed three-VM lab: ubuntu-traffic (10.10.10.2), ubuntu-nids (10.10.10.1/10.10.20.1; enp0s3), ubuntu-target (10.10.20.2:8080), using Locust only as a standardized bounded controlled HTTP load tool.",
+  "data_usage": {
+    "adaptation": "New amended-scope controlled HTTP DDoS-like adaptation sessions may be considered with explicit lineage; historical authorized DDoS retained.",
+    "prohibited": "E10/E13 are not relabeled as new F training data; no cross-session/capture overlap.",
+    "validation_final": "Never training; validation is unseen and final remains sealed."
+  },
+  "decision": "AMENDMENT_A1_ACCEPTED",
+  "f1_a1_status": "PENDING_OPERATOR_VALIDATION",
+  "frozen_contract": [
+    "Random Forest / three classes / exact 78 ordered features / CICFlowMeter V3 / random_state 42",
+    "RF-v2 and RF-v3 frozen baselines",
+    "no threshold hacks, silent imputation, leakage, Experiment D final-test use, or promotion"
+  ],
+  "frozen_evidence_unchanged": true,
+  "future_work": "Post-thesis validation must return to four genuinely independent traffic generators to strengthen external validity for distributed-DDoS claims.",
+  "generated_at_utc": "2026-09-15T15:26:18.886472+00:00",
+  "integrity_after": {
+    "config/experiment_f.yaml": "a501465a87367456fbdcda2504c38d4d8d974cc168c92a3bce6505c23d9fa65d",
+    "models/experiment_d/random_forest_rf_v2.joblib": "fb13a71a0287054d2630bf07529f113a153ba08d8f6835a605b04493408b8a31",
+    "models/experiment_e/random_forest_rf_v3_candidate.joblib": "6b01c7b3923c1a6bd471862d011f8f5b88a31378e51d1dde082bd2e72bedef86",
+    "models/experiment_e/random_forest_rf_v3_candidate_metadata.json": "30b6bdf2a6cb2d60e2be36d4db1e124d71504393081b229e6d94da7e70322cbc",
+    "reports/experiment_d/final_test/dataset_audit.json": "a0a22100cd0c6b923349aa6e899c2221b84d64991ca7e20b0626d811879d88c1",
+    "reports/experiment_e/decision/e14_remediation_decision.json": "e5c11c39f7401fe89551d927b193978c59adc32bf7bb3052f619d225a595278e",
+    "reports/experiment_f/preflight/f1_preflight_evidence.json": "a169426ba98fb7888272ddef0a473a0fb9e328b1ce4fe3ccc287c2cc45a44f86",
+    "reports/experiment_f/preflight/f1_topology_plan.json": "7bac6a5c00d23e814423ee32421c10f3ea5b16f0239547e85b5132508cf7f6b4",
+    "reports/experiment_f/preregistration/f0_acceptance_gates.json": "0d82ea5e4c6384484f58a4d5f3e248d9a3996fd1259bdc46506f4490773e74b3",
+    "reports/experiment_f/preregistration/f0_ground_truth_design.json": "0ffac32992a82d01bbd03de2108047a701e579392f492a794f2bf2b6991dbab4",
+    "reports/experiment_f/preregistration/f0_preregistration.json": "dfc628b60bbd56ea0a78c4585ed28cfece2154b56fe101567b89e434e83d6cfb",
+    "reports/tables/cicflowmeter_v3_78_feature_crosswalk.csv": "66e517cdcea217f19de4d0a2cd45302ede999388393f539fb8ca4a2c68b74cf4"
+  },
+  "integrity_before": {
+    "config/experiment_f.yaml": "a501465a87367456fbdcda2504c38d4d8d974cc168c92a3bce6505c23d9fa65d",
+    "models/experiment_d/random_forest_rf_v2.joblib": "fb13a71a0287054d2630bf07529f113a153ba08d8f6835a605b04493408b8a31",
+    "models/experiment_e/random_forest_rf_v3_candidate.joblib": "6b01c7b3923c1a6bd471862d011f8f5b88a31378e51d1dde082bd2e72bedef86",
+    "models/experiment_e/random_forest_rf_v3_candidate_metadata.json": "30b6bdf2a6cb2d60e2be36d4db1e124d71504393081b229e6d94da7e70322cbc",
+    "reports/experiment_d/final_test/dataset_audit.json": "a0a22100cd0c6b923349aa6e899c2221b84d64991ca7e20b0626d811879d88c1",
+    "reports/experiment_e/decision/e14_remediation_decision.json": "e5c11c39f7401fe89551d927b193978c59adc32bf7bb3052f619d225a595278e",
+    "reports/experiment_f/preflight/f1_preflight_evidence.json": "a169426ba98fb7888272ddef0a473a0fb9e328b1ce4fe3ccc287c2cc45a44f86",
+    "reports/experiment_f/preflight/f1_topology_plan.json": "7bac6a5c00d23e814423ee32421c10f3ea5b16f0239547e85b5132508cf7f6b4",
+    "reports/experiment_f/preregistration/f0_acceptance_gates.json": "0d82ea5e4c6384484f58a4d5f3e248d9a3996fd1259bdc46506f4490773e74b3",
+    "reports/experiment_f/preregistration/f0_ground_truth_design.json": "0ffac32992a82d01bbd03de2108047a701e579392f492a794f2bf2b6991dbab4",
+    "reports/experiment_f/preregistration/f0_preregistration.json": "dfc628b60bbd56ea0a78c4585ed28cfece2154b56fe101567b89e434e83d6cfb",
+    "reports/tables/cicflowmeter_v3_78_feature_crosswalk.csv": "66e517cdcea217f19de4d0a2cd45302ede999388393f539fb8ca4a2c68b74cf4"
+  },
+  "original_scientific_design": "Four genuinely independent traffic-generator VMs for distributed ground-truth methodology.",
+  "prohibited_actions": [
+    "traffic generation",
+    "Locust execution",
+    "RF-v4 training/creation",
+    "model mutation/activation/promotion",
+    "runtime DB writes"
+  ],
+  "rationale": "Thesis deadline/resource constraints justify a narrower reproducible controlled-load scope; the amendment preserves all model, feature, provenance, split, final-seal, and leakage safeguards.",
+  "replication": "Target 3 adaptation, 3 validation, and 3 final sessions per class. These are independent capture/session repetitions, not independent physical generators.",
+  "schema": "experiment_f_f0_amendment_a1",
+  "terminology": {
+    "experimental_ground_truth_scope": "controlled HTTP DDoS-like/load profile",
+    "freeze_rule": "All parameters are frozen before F2; no post-prediction tuning or profile substitution.",
+    "model_class": "DDoS",
+    "prohibited_claims": [
+      "genuine distributed DDoS",
+      "universal DDoS recall",
+      "traffic is distributed merely because Locust is standardized"
+    ]
+  },
+  "version": 1
+}

@@ -1,0 +1,10 @@
+{
+  "schema": "experiment_f_f2_a1_lineage_repair",
+  "session_id": "F-A1-DDOSLIKE-A-01",
+  "prior_lineage_record": "lineage.json",
+  "repair_evidence": "collection_evidence_repair.json",
+  "path_mapping_addendum": "path_mapping_addendum.json",
+  "artifact_recovery": "Recovered original PCAP and Locust CSV evidence into the repository; no traffic generation or scientific capture occurred during repair.",
+  "lineage_status": "A01_COLLECTION_EVIDENCE_COMPLETE_PENDING_EXTRACTION_AND_DATA_GATES",
+  "separation": {"split": "F-ADAPTATION", "eligible_for_validation": false, "eligible_for_final": false, "training_eligibility": "PENDING_EXTRACTION_AND_DATA_GATES"}
+}

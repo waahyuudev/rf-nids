@@ -1,0 +1,17 @@
+{
+  "schema": "experiment_f_f2_a1_lineage",
+  "session_id": "F-A1-DDOSLIKE-A-01",
+  "lineage": [
+    {"artifact": "F0 Amendment A1", "path": "reports/experiment_f/amendments/f0_amendment_a1.json", "sha256": "2116e1272ffc93dcaacfd105eb8f90afda10b2ccf5c2111ed2d2dd1179f6b95e", "status": "BOUND"},
+    {"artifact": "F1-A1 PASS", "path": "reports/experiment_f/preflight/f1_a1_preflight_evidence.json", "sha256": "a04fa37f5fccb32851d2a118316357d837aa7b61b1ad727b7a2e77a9711ddfd6", "decision": "F1_A1_PASS", "status": "BOUND"},
+    {"artifact": "pre-execution manifest", "path": "reports/experiment_f/collection/manifests/f_a1_ddoslike_a_01_preexecution_manifest.json", "sha256": "05e7038204fcc0e52d6f7b2d772a0cef9ed87f8f721388fc8b0f1cbb8ff82749", "status": "VERIFIED"},
+    {"artifact": "frozen Locust profile", "profile_id": "F-A1-DDOSLIKE-A-01", "maximum_users": 4, "spawn_rate_users_per_second": 1, "duration_seconds": 60, "wait_time_seconds": "1-2", "request_timeout_seconds": 10, "endpoint": "/", "status": "BOUND"},
+    {"artifact": "generator-side workload", "external_path": "/home/wahyudev/rf-nids-f-tools/workloads/f_a1_ddoslike_a_01.py", "sha256": "88c4f02b8ca06afe69eac9465b663d0089b69f7f00a7221b686f0bc7a4433aed", "status": "RECORDED_EXTERNAL_PROVENANCE"},
+    {"artifact": "execution environment", "locust_version": "2.46.5", "python_version": "3.14.4", "generator": "ubuntu-traffic / 10.10.10.2", "observer": "ubuntu-nids", "target": "http://10.10.20.2:8080/", "status": "RECORDED_OPERATOR_OBSERVATION"},
+    {"artifact": "PCAP", "path": "data/lab/experiment_f/adaptation/pcap/ddoslike/f-a1-ddoslike-a-01.pcap", "expected_sha256": "71874ad8f9e6519548aeffc219bb64635f1cca24f1acdf8c9ebaef50ced01910", "status": "MISSING_UNVERIFIED"},
+    {"artifact": "Locust evidence", "status": "MISSING_UNVERIFIED", "files": ["f_a1_ddoslike_a_01_exceptions.csv", "f_a1_ddoslike_a_01_failures.csv", "f_a1_ddoslike_a_01_stats.csv", "f_a1_ddoslike_a_01_stats_history.csv"]}
+  ],
+  "classification": {"split": "F-ADAPTATION", "model_class": "DDoS", "scope": "controlled HTTP DDoS-like/load profile", "genuine_distributed_ddos_claim": false},
+  "separation": {"eligible_for_validation": false, "eligible_for_final": false, "training_eligibility": "PENDING_EXTRACTION_AND_DATA_GATES"},
+  "lineage_status": "INCOMPLETE_REQUIRED_ARTIFACTS_MISSING"
+}
