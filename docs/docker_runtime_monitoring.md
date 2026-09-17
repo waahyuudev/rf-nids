@@ -53,9 +53,12 @@ Preflight checks executable/interface discovery, briefly starts tcpdump writing
 to `/dev/null`, detects immediate failures, then sends SIGINT and reaps it without
 waiting for packets. It escalates to SIGTERM/SIGKILL if needed and rejects abnormal
 termination. The usual probe takes about one second. Errors retain tcpdump's
-actual diagnostic, with Linux/macOS permission guidance. Image identity is still
-checked against the unchanged pinned digest. Models, features, classes, prediction
-rules, and runtime validation results are unchanged.
+actual diagnostic, with Linux/macOS permission guidance. Image identity is checked
+against the strict verified-extractor registry. The historical `0227...` identity
+remains accepted without rewriting its provenance; the Experiment E/F-approved
+`b12b...` identity is the current deployment default. Every other identity fails
+closed. Models, features, classes, prediction rules, and runtime validation results
+are unchanged.
 
 ## One-time setup, after reviewing the diff
 
@@ -82,10 +85,10 @@ If old artifacts have incompatible permissions, inspect those separately.
 ```bash
 docker compose config --quiet
 docker image inspect rf-nids-cicflowmeter-v3:a26aae27 --format '{{.Id}}'
-# Must match the existing pinned identity:
-# sha256:0227c7280e586d54144b9bb11b2a6b5d4b1c4ba9bc7c44199fa312a6b829caab
-docker compose build
-docker compose up -d
+# For the current isolated-lab deployment this must be:
+# sha256:b12b3a4a4218968aba2436685a4eb113473e5681de70705409e834e4613a879b
+docker compose build api migration
+docker compose up -d --no-deps api
 docker compose ps -a
 docker compose logs --tail=100 migration api
 curl --fail --silent --show-error http://127.0.0.1:8000/health
@@ -96,9 +99,9 @@ docker compose exec api python -c 'import socket; print(socket.if_nameindex())'
 docker compose exec api sh -c 'test -w /app/data/runtime/monitoring && docker image inspect rf-nids-cicflowmeter-v3:a26aae27 --format "{{.Id}}"'
 ```
 
-If the image is missing or mismatched, restore the already-approved pinned image
-from the existing lab image archive; do not rebuild/re-tag a substitute or change
-the expected digest. Do not infer runtime readiness from API health alone.
+If the image is missing or mismatched, restore an identity already present in the
+verified-extractor registry from the existing lab image archive; do not rebuild,
+re-tag, or substitute an image. Do not infer runtime readiness from API health alone.
 
 The following calls the real preflight **inside the API container**, without
 creating a monitoring session, requiring traffic, or writing runtime artifacts:

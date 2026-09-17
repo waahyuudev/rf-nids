@@ -26,8 +26,13 @@ from src.common.config import PROJECT_ROOT
 from src.ingestion.cicflowmeter_v3_adapter import (
     ADAPTER_IDENTITY,
     ADAPTER_VERSION,
+    CICFLOWMETER_V3_COMMIT,
     CICFLOWMETER_V3_IMAGE_DIGEST,
     CICFlowMeterV3ModelAdapter,
+)
+from src.api.runtime_extractors import (
+    RuntimeExtractorRegistry,
+    RuntimeExtractorVerificationError,
 )
 from src.ingestion.live_capture import validate_pcap
 
@@ -87,6 +92,8 @@ class RuntimePipeline:
         host_root: Path | None = None,
         expected_image_digest: str = CICFLOWMETER_V3_IMAGE_DIGEST,
         extraction_timeout_seconds: float = 120.0,
+        source_commit: str = CICFLOWMETER_V3_COMMIT,
+        extractor_registry: RuntimeExtractorRegistry | None = None,
         popen=subprocess.Popen, run=subprocess.run,
     ):
         self.root = root.resolve()
@@ -96,6 +103,8 @@ class RuntimePipeline:
         self.host_root = host_root if host_root is not None else self.root
         self.image = image
         self.expected_image_digest = expected_image_digest
+        self.source_commit = source_commit
+        self.extractor_registry = extractor_registry or RuntimeExtractorRegistry()
         self.window_seconds = window_seconds
         self.extraction_timeout_seconds = extraction_timeout_seconds
         self._popen = popen
@@ -154,6 +163,13 @@ class RuntimePipeline:
         if docker.returncode != 0:
             raise RuntimePipelineError("Pinned CICFlowMeter V3 Docker image is unavailable")
         identity = docker.stdout.strip()
+        try:
+            self.extractor_registry.verify(identity, source_commit=self.source_commit)
+            self.extractor_registry.verify(
+                self.expected_image_digest, source_commit=self.source_commit
+            )
+        except RuntimeExtractorVerificationError as exc:
+            raise RuntimePipelineError(str(exc)) from exc
         if identity != self.expected_image_digest:
             raise RuntimePipelineError(
                 "CICFlowMeter V3 image identity mismatch: "

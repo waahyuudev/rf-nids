@@ -11,6 +11,12 @@ from src.api.runtime_monitoring import (
     RuntimeCollectorController, RuntimePipeline, RuntimePipelineError, validate_runtime_root,
 )
 from src.api.runtime_monitoring import RuntimeWorker
+from src.api.runtime_extractors import (
+    APPROVED_CANDIDATE_IMAGE_DIGEST,
+    HISTORICAL_IMAGE_DIGEST,
+    RuntimeExtractorRegistry,
+    RuntimeExtractorVerificationError,
+)
 from src.api.database import Base, build_engine
 from src.api.models import Alert, ModelRecord, MonitoringSession, Prediction
 from src.ingestion.cicflowmeter_v3_adapter import MODEL_FEATURES, REQUIRED_V3_HEADERS
@@ -181,9 +187,11 @@ def test_preflight_accepts_idle_interface_without_packets_and_reaps(tmp_path, pr
         return probe
 
     pipeline = RuntimePipeline(
-        root=tmp_path, image="v3", expected_image_digest="sha256:expected",
+        root=tmp_path, image="v3", expected_image_digest=HISTORICAL_IMAGE_DIGEST,
         window_seconds=1, popen=popen,
-        run=lambda *a, **kw: SimpleNamespace(returncode=0, stdout="sha256:expected", stderr=""),
+        run=lambda *a, **kw: SimpleNamespace(
+            returncode=0, stdout=HISTORICAL_IMAGE_DIGEST, stderr=""
+        ),
     )
     pipeline.preflight("enp0s3")
     assert calls[0][0] == [
@@ -193,7 +201,7 @@ def test_preflight_accepts_idle_interface_without_packets_and_reaps(tmp_path, pr
     assert probe.signals == [signal.SIGINT]
     assert probe.waited and probe.stderr.closed and probe.poll() is not None
     assert pipeline.tcpdump_path == "/usr/bin/tcpdump"
-    assert pipeline.resolved_image_identity == "sha256:expected"
+    assert pipeline.resolved_image_identity == HISTORICAL_IMAGE_DIGEST
 
 
 def test_preflight_escalates_and_reaps_stubborn_capture(tmp_path, probe):
@@ -229,18 +237,91 @@ def test_preflight_rejects_ubuntu_interface_not_discovered_on_macos(tmp_path, mo
 
 
 @pytest.mark.parametrize("returncode, identity, error", [
-    (0, "sha256:wrong", "identity mismatch"),
+    (0, HISTORICAL_IMAGE_DIGEST, "identity mismatch"),
     (1, "", "image is unavailable"),
 ])
 def test_preflight_validates_extractor_identity(tmp_path, probe, returncode, identity, error):
     pipeline = RuntimePipeline(
-        root=tmp_path, image="v3", expected_image_digest="sha256:expected",
+        root=tmp_path, image="v3", expected_image_digest=APPROVED_CANDIDATE_IMAGE_DIGEST,
         window_seconds=1, popen=lambda *a, **kw: probe,
         run=lambda *a, **kw: SimpleNamespace(returncode=returncode, stdout=identity, stderr=""),
     )
     with pytest.raises(RuntimePipelineError, match=error):
         pipeline.preflight("enp0s3")
     assert probe.waited and probe.stderr.closed
+
+
+@pytest.mark.parametrize(
+    "identity", [HISTORICAL_IMAGE_DIGEST, APPROVED_CANDIDATE_IMAGE_DIGEST]
+)
+def test_verified_extractor_registry_accepts_both_approved_identities(identity):
+    approved = RuntimeExtractorRegistry().verify(
+        identity, source_commit="a26aae27f21d165ff30b4b28e75124a5f9b4b2c4"
+    )
+    assert approved.image_digest == identity
+
+
+def test_verified_extractor_registry_rejects_unknown_identity():
+    with pytest.raises(RuntimeExtractorVerificationError, match="not approved"):
+        RuntimeExtractorRegistry().verify(
+            "sha256:" + "0" * 64,
+            source_commit="a26aae27f21d165ff30b4b28e75124a5f9b4b2c4",
+        )
+
+
+def test_verified_extractor_registry_rejects_source_commit_mismatch():
+    with pytest.raises(RuntimeExtractorVerificationError, match="source commit"):
+        RuntimeExtractorRegistry().verify(
+            APPROVED_CANDIDATE_IMAGE_DIGEST, source_commit="wrong-commit"
+        )
+
+
+def test_actual_verified_extractor_identity_is_frozen_into_session(tmp_path):
+    engine = build_engine(f"sqlite:///{tmp_path / 'extractor-session.db'}")
+    Base.metadata.create_all(engine)
+    sessions = sessionmaker(bind=engine, expire_on_commit=False)
+    with sessions() as db:
+        model = ModelRecord(model_name="RF", model_version="rf-v5-candidate-01",
+                            algorithm="RF", is_active=False)
+        db.add(model)
+        db.flush()
+        row = MonitoringSession(target_ip="192.168.128.2", interface_name="test0",
+                                model_id=model.id, status="STARTING")
+        db.add(row)
+        db.commit()
+        session_id = row.id
+
+    settings = SimpleNamespace(
+        runtime_monitoring_root=tmp_path,
+        cicflowmeter_v3_image="rf-nids-cicflowmeter-v3:a26aae27",
+        cicflowmeter_v3_image_digest=APPROVED_CANDIDATE_IMAGE_DIGEST,
+        capture_window_seconds=1,
+    )
+    worker = RuntimeWorker(
+        session_id=session_id, session_factory=sessions, inference=object(),
+        settings=settings, on_exit=lambda *_: None,
+    )
+
+    class Pipeline:
+        resolved_image_identity = None
+
+        def preflight(self, interface):
+            assert interface == "test0"
+            self.resolved_image_identity = APPROVED_CANDIDATE_IMAGE_DIGEST
+
+    class Thread:
+        def start(self):
+            pass
+
+    worker.pipeline = Pipeline()
+    worker.thread = Thread()
+    worker.start()
+    with sessions() as db:
+        persisted = db.get(MonitoringSession, session_id)
+        assert persisted.extractor_identity == APPROVED_CANDIDATE_IMAGE_DIGEST
+        assert persisted.model.model_version == "rf-v5-candidate-01"
+        assert persisted.model.is_active is False
+    engine.dispose()
 
 
 @pytest.mark.parametrize("relative", [".", "data/lab", "reports", "models", "migrations"])

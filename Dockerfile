@@ -27,6 +27,8 @@ COPY models/experiment_d/random_forest_rf_v2.joblib ./models/experiment_d/random
 COPY models/experiment_d/random_forest_rf_v2_metadata.json ./models/experiment_d/random_forest_rf_v2_metadata.json
 COPY models/experiment_d/random_forest_rf_v2_runtime_metadata.json ./models/experiment_d/random_forest_rf_v2_runtime_metadata.json
 COPY reports/experiment_d/final_test/metrics.json ./reports/experiment_d/final_test/metrics.json
+COPY reports/tables/cicflowmeter_v3_78_feature_crosswalk.csv ./reports/tables/cicflowmeter_v3_78_feature_crosswalk.csv
+COPY reports/experiment_e/audit/e3_provenance_amendment_a1.json ./reports/experiment_e/audit/e3_provenance_amendment_a1.json
 COPY src ./src
 
 RUN useradd --create-home --uid 10001 rf-nids \
