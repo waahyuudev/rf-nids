@@ -31,6 +31,9 @@ COPY reports/tables/cicflowmeter_v3_78_feature_crosswalk.csv ./reports/tables/ci
 COPY reports/experiment_e/audit/e3_provenance_amendment_a1.json ./reports/experiment_e/audit/e3_provenance_amendment_a1.json
 COPY src ./src
 
+RUN echo "66e517cdcea217f19de4d0a2cd45302ede999388393f539fb8ca4a2c68b74cf4  reports/tables/cicflowmeter_v3_78_feature_crosswalk.csv" | sha256sum -c - \
+    && echo "5267b0195b0ebded335df8f306e3abecef2b2b369bd5934e553dc9cba8b913a5  reports/experiment_e/audit/e3_provenance_amendment_a1.json" | sha256sum -c -
+
 RUN useradd --create-home --uid 10001 rf-nids \
     && chown -R rf-nids:rf-nids /app
 
