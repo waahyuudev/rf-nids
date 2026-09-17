@@ -208,6 +208,9 @@ class MonitoringSession(Base):
     model_id: Mapped[int] = mapped_column(
         ForeignKey("models.id", ondelete="RESTRICT"), index=True
     )
+    selection_mode: Mapped[str] = mapped_column(String(20), default="DEFAULT")
+    selected_model_version: Mapped[str | None] = mapped_column(String(100))
+    selected_model_sha256: Mapped[str | None] = mapped_column(String(64))
     status: Mapped[str] = mapped_column(String(20), index=True)
     started_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     stopped_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))

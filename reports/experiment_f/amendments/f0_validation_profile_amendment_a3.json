@@ -1,0 +1,38 @@
+{
+  "schema": "experiment_f_f0_validation_profile_amendment_a3",
+  "version": 1,
+  "amendment_id": "A3",
+  "generated_at_utc": "2026-09-16T08:16:42Z",
+  "decision": "F0_AMENDMENT_A3_ACCEPTED",
+  "prospective_status": "ACCEPTED_BEFORE_ANY_VALIDATION_TRAFFIC_OR_PREDICTION_INSPECTION",
+  "reason": "Resolve the exact Normal and PortScan profile ambiguities recorded by the immutable F4-A0 blocked audit while preserving its evidence unchanged.",
+  "reauthorization": ["F4_A0_VALIDATION_PREREGISTRATION_PASS", "F4_A1_VALIDATION_COLLECTION_READY"],
+  "scope": "DESIGN_PREREGISTRATION_ONLY",
+  "sessions": [
+    {"session_id":"F-A1-NORMAL-V-01","class":"Normal","split":"F-VALIDATION","eligible_for_training":false,"eligible_for_final":false},
+    {"session_id":"F-A1-NORMAL-V-02","class":"Normal","split":"F-VALIDATION","eligible_for_training":false,"eligible_for_final":false},
+    {"session_id":"F-A1-NORMAL-V-03","class":"Normal","split":"F-VALIDATION","eligible_for_training":false,"eligible_for_final":false},
+    {"session_id":"F-A1-DDOSLIKE-V-01","class":"DDoS","split":"F-VALIDATION","eligible_for_training":false,"eligible_for_final":false},
+    {"session_id":"F-A1-DDOSLIKE-V-02","class":"DDoS","split":"F-VALIDATION","eligible_for_training":false,"eligible_for_final":false},
+    {"session_id":"F-A1-DDOSLIKE-V-03","class":"DDoS","split":"F-VALIDATION","eligible_for_training":false,"eligible_for_final":false},
+    {"session_id":"F-A1-PORTSCAN-V-01","class":"PortScan","split":"F-VALIDATION","eligible_for_training":false,"eligible_for_final":false},
+    {"session_id":"F-A1-PORTSCAN-V-02","class":"PortScan","split":"F-VALIDATION","eligible_for_training":false,"eligible_for_final":false},
+    {"session_id":"F-A1-PORTSCAN-V-03","class":"PortScan","split":"F-VALIDATION","eligible_for_training":false,"eligible_for_final":false}
+  ],
+  "topology": {"generator":"ubuntu-traffic / 10.10.10.2","observer":"ubuntu-nids / enp0s3","target":"ubuntu-target / 10.10.20.2","http_service":"http://10.10.20.2:8080/","private_isolated_lab_only":true,"arbitrary_target_parameter":false},
+  "profiles": {
+    "Normal": {"tool":"curl","method":"GET","target":"http://10.10.20.2:8080/","requests_per_session":30,"execution":"sequential; one request at a time","delay_seconds":1,"per_request_timeout_seconds":10,"user_agent":"RF-NIDS-Experiment-F-Normal-Validation/1.0","maximum_session_traffic_generation_seconds":120,"individual_result_logging":true,"concurrency":1,"additional_endpoints":false,"background_traffic_intentionally_generated":false,"ground_truth":"Normal"},
+    "DDoS": {"tool":"Locust","terminology":"controlled HTTP DDoS-like/load profile","target":"http://10.10.20.2:8080/","method":"GET","endpoint":"/","maximum_users":8,"spawn_rate_users_per_second":2,"maximum_runtime_seconds":90,"per_request_timeout_seconds":10,"per_user_wait_seconds":"1-2","ground_truth":"DDoS","genuine_distributed_ddos_claim":false},
+    "PortScan": {"tool":"nmap","target":"10.10.20.2","scan_type":"TCP SYN (-sS)","port_scope":"TCP 1-1000 only","host_discovery":"disabled (-Pn)","dns_resolution":"disabled (-n)","timing_template":"-T3","maximum_retries":1,"host_timeout":"120s","scans_per_session":1,"canonical_semantics":"nmap -sS -Pn -n -T3 --max-retries 1 --host-timeout 120s -p 1-1000 10.10.20.2","prohibited":["UDP scanning","OS detection","service/version detection","scripts","decoys","spoofing","additional hosts or subnets","ports outside TCP 1-1000"],"ground_truth":"PortScan"}
+  },
+  "capture": {"observer":"ubuntu-nids","interface":"enp0s3","normal_and_ddos_filter":"host 10.10.20.2 and tcp port 8080","portscan_filter":"host 10.10.20.2 and tcp and portrange 1-1000","interface_any_prohibited":true,"new_pcap_per_session":true,"overlapping_windows_prohibited":true},
+  "ground_truth": {"F-A1-NORMAL-V-01..03":"Normal","F-A1-DDOSLIKE-V-01..03":"DDoS","F-A1-PORTSCAN-V-01..03":"PortScan","source":"Prospectively frozen generator/session profile, never model predictions."},
+  "independence": {"requirements":["unique session ID","unique capture window","unique PCAP","unique generator evidence/log","unique extraction artifact","unique adapted artifact","unique lineage","no adaptation artifact reuse"],"interpretation":"Independent capture/session repetitions under single-generator Amendment A1 scope; not independent physical generators."},
+  "stop_conditions": ["target differs from 10.10.20.2","expected route fails","observer/capture interface unavailable","required HTTP service unavailable","traffic escapes preregistered scope","required generator tool unavailable","evidence output would overwrite existing session","safety/operator stop"],
+  "failed_attempt_rule": "Abort and preserve failure evidence; a failed attempt may not silently replace a registered scientific session.",
+  "model_comparison": {"same_validation_vectors_required":true,"RF-v2":"fb13a71a0287054d2630bf07529f113a153ba08d8f6835a605b04493408b8a31","RF-v3":"6b01c7b3923c1a6bd471862d011f8f5b88a31378e51d1dde082bd2e72bedef86","rf-v4.0-candidate-01":"d5dccd339a5c67635e760d7d3760e1d006278362c6f70ea06bf20928ccdece13","rf_v4_metadata":"9f8bb215740943b326b6ec6f76e55caef4d094290ac43ed30cb7e32884a47a1a"},
+  "extraction_contract": {"extractor":"Experiment E E3-A1-approved CICFlowMeter V3","approved_image_digest":"sha256:b12b3a4a4218968aba2436685a4eb113473e5681de70705409e834e4613a879b","feature_count":78,"feature_order_sha256":"9338f50fc3e7efc78d678cc65ab38d428a7f6912ed9467a2b99a449a7c8e3c13","crosswalk_sha256":"66e517cdcea217f19de4d0a2cd45302ede999388393f539fb8ca4a2c68b74cf4"},
+  "prior_blocked_evidence": {"reports/experiment_f/validation/f4_a0/f4_a0_validation_preregistration_blocked.json":"e010a9d7446b2250dea5c462c146cf2ad2b4e7a64a74b70acacf0b8be10f3c4c","reports/experiment_f/validation/f4_a0/f4_a0_integrity_verification.json":"a619e374d5732e8624bd15e8a9918e858f1ccb29b132befd5bee862d7cdff8a4","reports/experiment_f/validation/f4_a0/OPERATOR_RUNBOOK_BLOCKED.md":"66e74ad292b064db4fbbe36bb707c039a87c993d81b61e1056eb6850b09881a1","preserved_unchanged":true},
+  "prohibited_actions": ["traffic or capture during A3 creation","automatic extraction","validation inference","prediction inspection","RF-v4 retraining or modification","model activation or promotion","validation use for training or final evaluation"],
+  "next_action": "A separately operated F4-A1 collection may execute the generated create-new scripts one non-overlapping session at a time; stop before extraction or inference."
+}

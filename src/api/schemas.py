@@ -161,8 +161,20 @@ class MonitoringStatus(str, Enum):
 
 
 class MonitoringStartRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
     target_ip: str = Field(min_length=1, max_length=45)
     interface_name: str = Field(min_length=1, max_length=100)
+    selected_model_id: str | None = Field(default=None, min_length=1, max_length=100)
+
+
+class RuntimeModelInfo(BaseModel):
+    model_id: str
+    model_version: str
+    model_sha256: str
+    metadata_sha256: str
+    scientific_status: str
+    scientific_decision: str | None = None
+    selection_mode: str
 
 
 class RuntimeValidationScenario(str, Enum):
@@ -223,6 +235,10 @@ class MonitoringSessionInfo(BaseModel):
     model_id: int
     model_name: str
     model_version: str
+    selected_model_id: str
+    selected_model_version: str
+    selected_model_sha256: str | None
+    selection_mode: str
     status: MonitoringStatus
     started_at: datetime | None
     stopped_at: datetime | None

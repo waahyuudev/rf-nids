@@ -52,6 +52,7 @@ from src.api.schemas import (
     MonitoringControllerStatus,
     MonitoringSessionInfo,
     MonitoringStartRequest,
+    RuntimeModelInfo,
     RuntimeValidationCreate,
     RuntimeValidationInfo,
     CaptureInterfaceList,
@@ -76,6 +77,7 @@ from src.api.monitoring import (
 )
 from src.api.runtime_monitoring import RuntimeCollectorController, validate_runtime_root
 from src.api.runtime_validation import RuntimeValidationService
+from src.api.runtime_models import RuntimeModelRegistry, RuntimeModelVerificationError
 from src.api.exports import (
     EVALUATION_FIELDS,
     MAX_EXPORT_RECORDS,
@@ -226,6 +228,13 @@ def _monitoring_session(row: MonitoringSession) -> MonitoringSessionInfo:
         id=row.id, target_ip=row.target_ip, interface_name=row.interface_name,
         model_id=row.model_id, model_name=row.model.model_name,
         model_version=row.model.model_version, status=row.status,
+        selected_model_id=row.selected_model_version or row.model.model_version,
+        selected_model_version=row.selected_model_version or row.model.model_version,
+        selected_model_sha256=(
+            row.selected_model_sha256
+            if row.selected_model_version is not None else row.model.artifact_sha256
+        ),
+        selection_mode=row.selection_mode,
         started_at=row.started_at, stopped_at=row.stopped_at,
         created_by_user_id=row.created_by_user_id,
         created_by_name=row.created_by_user.name if row.created_by_user else None,
@@ -245,6 +254,7 @@ def create_app(
     engine_factory=InferenceEngine,
     create_tables: bool = False,
     collector_factory=None,
+    runtime_registry_factory=None,
 ) -> FastAPI:
     settings = settings or Settings.from_env()
     default_page_size = min(50, settings.max_page_size)
@@ -266,6 +276,10 @@ def create_app(
             Base.metadata.create_all(application.state.engine)
         application.state.inference = engine_factory(
             settings.model_path, settings.model_metadata_path
+        )
+        application.state.runtime_model_registry = (
+            runtime_registry_factory() if runtime_registry_factory else
+            (RuntimeModelRegistry() if settings.app_env != "test" else None)
         )
         with application.state.session_factory() as db:
             application.state.model_record = (
@@ -743,6 +757,37 @@ def create_app(
         return [_monitoring_session(row) for row in rows]
 
     @application.get(
+        "/api/monitoring/models",
+        response_model=list[RuntimeModelInfo],
+        summary="List verified models approved for manual runtime selection",
+    )
+    def monitoring_models(request: Request, db: Db, _: AdminUser):
+        registry = request.app.state.runtime_model_registry
+        if registry is None:
+            return []
+        active_version = db.scalar(
+            select(ModelRecord.model_version).where(ModelRecord.is_active.is_(True))
+            .order_by(ModelRecord.id.desc())
+        )
+        result = []
+        for approved, _engine in registry.available():
+            is_active = approved.model_id == active_version
+            result.append(RuntimeModelInfo(
+                model_id=approved.model_id,
+                model_version=approved.model_id,
+                model_sha256=approved.model_sha256,
+                metadata_sha256=approved.metadata_sha256,
+                scientific_status=(
+                    "ACTIVE" if is_active else
+                    ("APPROVED / NOT_ACTIVE" if approved.scientific_status == "ACTIVE"
+                     else approved.scientific_status)
+                ),
+                scientific_decision=approved.scientific_decision,
+                selection_mode="DEFAULT" if is_active else "MANUAL / DEMO SELECTION",
+            ))
+        return result
+
+    @application.get(
         "/api/monitoring/sessions/{session_id}",
         response_model=MonitoringSessionInfo,
         summary="Get one monitoring session",
@@ -782,12 +827,45 @@ def create_app(
         payload: MonitoringStartRequest, request: Request, db: Db, user: AdminUser
     ):
         try:
+            model_record = None
+            inference = request.app.state.inference
+            selection_mode = "DEFAULT"
+            if payload.selected_model_id is not None:
+                registry = request.app.state.runtime_model_registry
+                if registry is None:
+                    raise MonitoringValidation("Manual runtime model selection is unavailable")
+                approved, inference = registry.resolve(payload.selected_model_id)
+                model_record = db.scalar(select(ModelRecord).where(
+                    ModelRecord.model_version == approved.model_id
+                ))
+                if model_record is None:
+                    model_record = register_inactive_model(db, inference.metadata)
+                if model_record.artifact_sha256 != approved.model_sha256:
+                    raise MonitoringValidation("Verified runtime model database provenance mismatch")
+                selection_mode = (
+                    "DEFAULT" if model_record.is_active else "MANUAL / DEMO SELECTION"
+                )
+            else:
+                if request.app.state.settings.demo_model_version:
+                    # Backward-compatible explicit environment override. It remains
+                    # inactive and is classified as manual/demo selection.
+                    model_record = request.app.state.model_record
+                    selection_mode = "MANUAL / DEMO SELECTION"
+                else:
+                    model_record = db.scalar(
+                        select(ModelRecord).where(ModelRecord.is_active.is_(True))
+                        .order_by(ModelRecord.id.desc())
+                    )
+                if model_record is None:
+                    raise MonitoringValidation("No active model is available")
             row = request.app.state.monitoring_service.start(
                 db, target_ip=payload.target_ip,
                 interface_name=payload.interface_name, user=user,
-                # May be an inactive provenance record in explicitly enabled demo mode.
-                model_id=request.app.state.model_record.id,
+                model_id=model_record.id, inference=inference,
+                selection_mode=selection_mode,
             )
+        except RuntimeModelVerificationError as exc:
+            raise HTTPException(422, str(exc)) from exc
         except MonitoringValidation as exc:
             raise HTTPException(422, str(exc)) from exc
         except MonitoringConflict as exc:

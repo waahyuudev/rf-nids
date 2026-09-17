@@ -1,0 +1,41 @@
+{
+  "behavior_checks": {
+    "classes_match": true,
+    "parameters_match": true,
+    "predictions_match": true,
+    "probabilities_allclose": true,
+    "probabilities_exact_match": false,
+    "probabilities_max_absolute_difference": 2.220446049250313e-16,
+    "tree_identity_match": true,
+    "tree_random_states_match": true
+  },
+  "byte_serialization_match": true,
+  "byte_serialization_policy": "Serialization equality is recorded but is not the scientific pass criterion; behavior and tree identity are authoritative.",
+  "candidate_fit_seconds": 0.1564379578921944,
+  "candidate_model_sha256": "d5dccd339a5c67635e760d7d3760e1d006278362c6f70ea06bf20928ccdece13",
+  "candidate_serialized_sha256": "d5dccd339a5c67635e760d7d3760e1d006278362c6f70ea06bf20928ccdece13",
+  "candidate_tree_identity_sha256": "8f87dfdb337de6992a318d60f7138985c4856713474a3ba1d1af4e145dee064c",
+  "fixed_subset": {
+    "dataset_sha256": "a65c812494917b2e6d18153b784fd0505b84229f86b6a6916c59fa1187bd778d",
+    "rows": 70,
+    "selection": "row indices 0,97,194,..."
+  },
+  "method": "Independent non-candidate repeat-fit with the identical frozen input, float32/NaN preprocessing, feature order, labels, complete RF-v3 parameters, and random_state=42; compare fixed-subset behavior and exact tree structure. Reload the sole serialized candidate separately.",
+  "reload_checks": {
+    "classes_match": true,
+    "parameters_match": true,
+    "predictions_match": true,
+    "probabilities_allclose": true,
+    "probabilities_exact_match": false,
+    "probabilities_max_absolute_difference": 2.220446049250313e-16,
+    "tree_identity_match": true
+  },
+  "repeat_fit_seconds": 0.12975033291149884,
+  "repeat_in_memory_serialized_sha256": "d5dccd339a5c67635e760d7d3760e1d006278362c6f70ea06bf20928ccdece13",
+  "repeat_model_persisted": false,
+  "repeat_tree_identity_sha256": "8f87dfdb337de6992a318d60f7138985c4856713474a3ba1d1af4e145dee064c",
+  "schema": "experiment_f_f3_a2_training_reproducibility_audit",
+  "status": "PASS",
+  "validation_or_final_data_used": false,
+  "version": 1
+}

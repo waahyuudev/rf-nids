@@ -1,0 +1,98 @@
+{
+  "schema": "experiment_f_f4_a0_validation_preregistration",
+  "version": 1,
+  "generated_at_utc": "2026-09-16T08:07:52Z",
+  "decision": "F4_A0_VALIDATION_PREREGISTRATION_BLOCKED",
+  "collection_ready": false,
+  "mode": "DESIGN_PREREGISTRATION_ONLY",
+  "blocking_reason": "The frozen Experiment F/A1 records do not define exact F-VALIDATION operator parameters for Normal or PortScan. F0 describes both profiles qualitatively. Experiment E contains multiple distinct approved Normal and PortScan profiles, but no prospective Experiment F record selects one for these six validation sessions. Choosing one now would infer or invent parameters, which this authorization explicitly prohibits.",
+  "resolution_required": "Before collection, approve a prospective amendment that selects one exact bounded Normal profile and one exact bounded PortScan profile (tool, request/scan parameters, duration/timeouts, and evidence requirements) for the listed F-VALIDATION sessions. Then rerun F4-A0 without inspecting predictions.",
+  "sessions": [
+    {"session_id": "F-A1-NORMAL-V-01", "class": "Normal", "split": "F-VALIDATION", "eligible_for_training": false, "eligible_for_final": false, "profile_status": "BLOCKED_MISSING_EXACT_F_PROFILE"},
+    {"session_id": "F-A1-NORMAL-V-02", "class": "Normal", "split": "F-VALIDATION", "eligible_for_training": false, "eligible_for_final": false, "profile_status": "BLOCKED_MISSING_EXACT_F_PROFILE"},
+    {"session_id": "F-A1-NORMAL-V-03", "class": "Normal", "split": "F-VALIDATION", "eligible_for_training": false, "eligible_for_final": false, "profile_status": "BLOCKED_MISSING_EXACT_F_PROFILE"},
+    {"session_id": "F-A1-DDOSLIKE-V-01", "class": "DDoS", "split": "F-VALIDATION", "eligible_for_training": false, "eligible_for_final": false, "profile_status": "FROZEN"},
+    {"session_id": "F-A1-DDOSLIKE-V-02", "class": "DDoS", "split": "F-VALIDATION", "eligible_for_training": false, "eligible_for_final": false, "profile_status": "FROZEN"},
+    {"session_id": "F-A1-DDOSLIKE-V-03", "class": "DDoS", "split": "F-VALIDATION", "eligible_for_training": false, "eligible_for_final": false, "profile_status": "FROZEN"},
+    {"session_id": "F-A1-PORTSCAN-V-01", "class": "PortScan", "split": "F-VALIDATION", "eligible_for_training": false, "eligible_for_final": false, "profile_status": "BLOCKED_MISSING_EXACT_F_PROFILE"},
+    {"session_id": "F-A1-PORTSCAN-V-02", "class": "PortScan", "split": "F-VALIDATION", "eligible_for_training": false, "eligible_for_final": false, "profile_status": "BLOCKED_MISSING_EXACT_F_PROFILE"},
+    {"session_id": "F-A1-PORTSCAN-V-03", "class": "PortScan", "split": "F-VALIDATION", "eligible_for_training": false, "eligible_for_final": false, "profile_status": "BLOCKED_MISSING_EXACT_F_PROFILE"}
+  ],
+  "profiles": {
+    "Normal": {
+      "status": "AMBIGUOUS_NOT_FROZEN",
+      "experiment_f_text": "Representative bounded benign HTTP, explicitly logged, no concurrent DDoS/PortScan in its window.",
+      "conflict": "This does not fix request count, idle sequence, timeout, maximum duration, User-Agent, or exact command. Existing Experiment E profiles are not automatically Experiment F profiles."
+    },
+    "DDoS": {
+      "status": "FROZEN",
+      "terminology": "controlled HTTP DDoS-like/load profile",
+      "tool": "Locust",
+      "target_url": "http://10.10.20.2:8080/",
+      "endpoint": "/",
+      "maximum_users_concurrency": 8,
+      "spawn_rate_users_per_second": 2,
+      "maximum_duration_seconds": 90,
+      "timeout_seconds": 10,
+      "request_behavior": "GET / only with a fixed 1.0–2.0 second wait between requests per simulated user; no adaptive optimization from model outputs.",
+      "claim_limit": "Single-generator session repetitions; not genuine distributed DDoS."
+    },
+    "PortScan": {
+      "status": "AMBIGUOUS_NOT_FROZEN",
+      "experiment_f_text": "Representative approved runtime PortScan profile preserving the evidence class that remediated RF-v2; bounded, controlled, separately labeled.",
+      "conflict": "This does not select scan type, timing template, retry/rate options, port range, or maximum duration. Existing approved Experiment D/E profiles differ materially."
+    }
+  },
+  "topology": {
+    "generator": "ubuntu-traffic / 10.10.10.2/24",
+    "observer_router": "ubuntu-nids / 10.10.10.1/24 and 10.10.20.1/24",
+    "capture_interface": "enp0s3",
+    "target": "ubuntu-target / 10.10.20.2/24",
+    "http_target": "10.10.20.2:8080",
+    "external_or_public_target_prohibited": true,
+    "arbitrary_target_argument_prohibited": true
+  },
+  "ground_truth": {
+    "Normal": "Normal",
+    "DDoS": "DDoS (controlled HTTP DDoS-like/load profile only)",
+    "PortScan": "PortScan",
+    "source": "Prospectively preregistered generator/session design only; never RF predictions."
+  },
+  "independence": {
+    "requirements": ["unique session ID", "unique non-overlapping capture window", "unique PCAP", "unique traffic-generator evidence", "unique lineage", "separate extraction artifact", "separate adapted artifact", "no PCAP reuse", "no adaptation-session reuse"],
+    "scope": "Independent session/capture repetitions under the single-generator Amendment A1 scope; not independent physical generators."
+  },
+  "model_freeze": {
+    "RF-v2": "fb13a71a0287054d2630bf07529f113a153ba08d8f6835a605b04493408b8a31",
+    "RF-v3": "6b01c7b3923c1a6bd471862d011f8f5b88a31378e51d1dde082bd2e72bedef86",
+    "rf-v4.0-candidate-01": "d5dccd339a5c67635e760d7d3760e1d006278362c6f70ea06bf20928ccdece13",
+    "rf_v4_metadata_sha256": "9f8bb215740943b326b6ec6f76e55caef4d094290ac43ed30cb7e32884a47a1a",
+    "same_vectors_rule": "All three models must later receive the exact same frozen validation feature vectors.",
+    "candidate_mutation_prohibited": true
+  },
+  "extraction_contract": {
+    "extractor": "CICFlowMeter V3 provenance approved by Experiment E E3-A1",
+    "approved_image_digest": "sha256:b12b3a4a4218968aba2436685a4eb113473e5681de70705409e834e4613a879b",
+    "crosswalk_sha256": "66e517cdcea217f19de4d0a2cd45302ede999388393f539fb8ca4a2c68b74cf4",
+    "feature_count": 78,
+    "feature_order_sha256": "9338f50fc3e7efc78d678cc65ab38d428a7f6912ed9467a2b99a449a7c8e3c13"
+  },
+  "frozen_metrics": ["confusion matrix", "precision per class", "recall per class", "F1 per class", "macro precision", "macro recall", "macro F1", "accuracy", "support per class"],
+  "class_preservation_comparisons": {"Normal": "RF-v3 vs RF-v4", "PortScan": "RF-v3 vs RF-v4", "DDoS": "RF-v2 vs RF-v3 vs RF-v4"},
+  "acceptance_gates": {
+    "ddos_like_f1": ">= RF-v3 +0.10 absolute on the same amended-scope evaluation flows",
+    "ddos_like_recall": ">=0.20 and >=0.10 absolute improvement over RF-v3",
+    "false_positives": "No >0.02 absolute increase in Normal->DDoS or Normal->PortScan versus RF-v3",
+    "macro_f1": ">= RF-v3 -0.02 with no class gate waived",
+    "normal_recall": ">=0.98 and no more than 0.02 below RF-v3 on identical flows",
+    "portscan_recall": ">=0.995 and no more than 0.005 below RF-v3",
+    "normal_and_portscan_f1": "each >=0.98 of RF-v3 value on identical flows"
+  },
+  "operator_preparation": {
+    "status": "WITHHELD_FAIL_CLOSED",
+    "reason": "Creating runnable nine-session commands would require selecting missing Normal and PortScan parameters.",
+    "exact_first_operator_command": null,
+    "instruction": "DO NOT START CAPTURE OR TRAFFIC. Resolve the prospective profile amendment first."
+  },
+  "actions_not_performed": ["traffic generation", "capture", "extraction", "validation inference", "prediction inspection", "RF-v4 modification", "retraining", "threshold or hyperparameter tuning", "activation", "promotion"]
+}

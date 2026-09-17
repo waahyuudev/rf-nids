@@ -1,0 +1,8 @@
+# Nmap 7.98 scan initiated Wed Sep 16 08:42:46 2026 as: nmap -sS -Pn -n -T3 --max-retries 1 --host-timeout 120s -p 1-1000 -oA /var/tmp/rf-nids-f-validation-generator/F-A1-PORTSCAN-V-02/nmap 10.10.20.2
+Nmap scan report for 10.10.20.2
+Host is up (0.00055s latency).
+Not shown: 999 closed tcp ports (reset)
+PORT   STATE SERVICE
+22/tcp open  ssh
+
+# Nmap done at Wed Sep 16 08:42:46 2026 -- 1 IP address (1 host up) scanned in 0.07 seconds

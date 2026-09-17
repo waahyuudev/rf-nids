@@ -38,7 +38,12 @@ def render(client) -> None:
     st.subheader("Monitoring Configuration")
     interfaces = client.monitoring_interfaces()
     choices = [item["name"] for item in interfaces["interfaces"]]
-    model = client.active_model()
+    models = client.monitoring_models()
+    model_by_id = {item["model_id"]: item for item in models}
+    model_ids = list(model_by_id)
+    default_index = next(
+        (index for index, item in enumerate(models) if item["selection_mode"] == "DEFAULT"), 0
+    )
     with st.form("monitoring_configuration"):
         target = st.text_input(
             "Target IP", value="", placeholder="192.168.128.4", disabled=running
@@ -47,17 +52,28 @@ def render(client) -> None:
             "Capture Interface", choices or ["Interface discovery unavailable"],
             disabled=running or not choices,
         )
-        st.text_input(
-            "Active Model", value=f'{model["model_name"]} ({model["model_version"]})',
-            disabled=True,
+        selected_model_id = st.selectbox(
+            "Model", model_ids or ["No verified runtime models available"],
+            index=default_index if model_ids else 0,
+            disabled=running or not model_ids,
         )
+        selected = model_by_id.get(selected_model_id)
+        if selected:
+            st.markdown(
+                f'**Model:** {selected["model_version"]}  \n'
+                f'**Scientific status:** {selected["scientific_status"]}  \n'
+                f'**Runtime mode:** {selected["selection_mode"]}'
+            )
+            if selected.get("scientific_decision"):
+                st.caption(f'Scientific decision: {selected["scientific_decision"]}')
         submitted = st.form_submit_button(
-            "START MONITORING", type="primary", disabled=running or not choices
+            "START MONITORING", type="primary",
+            disabled=running or not choices or not model_ids,
         )
     if not interfaces["discovery_available"]:
         st.warning("Network interface discovery is unavailable on the API host.")
     if submitted:
-        client.start_monitoring(target, interface)
+        client.start_monitoring(target, interface, selected_model_id)
         st.rerun()
 
     st.divider()
@@ -77,6 +93,8 @@ def render(client) -> None:
         if current.get("last_error"):
             st.error(current["last_error"])
         st.caption(
+            f'Model SHA-256: {current.get("selected_model_sha256") or "—"} · '
+            f'Selection: {current.get("selection_mode") or "DEFAULT"} · '
             f'Extractor: {current.get("extractor_name") or "—"} · '
             f'Latest processing: {current.get("latest_processing_at") or "—"}'
         )
@@ -141,7 +159,8 @@ def render(client) -> None:
     st.subheader("Session History")
     page = int(st.number_input("Page", min_value=1, step=1, key="session_history_page"))
     rows = client.monitoring_sessions(limit=PAGE_SIZE, offset=(page - 1) * PAGE_SIZE)
-    fields = ["id", "target_ip", "interface_name", "model_version", "status",
+    fields = ["id", "target_ip", "interface_name", "selected_model_version",
+              "selected_model_sha256", "selection_mode", "status",
               "started_at", "stopped_at", "flow_count", "prediction_count", "alert_count"]
     st.dataframe([{key: row.get(key) for key in fields} for row in rows], use_container_width=True)
     st.caption(f"Page {page} · showing {len(rows)} of at most {PAGE_SIZE} sessions.")

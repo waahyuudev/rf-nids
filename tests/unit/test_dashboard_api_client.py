@@ -145,6 +145,17 @@ def test_phase_9_monitoring_controller_client_routes_and_payloads():
     }
 
 
+def test_monitoring_model_selector_client_contract():
+    session = Session([Response([{"model_id": "rf-v5-candidate-01"}]), Response({"id": 9})])
+    api = RFNIDSClient("http://api.test", session=session)
+    assert api.monitoring_models()[0]["model_id"] == "rf-v5-candidate-01"
+    api.start_monitoring("192.168.128.2", "bridge100", "rf-v5-candidate-01")
+    assert session.calls[1][2]["json"] == {
+        "target_ip": "192.168.128.2", "interface_name": "bridge100",
+        "selected_model_id": "rf-v5-candidate-01",
+    }
+
+
 @pytest.mark.parametrize(
     "response, message",
     [

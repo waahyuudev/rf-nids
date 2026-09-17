@@ -1,0 +1,256 @@
+{
+  "aggregate_adapted_normal_rows": 605,
+  "data_gate": "PASS",
+  "deduplication_performed": false,
+  "evidence_gate": "PASS",
+  "extraction_gate": "PASS",
+  "extractor": {
+    "commit": "a26aae27f21d165ff30b4b28e75124a5f9b4b2c4",
+    "image_digest": "sha256:b12b3a4a4218968aba2436685a4eb113473e5681de70705409e834e4613a879b",
+    "network_access": false
+  },
+  "feature_contract": {
+    "count": 78,
+    "crosswalk_sha256": "66e517cdcea217f19de4d0a2cd45302ede999388393f539fb8ca4a2c68b74cf4",
+    "feature_order_sha256": "9338f50fc3e7efc78d678cc65ab38d428a7f6912ed9467a2b99a449a7c8e3c13"
+  },
+  "required": ">94",
+  "rows_dropped": 0,
+  "schema": "experiment_f_a4_extraction_data_gate",
+  "sessions": [
+    {
+      "adapted": {
+        "columns": 78,
+        "duplicate_feature_vectors": 8,
+        "feature_order_sha256": "9338f50fc3e7efc78d678cc65ab38d428a7f6912ed9467a2b99a449a7c8e3c13",
+        "inf_count": 0,
+        "nan_count": 0,
+        "path": "data/lab/experiment_f/normal_remediation_a2/derived/a4_run_01/adapted_78/F-A1-NORMAL-A2-01_model_input_78.csv",
+        "provenance": {
+          "adapter_identity": "CICFLOWMETER_V3_CICIDS2017_MODEL_ADAPTER",
+          "adapter_version": "1.0.0",
+          "artifact_reproduction_fields": [
+            "fin_flag_count",
+            "syn_flag_count",
+            "rst_flag_count",
+            "psh_flag_count",
+            "ack_flag_count",
+            "urg_flag_count",
+            "cwe_flag_count",
+            "ece_flag_count",
+            "fwd_header_length.1"
+          ],
+          "cicflowmeter_v3_commit": "a26aae27f21d165ff30b4b28e75124a5f9b4b2c4",
+          "cicflowmeter_v3_image_digest": "sha256:0227c7280e586d54144b9bb11b2a6b5d4b1c4ba9bc7c44199fa312a6b829caab",
+          "crosswalk_path": "reports/tables/cicflowmeter_v3_78_feature_crosswalk.csv",
+          "crosswalk_sha256": "66e517cdcea217f19de4d0a2cd45302ede999388393f539fb8ca4a2c68b74cf4",
+          "imputation_performed": false,
+          "non_finite_after": {
+            "nan": 0,
+            "negative_infinity": 0,
+            "positive_infinity": 0,
+            "total": 0
+          },
+          "non_finite_before": {
+            "nan": 0,
+            "negative_infinity": 0,
+            "positive_infinity": 0,
+            "total": 0
+          },
+          "output_feature_count": 78,
+          "output_row_count": 201,
+          "raw_input_path": "data/lab/experiment_f/normal_remediation_a2/derived/a4_run_01/raw_cicflowmeter/F-A1-NORMAL-A2-01/F-A1-NORMAL-A2-01.pcap_ISCX.csv",
+          "raw_input_sha256": "e7b1ea5cb58408a42984cff70789fd854c21930f2157d8812d0e0f8ac3d563bb",
+          "raw_row_count": 201,
+          "schema_validation": "PASS"
+        },
+        "rows": 201,
+        "sha256": "4ed0482e82915c30e7572b1e148c2278ff7cc64f6c2d93185af5a2bfa4514a12"
+      },
+      "capture": {
+        "end_utc": "2026-09-17T03:57:12Z",
+        "exit_status": 0,
+        "filter": "host 10.10.20.2 and tcp port 8080",
+        "interface": "enp0s3",
+        "kernel_drops": 0,
+        "packets_captured": 1002,
+        "packets_received": 1002,
+        "pcap": "data/lab/experiment_f/normal_remediation_a2/raw/observer/F-A1-NORMAL-A2-01/F-A1-NORMAL-A2-01.pcap",
+        "pcap_sha256": "d7ceb5247f809fd4800330ba4b6d5207efc9fca9eacc54bd9e970c65a8e815e8",
+        "start_utc": "2026-09-17T03:54:49Z"
+      },
+      "decision": "PASS",
+      "generator": {
+        "end_utc": "2026-09-17T03:56:40Z",
+        "exit_status": 0,
+        "http_200": 100,
+        "profile_id": "F-A1-NORMAL-A2-PROFILE-01",
+        "requests": 100,
+        "start_utc": "2026-09-17T03:54:58Z"
+      },
+      "raw": {
+        "columns": 84,
+        "path": "data/lab/experiment_f/normal_remediation_a2/derived/a4_run_01/raw_cicflowmeter/F-A1-NORMAL-A2-01/F-A1-NORMAL-A2-01.pcap_ISCX.csv",
+        "rows": 201,
+        "sha256": "e7b1ea5cb58408a42984cff70789fd854c21930f2157d8812d0e0f8ac3d563bb"
+      },
+      "session_id": "F-A1-NORMAL-A2-01"
+    },
+    {
+      "adapted": {
+        "columns": 78,
+        "duplicate_feature_vectors": 13,
+        "feature_order_sha256": "9338f50fc3e7efc78d678cc65ab38d428a7f6912ed9467a2b99a449a7c8e3c13",
+        "inf_count": 0,
+        "nan_count": 0,
+        "path": "data/lab/experiment_f/normal_remediation_a2/derived/a4_run_01/adapted_78/F-A1-NORMAL-A2-02_model_input_78.csv",
+        "provenance": {
+          "adapter_identity": "CICFLOWMETER_V3_CICIDS2017_MODEL_ADAPTER",
+          "adapter_version": "1.0.0",
+          "artifact_reproduction_fields": [
+            "fin_flag_count",
+            "syn_flag_count",
+            "rst_flag_count",
+            "psh_flag_count",
+            "ack_flag_count",
+            "urg_flag_count",
+            "cwe_flag_count",
+            "ece_flag_count",
+            "fwd_header_length.1"
+          ],
+          "cicflowmeter_v3_commit": "a26aae27f21d165ff30b4b28e75124a5f9b4b2c4",
+          "cicflowmeter_v3_image_digest": "sha256:0227c7280e586d54144b9bb11b2a6b5d4b1c4ba9bc7c44199fa312a6b829caab",
+          "crosswalk_path": "reports/tables/cicflowmeter_v3_78_feature_crosswalk.csv",
+          "crosswalk_sha256": "66e517cdcea217f19de4d0a2cd45302ede999388393f539fb8ca4a2c68b74cf4",
+          "imputation_performed": false,
+          "non_finite_after": {
+            "nan": 0,
+            "negative_infinity": 0,
+            "positive_infinity": 0,
+            "total": 0
+          },
+          "non_finite_before": {
+            "nan": 0,
+            "negative_infinity": 0,
+            "positive_infinity": 0,
+            "total": 0
+          },
+          "output_feature_count": 78,
+          "output_row_count": 201,
+          "raw_input_path": "data/lab/experiment_f/normal_remediation_a2/derived/a4_run_01/raw_cicflowmeter/F-A1-NORMAL-A2-02/F-A1-NORMAL-A2-02.pcap_ISCX.csv",
+          "raw_input_sha256": "0dbd97c1d919f7acc240e1b3ab16929edcc22e9d3e0b4b76e82cbaaa6554e8d3",
+          "raw_row_count": 201,
+          "schema_validation": "PASS"
+        },
+        "rows": 201,
+        "sha256": "a6092ba4099394cf850e456299d293d11ce6f9111079fb0300347ea72bf41f56"
+      },
+      "capture": {
+        "end_utc": "2026-09-17T04:04:15Z",
+        "exit_status": 0,
+        "filter": "host 10.10.20.2 and tcp port 8080",
+        "interface": "enp0s3",
+        "kernel_drops": 0,
+        "packets_captured": 1004,
+        "packets_received": 1004,
+        "pcap": "data/lab/experiment_f/normal_remediation_a2/raw/observer/F-A1-NORMAL-A2-02/F-A1-NORMAL-A2-02.pcap",
+        "pcap_sha256": "42d2e0a8e53d286f71410415a1b35c07412ee6c9190118a3b00796239eb27cd8",
+        "start_utc": "2026-09-17T03:59:11Z"
+      },
+      "decision": "PASS",
+      "generator": {
+        "end_utc": "2026-09-17T04:01:01Z",
+        "exit_status": 0,
+        "http_200": 100,
+        "profile_id": "F-A1-NORMAL-A2-PROFILE-01",
+        "requests": 100,
+        "start_utc": "2026-09-17T03:59:19Z"
+      },
+      "raw": {
+        "columns": 84,
+        "path": "data/lab/experiment_f/normal_remediation_a2/derived/a4_run_01/raw_cicflowmeter/F-A1-NORMAL-A2-02/F-A1-NORMAL-A2-02.pcap_ISCX.csv",
+        "rows": 201,
+        "sha256": "0dbd97c1d919f7acc240e1b3ab16929edcc22e9d3e0b4b76e82cbaaa6554e8d3"
+      },
+      "session_id": "F-A1-NORMAL-A2-02"
+    },
+    {
+      "adapted": {
+        "columns": 78,
+        "duplicate_feature_vectors": 23,
+        "feature_order_sha256": "9338f50fc3e7efc78d678cc65ab38d428a7f6912ed9467a2b99a449a7c8e3c13",
+        "inf_count": 0,
+        "nan_count": 0,
+        "path": "data/lab/experiment_f/normal_remediation_a2/derived/a4_run_01/adapted_78/F-A1-NORMAL-A2-03_model_input_78.csv",
+        "provenance": {
+          "adapter_identity": "CICFLOWMETER_V3_CICIDS2017_MODEL_ADAPTER",
+          "adapter_version": "1.0.0",
+          "artifact_reproduction_fields": [
+            "fin_flag_count",
+            "syn_flag_count",
+            "rst_flag_count",
+            "psh_flag_count",
+            "ack_flag_count",
+            "urg_flag_count",
+            "cwe_flag_count",
+            "ece_flag_count",
+            "fwd_header_length.1"
+          ],
+          "cicflowmeter_v3_commit": "a26aae27f21d165ff30b4b28e75124a5f9b4b2c4",
+          "cicflowmeter_v3_image_digest": "sha256:0227c7280e586d54144b9bb11b2a6b5d4b1c4ba9bc7c44199fa312a6b829caab",
+          "crosswalk_path": "reports/tables/cicflowmeter_v3_78_feature_crosswalk.csv",
+          "crosswalk_sha256": "66e517cdcea217f19de4d0a2cd45302ede999388393f539fb8ca4a2c68b74cf4",
+          "imputation_performed": false,
+          "non_finite_after": {
+            "nan": 0,
+            "negative_infinity": 0,
+            "positive_infinity": 0,
+            "total": 0
+          },
+          "non_finite_before": {
+            "nan": 0,
+            "negative_infinity": 0,
+            "positive_infinity": 0,
+            "total": 0
+          },
+          "output_feature_count": 78,
+          "output_row_count": 203,
+          "raw_input_path": "data/lab/experiment_f/normal_remediation_a2/derived/a4_run_01/raw_cicflowmeter/F-A1-NORMAL-A2-03/F-A1-NORMAL-A2-03.pcap_ISCX.csv",
+          "raw_input_sha256": "b7467ce2fde5157754acbd8758d50e2cc7986195b5a7b37f16fc909147aaeb68",
+          "raw_row_count": 203,
+          "schema_validation": "PASS"
+        },
+        "rows": 203,
+        "sha256": "46ebf017a7f3de352deb2334df1b184125bff9815b4ad686d2300ecac73f3022"
+      },
+      "capture": {
+        "end_utc": "2026-09-17T04:11:51Z",
+        "exit_status": 0,
+        "filter": "host 10.10.20.2 and tcp port 8080",
+        "interface": "enp0s3",
+        "kernel_drops": 0,
+        "packets_captured": 1009,
+        "packets_received": 1009,
+        "pcap": "data/lab/experiment_f/normal_remediation_a2/raw/observer/F-A1-NORMAL-A2-03/F-A1-NORMAL-A2-03.pcap",
+        "pcap_sha256": "060f595d01b1d3e7f37521183b3246610f74e08f23190ac2683bba01e58ae61d",
+        "start_utc": "2026-09-17T04:05:45Z"
+      },
+      "decision": "PASS",
+      "generator": {
+        "end_utc": "2026-09-17T04:07:36Z",
+        "exit_status": 0,
+        "http_200": 100,
+        "profile_id": "F-A1-NORMAL-A2-PROFILE-01",
+        "requests": 100,
+        "start_utc": "2026-09-17T04:05:54Z"
+      },
+      "raw": {
+        "columns": 84,
+        "path": "data/lab/experiment_f/normal_remediation_a2/derived/a4_run_01/raw_cicflowmeter/F-A1-NORMAL-A2-03/F-A1-NORMAL-A2-03.pcap_ISCX.csv",
+        "rows": 203,
+        "sha256": "b7467ce2fde5157754acbd8758d50e2cc7986195b5a7b37f16fc909147aaeb68"
+      },
+      "session_id": "F-A1-NORMAL-A2-03"
+    }
+  ]
+}

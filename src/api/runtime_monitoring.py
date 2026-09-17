@@ -550,7 +550,9 @@ class RuntimeCollectorController:
             project_root=getattr(settings, "project_root", PROJECT_ROOT),
         )
 
-    def start(self, *, session_id: int, target_ip: str, interface_name: str) -> str:
+    def start(
+        self, *, session_id: int, target_ip: str, interface_name: str, inference=None
+    ) -> str:
         handle = uuid4().hex
         with self.session_factory() as db:
             row = db.get(MonitoringSession, session_id)
@@ -567,7 +569,7 @@ class RuntimeCollectorController:
             db.commit()
         worker = self.worker_factory(
             session_id=session_id, session_factory=self.session_factory,
-            inference=self.inference, settings=self.settings, on_exit=self._on_exit,
+            inference=inference or self.inference, settings=self.settings, on_exit=self._on_exit,
         )
         try:
             worker.start()

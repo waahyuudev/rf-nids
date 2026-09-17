@@ -1,0 +1,60 @@
+{
+  "schema": "experiment_f_f0_amendment_a3_normal_v01_replacement",
+  "version": 1,
+  "generated_at_utc": "2026-09-16T09:02:25Z",
+  "decision": "F4_A1_NORMAL_V01_REPLACEMENT_AUTHORIZED",
+  "status": "PROSPECTIVE_BEFORE_REPLACEMENT_TRAFFIC",
+  "reason": "The observer evidence directory for F-A1-NORMAL-V-01 was created and tcpdump ran before the Normal generator was started, producing an empty capture. The registered ID and evidence are preserved but cannot constitute a valid Normal validation repetition.",
+  "original_session": {
+    "session_id": "F-A1-NORMAL-V-01",
+    "disposition": "FAILED_PRE_TRAFFIC / EMPTY_CAPTURE",
+    "capture_started_utc": "2026-09-16T08:06:49Z",
+    "capture_ended_utc": "2026-09-16T08:09:51Z",
+    "tcpdump_exit_status": 0,
+    "packets_captured": 0,
+    "packets_received_by_filter": 0,
+    "packets_dropped_by_kernel": 0,
+    "pcap_size_bytes": 24,
+    "pcap_sha256": "704e5e5b3234433c01fcfd1b20a306e77e985038120492dc53965c3edd38a4ea",
+    "operator_observation": "tcpdump stderr contains an initial sudo authentication failure followed by successful tcpdump startup.",
+    "generator_traffic_executed": false,
+    "valid_repetition": false,
+    "rules": ["preserve unchanged as historical evidence","do not delete","do not overwrite","do not reuse","do not count among three valid Normal repetitions"]
+  },
+  "replacement": {
+    "session_id": "F-A1-NORMAL-V-01-R1",
+    "replaces_only": "F-A1-NORMAL-V-01",
+    "replacement_count_authorized": 1,
+    "split": "F-VALIDATION",
+    "eligible_for_training": false,
+    "eligible_for_final": false,
+    "profile": "Exact Amendment A3 Normal profile without modification",
+    "target": "http://10.10.20.2:8080/",
+    "capture_interface": "enp0s3",
+    "capture_filter": "host 10.10.20.2 and tcp port 8080",
+    "ground_truth": "Normal"
+  },
+  "required_normal_validation_set": ["F-A1-NORMAL-V-01-R1","F-A1-NORMAL-V-02","F-A1-NORMAL-V-03"],
+  "unchanged_sessions": {
+    "Normal": ["F-A1-NORMAL-V-02","F-A1-NORMAL-V-03"],
+    "DDoS": ["F-A1-DDOSLIKE-V-01","F-A1-DDOSLIKE-V-02","F-A1-DDOSLIKE-V-03"],
+    "PortScan": ["F-A1-PORTSCAN-V-01","F-A1-PORTSCAN-V-02","F-A1-PORTSCAN-V-03"]
+  },
+  "inherited_contract": {
+    "amendment_a3_path": "reports/experiment_f/amendments/f0_validation_profile_amendment_a3.json",
+    "amendment_a3_sha256": "0682dc4d6508316d47927ad12700a75229fc3a1fb44054477c5c827692f3bd4a",
+    "normal_profile": {"tool":"curl","method":"GET","target":"http://10.10.20.2:8080/","requests_per_session":30,"execution":"sequential; one request at a time","delay_seconds":1,"per_request_timeout_seconds":10,"user_agent":"RF-NIDS-Experiment-F-Normal-Validation/1.0","maximum_session_traffic_generation_seconds":120,"concurrency":1},
+    "evidence_requirements_unchanged": true,
+    "acceptance_gates_unchanged": true,
+    "session_independence_rules_unchanged": true,
+    "stop_conditions_unchanged": true
+  },
+  "replacement_policy": {
+    "allowlisted_replacement_ids": ["F-A1-NORMAL-V-01-R1"],
+    "arbitrary_replacement_ids_prohibited": true,
+    "original_id_recognized_as_historical": true,
+    "original_id_reuse_prevented_by_create_new_evidence_rule": true,
+    "further_replacement_requires_new_prospective_authorization": true
+  },
+  "authorization": "Collection only for the amended validation set. No extraction, inference, evaluation, training, model modification, activation, or promotion is authorized by this amendment."
+}

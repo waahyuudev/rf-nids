@@ -1,0 +1,153 @@
+{
+  "authorized_input": {
+    "class_counts": {
+      "DDoS": 4023,
+      "Normal": 94,
+      "PortScan": 2581
+    },
+    "dataset_sha256": "a65c812494917b2e6d18153b784fd0505b84229f86b6a6916c59fa1187bd778d",
+    "freeze_sha256": "1e89b78779c15d2c9f9cd21ea89fd39c88275a888fd28fd7d08b8d62d5cf4142",
+    "lineage_sha256": "1ee2fdad6a9cb4321f6a85beb003e2eb2596518ddd9b54a7a9f151b1c65f4283",
+    "rows": 6698
+  },
+  "candidate": {
+    "metadata_path": "models/experiment_f/random_forest_rf_v4_candidate_01_metadata.json",
+    "metadata_sha256": "9f8bb215740943b326b6ec6f76e55caef4d094290ac43ed30cb7e32884a47a1a",
+    "model_id": "rf-v4.0-candidate-01",
+    "path": "models/experiment_f/random_forest_rf_v4_candidate_01.joblib",
+    "sha256": "d5dccd339a5c67635e760d7d3760e1d006278362c6f70ea06bf20928ccdece13",
+    "status": "CANDIDATE / NOT_ACTIVE"
+  },
+  "decision": "F3_A2_RF_V4_TRAINING_PASS",
+  "final_data_used": false,
+  "frozen_integrity": {
+    "artifacts": {
+      "models/experiment_d/random_forest_rf_v2.joblib": {
+        "actual_sha256": "fb13a71a0287054d2630bf07529f113a153ba08d8f6835a605b04493408b8a31",
+        "expected_sha256": "fb13a71a0287054d2630bf07529f113a153ba08d8f6835a605b04493408b8a31",
+        "match": true
+      },
+      "models/experiment_e/random_forest_rf_v3_candidate.joblib": {
+        "actual_sha256": "6b01c7b3923c1a6bd471862d011f8f5b88a31378e51d1dde082bd2e72bedef86",
+        "expected_sha256": "6b01c7b3923c1a6bd471862d011f8f5b88a31378e51d1dde082bd2e72bedef86",
+        "match": true
+      },
+      "models/experiment_e/random_forest_rf_v3_candidate_metadata.json": {
+        "actual_sha256": "30b6bdf2a6cb2d60e2be36d4db1e124d71504393081b229e6d94da7e70322cbc",
+        "expected_sha256": "30b6bdf2a6cb2d60e2be36d4db1e124d71504393081b229e6d94da7e70322cbc",
+        "match": true
+      },
+      "reports/experiment_d/final_test/dataset_audit.json": {
+        "actual_sha256": "a0a22100cd0c6b923349aa6e899c2221b84d64991ca7e20b0626d811879d88c1",
+        "expected_sha256": "a0a22100cd0c6b923349aa6e899c2221b84d64991ca7e20b0626d811879d88c1",
+        "match": true
+      },
+      "reports/experiment_e/decision/e14_remediation_decision.json": {
+        "actual_sha256": "e5c11c39f7401fe89551d927b193978c59adc32bf7bb3052f619d225a595278e",
+        "expected_sha256": "e5c11c39f7401fe89551d927b193978c59adc32bf7bb3052f619d225a595278e",
+        "match": true
+      },
+      "reports/experiment_f/amendments/f0_amendment_a1.json": {
+        "actual_sha256": "2116e1272ffc93dcaacfd105eb8f90afda10b2ccf5c2111ed2d2dd1179f6b95e",
+        "expected_sha256": "2116e1272ffc93dcaacfd105eb8f90afda10b2ccf5c2111ed2d2dd1179f6b95e",
+        "match": true
+      },
+      "reports/experiment_f/amendments/f0_composition_amendment_a2.json": {
+        "actual_sha256": "24840ecd9973e4028c0dd382da90d1a467f0190a654abcd2fbd50af9baed6afb",
+        "expected_sha256": "24840ecd9973e4028c0dd382da90d1a467f0190a654abcd2fbd50af9baed6afb",
+        "match": true
+      },
+      "reports/experiment_f/data_gates/f2_a1_extraction_data_gate.json": {
+        "actual_sha256": "5e45cb8bbf8d0857345843f3a28e05c5d173f350528c3bee6b797e04783f43e0",
+        "expected_sha256": "5e45cb8bbf8d0857345843f3a28e05c5d173f350528c3bee6b797e04783f43e0",
+        "match": true
+      },
+      "reports/experiment_f/dataset_assembly/f3_a1_dataset_assembly_audit.json": {
+        "actual_sha256": "6dc316a4f27a39a4db81d3f0e787467236b2b4af42da87cacbb0524838464ee4",
+        "expected_sha256": "6dc316a4f27a39a4db81d3f0e787467236b2b4af42da87cacbb0524838464ee4",
+        "match": true
+      },
+      "reports/experiment_f/dataset_assembly/rf_v4_candidate_01_training_input_freeze.json": {
+        "actual_sha256": "1e89b78779c15d2c9f9cd21ea89fd39c88275a888fd28fd7d08b8d62d5cf4142",
+        "expected_sha256": "1e89b78779c15d2c9f9cd21ea89fd39c88275a888fd28fd7d08b8d62d5cf4142",
+        "match": true
+      },
+      "reports/experiment_f/preflight/f1_a1_preflight_evidence.json": {
+        "actual_sha256": "a04fa37f5fccb32851d2a118316357d837aa7b61b1ad727b7a2e77a9711ddfd6",
+        "expected_sha256": "a04fa37f5fccb32851d2a118316357d837aa7b61b1ad727b7a2e77a9711ddfd6",
+        "match": true
+      },
+      "reports/experiment_f/preregistration/f0_preregistration.json": {
+        "actual_sha256": "dfc628b60bbd56ea0a78c4585ed28cfece2154b56fe101567b89e434e83d6cfb",
+        "expected_sha256": "dfc628b60bbd56ea0a78c4585ed28cfece2154b56fe101567b89e434e83d6cfb",
+        "match": true
+      },
+      "reports/tables/cicflowmeter_v3_78_feature_crosswalk.csv": {
+        "actual_sha256": "66e517cdcea217f19de4d0a2cd45302ede999388393f539fb8ca4a2c68b74cf4",
+        "expected_sha256": "66e517cdcea217f19de4d0a2cd45302ede999388393f539fb8ca4a2c68b74cf4",
+        "match": true
+      }
+    },
+    "status": "PASS"
+  },
+  "preprocessing_verification": {
+    "PCA": "NONE",
+    "encoding": "NONE",
+    "feature_selection": "NONE",
+    "imputation": "NONE",
+    "input_dtype": "float32",
+    "nan_cells": 336,
+    "normalization": "NONE",
+    "positive_negative_infinity": "replace with NaN",
+    "row_deletion": "NONE",
+    "scaling": "NONE",
+    "source": "exact frozen RF-v3 training workflow"
+  },
+  "promotion_performed": false,
+  "reproducibility": {
+    "path": "reports/experiment_f/training/f3_a2_training_reproducibility_audit.json",
+    "sha256": "314269a72da6053f2af1c7e63818b46fef1c403fb472a5cd19b27bffe14cab70",
+    "status": "PASS"
+  },
+  "rf_parameters": {
+    "bootstrap": false,
+    "ccp_alpha": 0.0,
+    "class_weight": "balanced",
+    "criterion": "gini",
+    "max_depth": null,
+    "max_features": "log2",
+    "max_leaf_nodes": null,
+    "max_samples": null,
+    "min_impurity_decrease": 0.0,
+    "min_samples_leaf": 4,
+    "min_samples_split": 5,
+    "min_weight_fraction_leaf": 0.0,
+    "monotonic_cst": null,
+    "n_estimators": 200,
+    "n_jobs": -1,
+    "oob_score": false,
+    "random_state": 42,
+    "verbose": 0,
+    "warm_start": false
+  },
+  "runtime_activation_performed": false,
+  "schema": "experiment_f_f3_a2_training_audit",
+  "scientific_scope": "The additional Experiment F DDoS training contribution consists of controlled HTTP DDoS-like/load profiles collected under Amendment A1. RF-v4 has not demonstrated improved DDoS generalization. Training success is not evidence of detection improvement; prospectively separated validation is required.",
+  "structural_audit": {
+    "estimator_classes_actual_order": [
+      "DDoS",
+      "Normal",
+      "PortScan"
+    ],
+    "feature_names_in_match": true,
+    "n_features_in": 78,
+    "parameters_equal_rf_v3": true,
+    "random_state": 42,
+    "status": "PASS",
+    "tree_count": 200
+  },
+  "training_set_performance_reported": false,
+  "validation_data_used": false,
+  "validation_readiness": "F4_RF_V4_VALIDATION_READY",
+  "version": 1
+}

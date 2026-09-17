@@ -1,0 +1,4 @@
+# Nmap 7.98 scan initiated Wed Sep 16 08:39:16 2026 as: nmap -sS -Pn -n -T3 --max-retries 1 --host-timeout 120s -p 1-1000 -oA /var/tmp/rf-nids-f-validation-generator/F-A1-PORTSCAN-V-01/nmap 10.10.20.2
+Host: 10.10.20.2 ()	Status: Up
+Host: 10.10.20.2 ()	Ports: 22/open/tcp//ssh///	Ignored State: closed (999)
+# Nmap done at Wed Sep 16 08:39:16 2026 -- 1 IP address (1 host up) scanned in 0.15 seconds

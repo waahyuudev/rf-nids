@@ -75,14 +75,19 @@ class InferenceEngine:
 
     @staticmethod
     def _normalize_demo_metadata(metadata: dict[str, Any]) -> dict[str, Any]:
-        """Translate only the allowlisted Experiment E candidate for runtime display."""
-        if metadata.get("version") != "rf-v3.0-candidate":
+        """Translate frozen candidate metadata into the common runtime contract."""
+        version = metadata.get("version") or metadata.get("model_id")
+        if version not in {
+            "rf-v3.0-candidate", "rf-v4.0-candidate-01", "rf-v5-candidate-01"
+        }:
             return metadata
-        if metadata.get("status") != "CANDIDATE / NOT_ACTIVE":
-            raise ValueError("RF-v3 demo metadata must remain CANDIDATE / NOT_ACTIVE")
-        return {**metadata, "model_version": "rf-v3.0-candidate",
-                "model_name": "RF-NIDS Random Forest — Experiment E Demo",
-                "algorithm": "Random Forest", "class_names": metadata.get("classes_declared_order"),
+        if (metadata.get("status") != "CANDIDATE / NOT_ACTIVE"
+                or ("active" in metadata and metadata["active"] is not False)):
+            raise ValueError(f"{version} runtime metadata must remain CANDIDATE / NOT_ACTIVE")
+        classes = metadata.get("classes_declared_order") or metadata.get("estimator_classes")
+        return {**metadata, "model_version": version,
+                "model_name": f"RF-NIDS Random Forest — {version}",
+                "algorithm": "Random Forest", "class_names": classes,
                 "parameters": metadata.get("rf_parameters"), "extra_feature_policy": "reject"}
 
     @staticmethod

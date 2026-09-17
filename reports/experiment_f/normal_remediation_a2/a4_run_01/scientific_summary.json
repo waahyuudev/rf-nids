@@ -1,0 +1,112 @@
+{
+  "evidence_gate": "PASS",
+  "extraction_data_gate": "PASS",
+  "final_evaluation_authorized": false,
+  "finalizer_note": "Training/evaluation completed before a report-only typo; this continuation created no model and performed no fit or inference.",
+  "metadata_sha256": "b9255fb4ad067611db60632e384e2cc5e8aaa2f989228cbc0e541ef421c7224e",
+  "metrics": {
+    "RF-v3": {
+      "accuracy": 0.5295882647107851,
+      "macro_f1": 0.3708787140270324,
+      "per_class": {
+        "DDoS": {
+          "correct": 0,
+          "f1": 0.0,
+          "precision": 0.0,
+          "recall": 0.0,
+          "support": 2819,
+          "total": 2819
+        },
+        "Normal": {
+          "correct": 180,
+          "f1": 0.11313639220615965,
+          "precision": 0.05996002664890073,
+          "recall": 1.0,
+          "support": 180,
+          "total": 180
+        },
+        "PortScan": {
+          "correct": 2997,
+          "f1": 0.9994997498749375,
+          "precision": 1.0,
+          "recall": 0.999,
+          "support": 3000,
+          "total": 3000
+        }
+      }
+    },
+    "RF-v4": {
+      "accuracy": 0.9668278046341057,
+      "macro_f1": 0.8334656704202404,
+      "per_class": {
+        "DDoS": {
+          "correct": 2685,
+          "f1": 0.9642664751301849,
+          "precision": 0.9763636363636363,
+          "recall": 0.952465413267116,
+          "support": 2819,
+          "total": 2819
+        },
+        "Normal": {
+          "correct": 115,
+          "f1": 0.5361305361305362,
+          "precision": 0.46184738955823296,
+          "recall": 0.6388888888888888,
+          "support": 180,
+          "total": 180
+        },
+        "PortScan": {
+          "correct": 3000,
+          "f1": 1.0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "support": 3000,
+          "total": 3000
+        }
+      }
+    },
+    "RF-v5": {
+      "accuracy": 0.9548258043007168,
+      "macro_f1": 0.8372719934510672,
+      "per_class": {
+        "DDoS": {
+          "correct": 2554,
+          "f1": 0.949618888269195,
+          "precision": 0.99765625,
+          "recall": 0.9059950336998935,
+          "support": 2819,
+          "total": 2819
+        },
+        "Normal": {
+          "correct": 174,
+          "f1": 0.5621970920840065,
+          "precision": 0.39635535307517084,
+          "recall": 0.9666666666666667,
+          "support": 180,
+          "total": 180
+        },
+        "PortScan": {
+          "correct": 3000,
+          "f1": 1.0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "support": 3000,
+          "total": 3000
+        }
+      }
+    }
+  },
+  "model_sha256": "31d7d50fa79e3400e7d357cab05c780e038bc527b746d0be6ff894828c6b8d17",
+  "new_normal_rows": 605,
+  "no_rf_v6_created": true,
+  "phase_decision": "RF_V5_VALIDATION_FAIL",
+  "schema": "experiment_f_a4_rf_v5_summary",
+  "status": "CANDIDATE / NOT_ACTIVE",
+  "training_class_counts": {
+    "DDoS": 4023,
+    "Normal": 699,
+    "PortScan": 2581
+  },
+  "training_rows": 7303,
+  "validation_decision": "FAIL"
+}

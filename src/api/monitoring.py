@@ -32,7 +32,7 @@ class CollectorController:
 
     mode = "LIFECYCLE_ONLY"
 
-    def start(self, *, session_id: int, target_ip: str, interface_name: str) -> str:
+    def start(self, *, session_id: int, target_ip: str, interface_name: str, inference=None) -> str:
         return f"lifecycle:{session_id}"
 
     def stop(self, runtime_handle: str | None) -> None:
@@ -85,7 +85,7 @@ class MonitoringService:
 
     def start(
         self, db: Session, *, target_ip: str, interface_name: str, user: User,
-        model_id: int | None = None,
+        model_id: int | None = None, inference=None, selection_mode: str = "DEFAULT",
     ):
         try:
             address = ip_address(target_ip.strip())
@@ -122,6 +122,9 @@ class MonitoringService:
             target_ip=normalized_ip,
             interface_name=interface_name,
             model_id=model.id,
+            selection_mode=selection_mode,
+            selected_model_version=model.model_version,
+            selected_model_sha256=model.artifact_sha256,
             created_by_user_id=user.id,
             status="STARTING",
             extractor_name="CICFlowMeter V3",
@@ -133,7 +136,8 @@ class MonitoringService:
             db.commit()
             db.refresh(row)
             handle = self.collector.start(
-                session_id=row.id, target_ip=normalized_ip, interface_name=interface_name
+                session_id=row.id, target_ip=normalized_ip, interface_name=interface_name,
+                inference=inference,
             )
             db.refresh(row)
             if row.status != "FAILED":

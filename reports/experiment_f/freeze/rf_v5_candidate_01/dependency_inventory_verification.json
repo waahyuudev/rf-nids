@@ -1,0 +1,7 @@
+{
+  "inventory_path": "reports/experiment_f/freeze/rf_v5_candidate_01/DEPENDENCY_SHA256SUMS",
+  "inventory_sha256": "02d61e9045af3889adc4f9406c1049160fcef609f5e733d804b5b69c224f26f4",
+  "schema": "experiment_f_rf_v5_freeze_inventory_verification",
+  "status": "PASS",
+  "verified_entries": 695
+}
