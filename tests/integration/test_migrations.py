@@ -1,6 +1,7 @@
 from alembic import command
 from alembic.config import Config
-from sqlalchemy import inspect
+import pytest
+from sqlalchemy import inspect, text
 
 
 def test_initial_migration_creates_detection_schema(tmp_path, monkeypatch):
@@ -47,6 +48,11 @@ def test_initial_migration_creates_detection_schema(tmp_path, monkeypatch):
     assert "acknowledged_by_user_id" in {
         column["name"] for column in schema.get_columns("alerts")
     }
+    selection_mode = next(
+        column for column in schema.get_columns("monitoring_sessions")
+        if column["name"] == "selection_mode"
+    )
+    assert selection_mode["type"].length == 64
     engine.dispose()
 
 
@@ -65,6 +71,37 @@ def test_phase_11_sqlite_upgrade_downgrade_upgrade(tmp_path, monkeypatch):
     engine = create_engine(f"sqlite:///{database_path}")
     assert "runtime_validation_runs" in inspect(engine).get_table_names()
     engine.dispose()
+
+
+def test_selection_mode_downgrade_refuses_to_truncate_existing_values(
+    tmp_path, monkeypatch
+):
+    monkeypatch.delenv("DATABASE_URL", raising=False)
+    database_path = tmp_path / "selection-mode-downgrade.db"
+    config = Config("alembic.ini")
+    config.set_main_option("sqlalchemy.url", f"sqlite:///{database_path}")
+    command.upgrade(config, "head")
+
+    from sqlalchemy import create_engine
+
+    engine = create_engine(f"sqlite:///{database_path}")
+    with engine.begin() as connection:
+        connection.execute(text(
+            "INSERT INTO models "
+            "(id, model_name, model_version, algorithm, is_active, created_at) "
+            "VALUES (1, 'RF-v5', 'rf-v5-candidate-01', 'Random Forest', 0, CURRENT_TIMESTAMP)"
+        ))
+        connection.execute(text(
+            "INSERT INTO monitoring_sessions "
+            "(target_ip, interface_name, model_id, selection_mode, status, created_at, "
+            "updated_at, flow_count, prediction_count, alert_count) VALUES "
+            "('192.168.128.2', 'test0', 1, 'MANUAL / DEMO SELECTION', 'STOPPED', "
+            "CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, 0, 0, 0)"
+        ))
+    engine.dispose()
+
+    with pytest.raises(RuntimeError, match="existing values exceed 20 characters"):
+        command.downgrade(config, "20260917_09")
 
 
 def test_phase_1_migration_preserves_legacy_rows(tmp_path, monkeypatch):

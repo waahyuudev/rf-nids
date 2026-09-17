@@ -8,7 +8,7 @@ import socket
 from uuid import uuid4
 
 from sqlalchemy import select
-from sqlalchemy.exc import IntegrityError
+from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from sqlalchemy.orm import Session
 
 from src.api.models import ModelRecord, MonitoringSession, User
@@ -134,27 +134,41 @@ class MonitoringService:
         db.add(row)
         try:
             db.commit()
-            db.refresh(row)
+        except IntegrityError as exc:
+            db.rollback()
+            raise MonitoringConflict("A monitoring session is already active") from exc
+        except SQLAlchemyError:
+            db.rollback()
+            raise
+
+        db.refresh(row)
+        try:
             handle = self.collector.start(
                 session_id=row.id, target_ip=normalized_ip, interface_name=interface_name,
                 inference=inference,
             )
-            db.refresh(row)
-            if row.status != "FAILED":
-                row.runtime_handle = handle
-                row.started_at = datetime.now(timezone.utc)
-                row.status = "RUNNING"
-                db.commit()
-        except IntegrityError as exc:
-            db.rollback()
-            raise MonitoringConflict("A monitoring session is already active") from exc
         except Exception as exc:
             row.status = "FAILED"
             row.last_error = str(exc)[:2000] or exc.__class__.__name__
             row.stopped_at = datetime.now(timezone.utc)
             row.runtime_handle = None
             row.processing_state = None
-            db.commit()
+            try:
+                db.commit()
+            except SQLAlchemyError:
+                db.rollback()
+                raise
+        else:
+            db.refresh(row)
+            if row.status != "FAILED":
+                row.runtime_handle = handle
+                row.started_at = datetime.now(timezone.utc)
+                row.status = "RUNNING"
+                try:
+                    db.commit()
+                except SQLAlchemyError:
+                    db.rollback()
+                    raise
         db.refresh(row)
         return row
 
