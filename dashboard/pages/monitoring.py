@@ -25,6 +25,40 @@ def session_model_display(model_version: str | None, demo_model_version: str | N
     return f"{value} · DEMO" if value == demo_model_version else value
 
 
+def model_metadata_for_display(
+    model_by_id: dict[str, dict],
+    selected_model_id: str,
+    *,
+    running: bool,
+    current_session: dict | None,
+) -> dict | None:
+    """Resolve configuration metadata without confusing UI and runtime state."""
+    if not running:
+        return model_by_id.get(selected_model_id)
+    if current_session is None:
+        return None
+
+    session_model_id = session_model_id_from(current_session)
+    registered = model_by_id.get(session_model_id, {})
+    return {
+        **registered,
+        "model_id": session_model_id,
+        "model_version": current_session.get("selected_model_version")
+        or current_session.get("model_version")
+        or session_model_id,
+        "selection_mode": current_session.get("selection_mode")
+        or registered.get("selection_mode", "DEFAULT"),
+    }
+
+
+def session_model_id_from(current_session: dict) -> str | None:
+    return (
+        current_session.get("selected_model_id")
+        or current_session.get("selected_model_version")
+        or current_session.get("model_version")
+    )
+
+
 def render(client) -> None:
     section_heading(
         "Monitoring",
@@ -41,35 +75,45 @@ def render(client) -> None:
     models = client.monitoring_models()
     model_by_id = {item["model_id"]: item for item in models}
     model_ids = list(model_by_id)
-    default_index = next(
-        (index for index, item in enumerate(models) if item["selection_mode"] == "DEFAULT"), 0
+    active_model = next(
+        (item for item in models if item["selection_mode"] == "DEFAULT"), None
     )
-    with st.form("monitoring_configuration"):
-        target = st.text_input(
-            "Target IP", value="", placeholder="192.168.128.4", disabled=running
+    session_model_id = session_model_id_from(current) if current else None
+    initial_model_id = (
+        session_model_id if running and session_model_id in model_by_id
+        else active_model["model_id"] if active_model else None
+    )
+    default_index = model_ids.index(initial_model_id) if initial_model_id else 0
+    target = st.text_input(
+        "Target IP", value="", placeholder="192.168.128.4", disabled=running
+    )
+    interface = st.selectbox(
+        "Capture Interface", choices or ["Interface discovery unavailable"],
+        disabled=running or not choices,
+    )
+    selected_model_id = st.selectbox(
+        "Model", model_ids or ["No verified runtime models available"],
+        index=default_index if model_ids else 0,
+        disabled=running or not model_ids,
+        key="selected_monitoring_model_id",
+    )
+    selected_model = model_by_id.get(selected_model_id)
+    session_model = model_metadata_for_display(
+        model_by_id, selected_model_id, running=running, current_session=current
+    )
+    displayed_model = session_model if running else selected_model
+    if displayed_model:
+        st.markdown(
+            f'**Model:** {displayed_model["model_version"]}  \n'
+            f'**Scientific status:** {displayed_model.get("scientific_status", "—")}  \n'
+            f'**Runtime mode:** {displayed_model["selection_mode"]}'
         )
-        interface = st.selectbox(
-            "Capture Interface", choices or ["Interface discovery unavailable"],
-            disabled=running or not choices,
-        )
-        selected_model_id = st.selectbox(
-            "Model", model_ids or ["No verified runtime models available"],
-            index=default_index if model_ids else 0,
-            disabled=running or not model_ids,
-        )
-        selected = model_by_id.get(selected_model_id)
-        if selected:
-            st.markdown(
-                f'**Model:** {selected["model_version"]}  \n'
-                f'**Scientific status:** {selected["scientific_status"]}  \n'
-                f'**Runtime mode:** {selected["selection_mode"]}'
-            )
-            if selected.get("scientific_decision"):
-                st.caption(f'Scientific decision: {selected["scientific_decision"]}')
-        submitted = st.form_submit_button(
-            "START MONITORING", type="primary",
-            disabled=running or not choices or not model_ids,
-        )
+        if displayed_model.get("scientific_decision"):
+            st.caption(f'Scientific decision: {displayed_model["scientific_decision"]}')
+    submitted = st.button(
+        "START MONITORING", type="primary",
+        disabled=running or not choices or not model_ids,
+    )
     if not interfaces["discovery_available"]:
         st.warning("Network interface discovery is unavailable on the API host.")
     if submitted:

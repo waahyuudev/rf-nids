@@ -4,6 +4,7 @@ import pytest
 
 from dashboard.api_client import APIError, RFNIDSClient
 from dashboard.config import DashboardConfig
+from dashboard.pages.monitoring import model_metadata_for_display
 
 
 class Response:
@@ -146,13 +147,28 @@ def test_phase_9_monitoring_controller_client_routes_and_payloads():
 
 
 def test_monitoring_model_selector_client_contract():
-    session = Session([Response([{"model_id": "rf-v5-candidate-01"}]), Response({"id": 9})])
+    rf_v5 = {
+        "model_id": "rf-v5-candidate-01",
+        "model_version": "rf-v5-candidate-01",
+        "scientific_status": "CANDIDATE / NOT_ACTIVE",
+        "selection_mode": "MANUAL / DEMO SELECTION",
+        "scientific_decision": "RF_V5_VALIDATION_FAIL",
+    }
+    session = Session([Response([rf_v5]), Response({"id": 9})])
     api = RFNIDSClient("http://api.test", session=session)
-    assert api.monitoring_models()[0]["model_id"] == "rf-v5-candidate-01"
-    api.start_monitoring("192.168.128.2", "bridge100", "rf-v5-candidate-01")
+    models = api.monitoring_models()
+    selected_model_id = "rf-v5-candidate-01"
+    displayed = model_metadata_for_display(
+        {model["model_id"]: model for model in models},
+        selected_model_id,
+        running=False,
+        current_session=None,
+    )
+    assert displayed == rf_v5
+    api.start_monitoring("192.168.128.2", "bridge100", selected_model_id)
     assert session.calls[1][2]["json"] == {
         "target_ip": "192.168.128.2", "interface_name": "bridge100",
-        "selected_model_id": "rf-v5-candidate-01",
+        "selected_model_id": displayed["model_id"],
     }
 
 
