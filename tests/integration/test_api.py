@@ -18,7 +18,8 @@ from src.api.monitoring import CollectorController, list_capture_interfaces
 from src.api.auth import hash_password
 from src.api.models import Dataset, EvidenceSource, EvaluationResult, Experiment, User
 from src.api.schemas import FlowMetadata, PredictionRequest
-from src.api.service import persist_predictions
+from src.api.service import persist_predictions, register_inactive_model
+from src.api.runtime_models import RuntimeModelRegistry
 from src.application.evidence_sync import synchronize_evidence
 from src.common.config import Settings
 from src.inference import FeatureValidationError
@@ -473,6 +474,63 @@ def test_stale_monitoring_session_reconciliation(client):
         assert "API restarted" in row.last_error
 
 
+def test_stop_timeout_remains_stopping_until_clean_worker_exit(client):
+    http, app = client
+    names, _ = list_capture_interfaces()
+    interface_name = names[0]["name"] if names else "test-interface"
+
+    class DelayedCollector:
+        mode = "RUNTIME_V3"
+
+        def start(self, *, session_id, **_):
+            self.session_id = session_id
+            return f"delayed:{session_id}"
+
+        def stop(self, _):
+            return False  # synchronous API wait expired; worker is still flushing
+
+        def clean_exit(self):
+            # This mirrors RuntimeCollectorController._on_exit's worker-owned
+            # terminal write without re-running a worker in an API fixture.
+            with app.state.session_factory() as db:
+                row = db.get(MonitoringSession, self.session_id)
+                row.status = "STOPPED"
+                row.last_error = None
+                row.runtime_handle = None
+                row.processing_state = None
+                row.stopped_at = datetime.now(timezone.utc)
+                db.commit()
+
+    collector = DelayedCollector()
+    app.state.monitoring_service.collector = collector
+    started = http.post("/api/monitoring/start", json={
+        "target_ip": "192.168.128.2", "interface_name": interface_name
+    }).json()
+    stopping = http.post("/api/monitoring/stop")
+    assert stopping.status_code == 200
+    assert stopping.json()["status"] == "STOPPING"
+    # A repeat request only re-signals the same worker; it does not start another.
+    assert http.post("/api/monitoring/stop").json()["status"] == "STOPPING"
+    collector.clean_exit()
+    final = http.get(f"/api/monitoring/sessions/{started['id']}").json()
+    assert final["status"] == "STOPPED"
+
+
+def test_stopping_session_is_not_failed_by_startup_reconciliation(client):
+    _, app = client
+    with app.state.session_factory() as db:
+        model = db.scalar(select(ModelRecord).where(ModelRecord.is_active.is_(True)))
+        user = db.scalar(select(User))
+        row = MonitoringSession(target_ip="192.168.128.2", interface_name="test0",
+                                model_id=model.id, created_by_user_id=user.id,
+                                status="STOPPING", runtime_handle="flushing")
+        db.add(row)
+        db.commit()
+        assert app.state.monitoring_service.reconcile_stale_sessions(db) == 0
+        db.refresh(row)
+        assert row.status == "STOPPING"
+
+
 def test_runtime_prediction_preserves_monitoring_model_and_alert_provenance(client):
     http, app = client
     names, _ = list_capture_interfaces()
@@ -503,6 +561,45 @@ def test_runtime_prediction_preserves_monitoring_model_and_alert_provenance(clie
         f'/api/monitoring/sessions/{started["id"]}/predictions'
     ).json()
     assert [row["id"] for row in listed] == [result["prediction_id"]]
+
+
+def test_demo_monitoring_uses_effective_candidate_provenance(client):
+    """A new demo session must not fall back to the database-active RF-v2 row."""
+    from dataclasses import replace
+
+    http, app = client
+    app.state.settings = replace(app.state.settings, demo_model_version="rf-v3.0-candidate")
+    with app.state.session_factory() as db:
+        candidate = ModelRecord(
+            model_name="Experiment E demo candidate", model_version="rf-v3.0-candidate",
+            algorithm="Random Forest", is_active=False,
+        )
+        db.add(candidate); db.commit(); db.refresh(candidate)
+        app.state.model_record = candidate
+    names, _ = list_capture_interfaces()
+    interface_name = names[0]["name"] if names else "test-interface"
+    started = http.post("/api/monitoring/start", json={
+        "target_ip": "192.168.128.2", "interface_name": interface_name,
+    })
+    assert started.status_code == 201
+    session = started.json()
+    assert session["model_version"] == "rf-v3.0-candidate"
+    with app.state.session_factory() as db:
+        active = db.scalar(select(ModelRecord).where(ModelRecord.is_active.is_(True)))
+        assert active.model_version == "test-v1"
+        assert db.get(MonitoringSession, session["id"]).model_id == candidate.id
+        output = {
+            "prediction": "PortScan", "confidence": 0.99,
+            "probabilities": {"Normal": 0.005, "DDoS": 0.005, "PortScan": 0.99},
+            "model_version": "rf-v3.0-candidate",
+        }
+        result = persist_predictions(
+            db, [PredictionRequest(**payload(20))], [output], candidate.id,
+            monitoring_session_id=session["id"], external_keys=[f"demo:{session['id']}:1"],
+        )[0]
+    listed = http.get(f"/api/monitoring/sessions/{session['id']}/predictions").json()
+    assert listed[0]["id"] == result["prediction_id"]
+    assert listed[0]["model_version"] == "rf-v3.0-candidate"
 
 
 def test_health_and_model(client):
@@ -881,6 +978,117 @@ def test_active_model_presentation_endpoint(client):
     assert body["parameters"] is None
 
 
+def test_demo_active_model_serializes_detached_record_experiment(client):
+    """Demo mode stores an inactive provenance record outside the request session."""
+    from dataclasses import replace
+
+    http, app = client
+    app.state.settings = replace(
+        app.state.settings, demo_model_version="rf-v3.0-candidate"
+    )
+    with app.state.session_factory() as db:
+        record = db.get(ModelRecord, app.state.model_record.id)
+        experiment = Experiment(
+            experiment_code="EXPERIMENT_E_DEMO",
+            experiment_name="Experiment E demonstration",
+            experiment_type="RUNTIME_DEMO",
+            status="CANDIDATE",
+        )
+        db.add(experiment)
+        db.flush()
+        record.experiment_id = experiment.id
+        record.is_active = False
+        db.commit()
+
+    # app.state.model_record is detached and has no loaded `experiment` relation.
+    response = http.get("/api/models/active")
+    assert response.status_code == 200
+    assert response.json()["experiment_code"] == "EXPERIMENT_E_DEMO"
+    assert response.json()["is_active"] is False
+
+
+def test_manual_runtime_model_selection_is_frozen_and_scientifically_neutral(client):
+    http, app = client
+    registry = RuntimeModelRegistry()
+    app.state.runtime_model_registry = registry
+    with app.state.session_factory() as db:
+        active_before = db.scalar(
+            select(ModelRecord).where(ModelRecord.is_active.is_(True))
+        )
+        assert active_before.model_version == "test-v1"
+        for _approved, engine in registry.available():
+            register_inactive_model(db, engine.metadata)
+
+    available = http.get("/api/monitoring/models")
+    assert available.status_code == 200
+    assert [row["model_id"] for row in available.json()] == [
+        "rf-v2.0", "rf-v3.0-candidate", "rf-v4.0-candidate-01",
+        "rf-v5-candidate-01",
+    ]
+    rf_v5 = available.json()[-1]
+    assert rf_v5["scientific_status"] == "CANDIDATE / NOT_ACTIVE"
+    assert rf_v5["selection_mode"] == "MANUAL / DEMO SELECTION"
+    assert rf_v5["scientific_decision"] == "RF_V5_VALIDATION_FAIL"
+
+    interfaces, _ = list_capture_interfaces()
+    interface_name = interfaces[0]["name"]
+    sessions = []
+    for model_id in (
+        "rf-v3.0-candidate", "rf-v4.0-candidate-01", "rf-v5-candidate-01"
+    ):
+        response = http.post("/api/monitoring/start", json={
+            "target_ip": "192.168.128.2", "interface_name": interface_name,
+            "selected_model_id": model_id,
+        })
+        assert response.status_code == 201, response.text
+        session = response.json()
+        sessions.append(session)
+        assert session["selected_model_id"] == model_id
+        assert session["selected_model_version"] == model_id
+        assert session["selection_mode"] == "MANUAL / DEMO SELECTION"
+        if model_id == "rf-v3.0-candidate":
+            blocked = http.post("/api/monitoring/start", json={
+                "target_ip": "192.168.128.2", "interface_name": interface_name,
+                "selected_model_id": "rf-v5-candidate-01",
+            })
+            assert blocked.status_code == 409
+        assert http.post("/api/monitoring/stop").status_code == 200
+
+    unknown = http.post("/api/monitoring/start", json={
+        "target_ip": "192.168.128.2", "interface_name": interface_name,
+        "selected_model_id": "unknown-model",
+    })
+    assert unknown.status_code == 422
+
+    with app.state.session_factory() as db:
+        active_after = db.scalar(
+            select(ModelRecord).where(ModelRecord.is_active.is_(True))
+        )
+        assert active_after.id == active_before.id
+        assert active_after.model_version == "test-v1"
+        historical = db.get(MonitoringSession, sessions[0]["id"])
+        assert historical.model.model_version == "rf-v3.0-candidate"
+        assert historical.selection_mode == "MANUAL / DEMO SELECTION"
+
+        candidate_session = db.get(MonitoringSession, sessions[-1]["id"])
+        request = PredictionRequest(features={"feature_a": 20, "feature_b": 1})
+        output = {
+            "prediction": "DDoS", "confidence": 0.95,
+            "probabilities": {"Normal": 0.025, "DDoS": 0.95, "PortScan": 0.025},
+            "model_version": "rf-v5-candidate-01",
+        }
+        persist_predictions(
+            db, [request], [output], candidate_session.model_id,
+            monitoring_session_id=candidate_session.id,
+        )
+        persisted = db.scalar(
+            select(Prediction).where(
+                Prediction.monitoring_session_id == candidate_session.id
+            )
+        )
+        assert persisted.model_id == candidate_session.model_id
+        assert persisted.alert is not None
+        assert persisted.alert.prediction.model_id == candidate_session.model_id
 def test_monitoring_empty_state_and_unpredicted_legacy_flow(client):
     http, app = client
     assert http.get("/api/traffic-flows").json() == []

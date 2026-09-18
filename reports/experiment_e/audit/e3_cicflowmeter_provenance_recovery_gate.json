@@ -1,0 +1,92 @@
+{
+  "schema": "experiment_e_e3_cicflowmeter_provenance_recovery_gate",
+  "schema_version": 1,
+  "experiment_code": "EXPERIMENT_E",
+  "historical_artifact": {
+    "expected_image_digest": "sha256:0227c7280e586d54144b9bb11b2a6b5d4b1c4ba9bc7c44199fa312a6b829caab",
+    "availability": "not found on ubuntu-nids or the macOS Docker host",
+    "build_specification": {
+      "dockerfile": "docker/cicflowmeter-v3/Dockerfile at the historical pre-cross-build revision",
+      "builder_base": "eclipse-temurin:8-jdk-jammy@sha256:e0e0243c25c8985bb786948c2e23d267597ad9751c0311f43c113211a25392f5",
+      "runtime_base": "eclipse-temurin:8-jre-jammy@sha256:8d8ffe619c1b4aebfa670426ea6b938cccf76faa491ca8483dee520c48b30441",
+      "platform": "linux/amd64",
+      "repository": "https://github.com/ahlashkari/CICFlowMeter",
+      "commit": "a26aae27f21d165ff30b4b28e75124a5f9b4b2c4",
+      "source_archive_sha256": "78f13b2d474e5a669a367aef610d597cf86bc338088ffdd72228671bdca364c7",
+      "java": "Temurin OpenJDK 1.8.0_492-b09",
+      "maven": "3.6.3",
+      "gradle": "4.2",
+      "jnetpcap": "1.4.1-r1425",
+      "runtime_libpcap": "1.10.1-4ubuntu1.22.04.1",
+      "build_change": "remove only the build.gradle exclusion of upstream cic.cs.unb.ca.ifm.CICFlowMeter.java; install bundled JNetPcap jar; run ./gradlew --no-daemon installDist",
+      "entrypoint": "cicflowmeter-v3; /usr/local/bin/cicflowmeter-v3 SHA-256 47153a903c8a2b1b5a6b508e400f56ed7119cc04fcb74c863cfc6b421182016f",
+      "runtime": "non-root cicflowmeter uid 10001, workdir /work"
+    },
+    "historical_source_hashes": {
+      "BasicFlow.java": "7519720889fe4f5de53b70c38efcd8f8b403a0b2cd6e743bce1648e4a46b31a9",
+      "BasicPacketInfo.java": "eff86c02d123bcc285a824822bb759909da40d4d96618bd5a7159b8189435ba3",
+      "FlowFeature.java": "941611e67a7a9cd72895cdb110510519a39051a2eedffdc8433b157601b41511",
+      "FlowGenerator.java": "c760789268bad42159e34cf972555d44dc9b82ad1c6eac6ad17c049a99e5e407",
+      "FlowMgr.java": "73168b4ed80e023454ed7aa1517c0fb9ef646d652994322848efc09b00ff5af1",
+      "CICFlowMeter.java": "9b74a25ae29230020dc7115ad6327e165caed8a7c06f21fde2e417597c76411e"
+    }
+  },
+  "candidate_comparison": [
+    {
+      "location": "ubuntu-nids",
+      "digest": "sha256:61bfd8411b6a38be89a2ee21f5998a286faef8247a24a11b5e5690721291cfe6",
+      "status": "NOT_TESTED",
+      "reason": "direct image access was unavailable to this workspace"
+    },
+    {
+      "location": "ubuntu-nids",
+      "digest": "sha256:dafd5b90f89af6063bc2348cffdb3798bb930b416da5468c3867c8a38529ee5f",
+      "tag": "rf-nids-cicflowmeter-v3:a26aae27-cross",
+      "status": "NOT_TESTED",
+      "reason": "direct image access was unavailable to this workspace"
+    },
+    {
+      "location": "macOS Docker host",
+      "digest": "sha256:b12b3a4a4218968aba2436685a4eb113473e5681de70705409e834e4613a879b",
+      "platform": "linux/amd64",
+      "status": "TESTED",
+      "metadata_comparison": {
+        "labels_repository_commit_source_checksum_jnetpcap_gradle_cli": "MATCH",
+        "entrypoint": "MATCH",
+        "runtime_user_and_workdir": "MATCH",
+        "source_hashes": "MATCH",
+        "jni_linkage_to_libpcap": "PASS",
+        "historical_build_toolchain_architecture": "amd64",
+        "candidate_build_toolchain_architecture": "aarch64",
+        "image_digest": "DIFFERENT"
+      },
+      "equivalence_verdict": "BYTE_IDENTICAL_ON_NINE_NON_FINAL_EXPERIMENT_D_ADAPTATION_REFERENCE_PCAPS"
+    }
+  ],
+  "compatibility_test": {
+    "inputs": "all nine Experiment D adaptation PCAPs only; no Experiment D final-test PCAP was accessed",
+    "execution_constraints": ["Docker network none", "read-only PCAP bind mount", "temporary output directory under /private/tmp", "no frozen CSV or manifest overwrite"],
+    "results": [
+      {"pcap": "normal-d2-s01.pcap", "rows": 9, "columns": 84, "historical_sha256": "a75d02bcc954c98cff052ed333d6da04cfcf069b7a28e8fd90ef89393da400df", "candidate_sha256": "a75d02bcc954c98cff052ed333d6da04cfcf069b7a28e8fd90ef89393da400df"},
+      {"pcap": "normal-d2-s02.pcap", "rows": 12, "columns": 84, "historical_sha256": "c22a5f23299064bdbf0a649df9b2591832ec903df1b236b7ed6fa46157dc9ec9", "candidate_sha256": "c22a5f23299064bdbf0a649df9b2591832ec903df1b236b7ed6fa46157dc9ec9"},
+      {"pcap": "normal-d2-s03.pcap", "rows": 23, "columns": 84, "historical_sha256": "548c1a3192cc1310edc923c9923ed7b79366ad048e8f82d23a1c5edb3a67681b", "candidate_sha256": "548c1a3192cc1310edc923c9923ed7b79366ad048e8f82d23a1c5edb3a67681b"},
+      {"pcap": "portscan-d2-s01.pcap", "rows": 513, "columns": 84, "historical_sha256": "b6b37ca630e4a17ea256f1c0ac32c105eaddc5d22721f95d60406c265955b04a", "candidate_sha256": "b6b37ca630e4a17ea256f1c0ac32c105eaddc5d22721f95d60406c265955b04a"},
+      {"pcap": "portscan-d2-s02.pcap", "rows": 1025, "columns": 84, "historical_sha256": "76642114974d6317506f951d824f32ceee09f6333e3bef50ee4ce2c298f96e9f", "candidate_sha256": "76642114974d6317506f951d824f32ceee09f6333e3bef50ee4ce2c298f96e9f"},
+      {"pcap": "portscan-d2-s03.pcap", "rows": 16, "columns": 84, "historical_sha256": "6c8c195b743ea8453347b1d91513f4eb5cf03ea53a9acad78811bee3ee1d49c4", "candidate_sha256": "6c8c195b743ea8453347b1d91513f4eb5cf03ea53a9acad78811bee3ee1d49c4"},
+      {"pcap": "ddos-like-d2-s01.pcap", "rows": 2400, "columns": 84, "historical_sha256": "3c19e07d4365d1532d5ff72b0e97feab0bdc9883047d71c22763aa45043bc017", "candidate_sha256": "3c19e07d4365d1532d5ff72b0e97feab0bdc9883047d71c22763aa45043bc017"},
+      {"pcap": "ddos-like-d2-s02.pcap", "rows": 4800, "columns": 84, "historical_sha256": "5f9b415183633af092af785c06caeb7258b15467491f91140e61841840b385d8", "candidate_sha256": "5f9b415183633af092af785c06caeb7258b15467491f91140e61841840b385d8"},
+      {"pcap": "ddos-like-d2-s04-replacement.pcap", "rows": 7116, "columns": 84, "historical_sha256": "e7adaa0ed70c6a8c0be6634c85203e0229675d03a3aef12f2533aded4d0752f1", "candidate_sha256": "e7adaa0ed70c6a8c0be6634c85203e0229675d03a3aef12f2533aded4d0752f1"}
+    ],
+    "ordered_84_column_headers": "identical for all nine",
+    "parsed_field_values": "identical for all nine; no ordering, metadata, or feature-value difference observed",
+    "adapter": "accepted all nine candidate CSVs with exact ordered 78-feature output and schema validation PASS"
+  },
+  "decision": {
+    "candidate_equivalence": "functionally demonstrated on the complete available Experiment D adaptation reference corpus; raw CSV output is byte-identical on every reference PCAP",
+    "experiment_e_only_amendment_scientifically_defensible": true,
+    "proposed_amendment": "retain the historical digest as immutable baseline provenance; add candidate digest sha256:b12b3a4a4218968aba2436685a4eb113473e5681de70705409e834e4613a879b as an explicitly compatibility-qualified E3 extraction image, limited to Experiment E outputs",
+    "amendment_applied": false,
+    "limitation": "the candidate image artifact itself is not byte-identical to the missing historical artifact, and the candidate build toolchain reports aarch64 rather than historical amd64; equivalence is demonstrated by output, not assumed from matching source labels",
+    "e3_status": "BLOCKED_PENDING_EXPLICIT_EXPERIMENT_E_ONLY_PROVENANCE_AMENDMENT_AUTHORIZATION"
+  }
+}

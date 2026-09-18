@@ -1,0 +1,221 @@
+{
+  "models": {
+    "RF-v3": {
+      "accuracy": 0.5295882647107851,
+      "confusion_matrix": {
+        "labels": [
+          "Normal",
+          "DDoS",
+          "PortScan"
+        ],
+        "rows": [
+          [
+            180,
+            0,
+            0
+          ],
+          [
+            2819,
+            0,
+            0
+          ],
+          [
+            3,
+            0,
+            2997
+          ]
+        ]
+      },
+      "macro_f1": 0.3708787140270324,
+      "macro_precision": 0.3533200088829669,
+      "macro_recall": 0.6663333333333333,
+      "model_sha256": "6b01c7b3923c1a6bd471862d011f8f5b88a31378e51d1dde082bd2e72bedef86",
+      "per_class": {
+        "DDoS": {
+          "correct": 0,
+          "f1": 0.0,
+          "precision": 0.0,
+          "recall": 0.0,
+          "support": 2819,
+          "total": 2819
+        },
+        "Normal": {
+          "correct": 180,
+          "f1": 0.11313639220615965,
+          "precision": 0.05996002664890073,
+          "recall": 1.0,
+          "support": 180,
+          "total": 180
+        },
+        "PortScan": {
+          "correct": 2997,
+          "f1": 0.9994997498749375,
+          "precision": 1.0,
+          "recall": 0.999,
+          "support": 3000,
+          "total": 3000
+        }
+      },
+      "predictions_sha256": "3b6e1ade1d36d2f7341e939d21e0901cbbe473654024626719cd6be3bd7767f6"
+    },
+    "RF-v4": {
+      "accuracy": 0.9668278046341057,
+      "confusion_matrix": {
+        "labels": [
+          "Normal",
+          "DDoS",
+          "PortScan"
+        ],
+        "rows": [
+          [
+            115,
+            65,
+            0
+          ],
+          [
+            134,
+            2685,
+            0
+          ],
+          [
+            0,
+            0,
+            3000
+          ]
+        ]
+      },
+      "macro_f1": 0.8334656704202404,
+      "macro_precision": 0.812737008640623,
+      "macro_recall": 0.863784767385335,
+      "model_sha256": "d5dccd339a5c67635e760d7d3760e1d006278362c6f70ea06bf20928ccdece13",
+      "per_class": {
+        "DDoS": {
+          "correct": 2685,
+          "f1": 0.9642664751301849,
+          "precision": 0.9763636363636363,
+          "recall": 0.952465413267116,
+          "support": 2819,
+          "total": 2819
+        },
+        "Normal": {
+          "correct": 115,
+          "f1": 0.5361305361305362,
+          "precision": 0.46184738955823296,
+          "recall": 0.6388888888888888,
+          "support": 180,
+          "total": 180
+        },
+        "PortScan": {
+          "correct": 3000,
+          "f1": 1.0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "support": 3000,
+          "total": 3000
+        }
+      },
+      "predictions_sha256": "62e0f54b3f79364617655a1c5705f8d23e90d72ff07a51804e14f8544f22506c"
+    },
+    "RF-v5": {
+      "accuracy": 0.9548258043007168,
+      "confusion_matrix": {
+        "labels": [
+          "Normal",
+          "DDoS",
+          "PortScan"
+        ],
+        "rows": [
+          [
+            174,
+            6,
+            0
+          ],
+          [
+            265,
+            2554,
+            0
+          ],
+          [
+            0,
+            0,
+            3000
+          ]
+        ]
+      },
+      "macro_f1": 0.8372719934510672,
+      "macro_precision": 0.7980038676917237,
+      "macro_recall": 0.9575539001221868,
+      "model_sha256": "31d7d50fa79e3400e7d357cab05c780e038bc527b746d0be6ff894828c6b8d17",
+      "per_class": {
+        "DDoS": {
+          "correct": 2554,
+          "f1": 0.949618888269195,
+          "precision": 0.99765625,
+          "recall": 0.9059950336998935,
+          "support": 2819,
+          "total": 2819
+        },
+        "Normal": {
+          "correct": 174,
+          "f1": 0.5621970920840065,
+          "precision": 0.39635535307517084,
+          "recall": 0.9666666666666667,
+          "support": 180,
+          "total": 180
+        },
+        "PortScan": {
+          "correct": 3000,
+          "f1": 1.0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "support": 3000,
+          "total": 3000
+        }
+      },
+      "predictions_sha256": "befa9a2d3ce446c39c9cb5a901f9b0d538dc8984bd4dbfe55f6e0f66cd56bf71"
+    }
+  },
+  "schema": "experiment_f_a4_rf_v5_comparative_metrics",
+  "transitions": {
+    "RF-v3->RF-v4": {
+      "DDoS->DDoS": 0,
+      "DDoS->Normal": 0,
+      "DDoS->PortScan": 0,
+      "Normal->DDoS": 2750,
+      "Normal->Normal": 249,
+      "Normal->PortScan": 3,
+      "PortScan->DDoS": 0,
+      "PortScan->Normal": 0,
+      "PortScan->PortScan": 2997
+    },
+    "RF-v3->RF-v5": {
+      "DDoS->DDoS": 0,
+      "DDoS->Normal": 0,
+      "DDoS->PortScan": 0,
+      "Normal->DDoS": 2560,
+      "Normal->Normal": 439,
+      "Normal->PortScan": 3,
+      "PortScan->DDoS": 0,
+      "PortScan->Normal": 0,
+      "PortScan->PortScan": 2997
+    },
+    "RF-v4->RF-v5": {
+      "DDoS->DDoS": 2505,
+      "DDoS->Normal": 245,
+      "DDoS->PortScan": 0,
+      "Normal->DDoS": 55,
+      "Normal->Normal": 194,
+      "Normal->PortScan": 0,
+      "PortScan->DDoS": 0,
+      "PortScan->Normal": 0,
+      "PortScan->PortScan": 3000
+    }
+  },
+  "validation": {
+    "lineage_sha256": "8c2697841de6df5d66e22836eee100cf53de08935f1832f265130a9a2419c909",
+    "path": "data/lab/experiment_f/validation/derived/f4_a2_run_03/frozen/f_validation_78_features_ground_truth.csv",
+    "rows": 5999,
+    "sha256": "d5dbc3e6a6de373526c46bb7220092c14e81779ec91ebfe5ef855db7f7d53d0e",
+    "unchanged": true
+  }
+}

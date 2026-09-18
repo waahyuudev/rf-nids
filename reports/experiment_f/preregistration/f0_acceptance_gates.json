@@ -1,0 +1,40 @@
+{
+  "basis": "E6/E7 RF-v3 PortScan recall 0.999334/0.998336; E13 RF-v3 DDoS-like 2/801 and 4/1612; E14 requires class-level\u2014not accuracy-only\u2014decision.",
+  "failure": "Any mandatory failure is NOT_PROMOTION_ELIGIBLE; document rather than tune or alter thresholds post hoc.",
+  "final_scientific_success": {
+    "comparators": "RF-v2, RF-v3, RF-v4 evaluated on exact same final matrices.",
+    "integrity": "Final session/hash/lineage seal remains intact until candidate is frozen; no flow/capture overlap.",
+    "replication": "All validation gates reproduced on at least 3 independent sealed sessions per class; aggregate and per-session results shown."
+  },
+  "mandatory_metrics": [
+    "per-class recall",
+    "per-class F1",
+    "confusion matrix",
+    "macro F1",
+    "false-positive rates",
+    "calibrated/appropriate probability diagnostics",
+    "paired predictions against RF-v2 and RF-v3"
+  ],
+  "pretraining_lock": true,
+  "promotion_eligibility": "Only after all validation and final scientific gates pass, a separately authorized F10 decision may consider promotion. Passing accuracy alone, training success, or one session never suffices.",
+  "schema": "experiment_f_f0_acceptance_gates",
+  "training_success": {
+    "purpose": "diagnostic only; cannot establish promotion",
+    "requirements": [
+      "78-feature/provenance/leakage gates pass",
+      "training metrics reported without final data",
+      "no threshold tuning or final-data access"
+    ]
+  },
+  "validation_success": {
+    "ddos_f1": ">= RF-v3 + 0.10 absolute on new F DDoS validation flows",
+    "ddos_recall": "on new ground-truth F DDoS validation sessions, >= 0.20 and >= 0.10 absolute improvement over RF-v3",
+    "false_positives": "No >0.02 absolute increase in Normal->DDoS or Normal->PortScan rate versus RF-v3",
+    "macro_f1": ">= RF-v3 - 0.02, with no mandatory class gate waived",
+    "normal_and_portscan_f1": "each >= 0.98 of RF-v3 value on identical flows",
+    "normal_recall": ">= 0.98 and no more than 0.02 below RF-v3 on identical validation flows",
+    "paired_transitions": "Report RF-v3 PortScan->RF-v4 Normal, RF-v3 Normal->RF-v4 anomaly, RF-v2 DDoS->RF-v4 Normal, RF-v3 Normal->RF-v4 DDoS, RF-v3 DDoS->RF-v4 Normal",
+    "portscan_recall": ">= 0.995 and no more than 0.005 below RF-v3"
+  },
+  "version": 1
+}

@@ -1,0 +1,41 @@
+{
+  "checks": {
+    "duplicate_row_identity_count": 0,
+    "exact_78_feature_order": true,
+    "experiment_d_final_test_excluded": true,
+    "final_test_unread_and_excluded": true,
+    "row_oversampling": false,
+    "three_class_design_preserved": true,
+    "training_or_evaluation_performed": false,
+    "validation_rows_excluded": true
+  },
+  "e5_execution_authorized": false,
+  "e5_scientifically_authorized": true,
+  "experiment_code": "EXPERIMENT_E",
+  "forbidden_sessions": [
+    "expe-normal-n-v1",
+    "expe-portscan-p-v1",
+    "expe-normal-n-f1",
+    "expe-portscan-p-f1"
+  ],
+  "historical_source_eligibility": {
+    "eligibility": "EXPERIMENT_D adaptation-only controlled ground-truth sessions; no final-test or evaluation source was read",
+    "manifest": "data/lab/experiment_d/adaptation/manifests/labeled_flow_manifest.json"
+  },
+  "included_experiment_e_sessions": [
+    "expe-normal-n-a1",
+    "expe-normal-n-a2",
+    "expe-normal-n-a3",
+    "expe-portscan-p-a1",
+    "expe-portscan-p-a2",
+    "expe-portscan-p-a3"
+  ],
+  "limitations": [
+    "Normal has 94 rows after combining 50 Experiment E and 44 historical adaptation rows.",
+    "P-A3 has only 25 rows; retaining all preserves its independent session signal but does not equalize session sizes.",
+    "DDoS remains historical-only; future fitting must use session-aware class weighting rather than alter labels or validation membership."
+  ],
+  "schema": "experiment_e_e4_dataset_construction_audit",
+  "schema_version": 1,
+  "status": "PASS_WITH_DOCUMENTED_LIMITATION"
+}

@@ -1,0 +1,145 @@
+{
+  "constraints": [
+    "Do not install or execute Locust in this manifest step.",
+    "Do not start tcpdump or scientific capture in this manifest step.",
+    "Do not generate traffic, inspect predictions, train RF-v4, modify models, or write runtime DB records."
+  ],
+  "created_at_utc": "2026-09-16T04:02:05.149966+00:00",
+  "evidence": {
+    "observed_traffic_derived_evidence": {
+      "checksums": {
+        "path": "reports/experiment_f/collection/F-A1-DDOSLIKE-A-01/SHA256SUMS",
+        "status": "NOT_YET_COLLECTED"
+      },
+      "extraction_provenance": {
+        "path": "reports/experiment_f/collection/F-A1-DDOSLIKE-A-01/provenance/f_a1_ddoslike_a_01_extraction_provenance.json",
+        "status": "NOT_YET_COLLECTED"
+      },
+      "lineage_record": {
+        "path": "reports/experiment_f/collection/F-A1-DDOSLIKE-A-01/lineage/f_a1_ddoslike_a_01_lineage.json",
+        "status": "NOT_YET_COLLECTED"
+      },
+      "locust_execution_log": {
+        "path": "reports/experiment_f/collection/F-A1-DDOSLIKE-A-01/logs/f_a1_ddoslike_a_01_locust.log",
+        "status": "NOT_YET_COLLECTED"
+      },
+      "locust_statistics_report": {
+        "path": "reports/experiment_f/collection/F-A1-DDOSLIKE-A-01/logs/f_a1_ddoslike_a_01_locust_stats.csv",
+        "status": "NOT_YET_COLLECTED"
+      },
+      "model_input_78_matrix": {
+        "path": "reports/experiment_f/collection/F-A1-DDOSLIKE-A-01/model_input/f_a1_ddoslike_a_01_model_input_78.csv",
+        "status": "NOT_YET_COLLECTED"
+      },
+      "pcap": {
+        "path": "reports/experiment_f/collection/F-A1-DDOSLIKE-A-01/pcap/f_a1_ddoslike_a_01.pcap",
+        "status": "NOT_YET_COLLECTED"
+      },
+      "raw_cicflowmeter_84_csv": {
+        "path": "reports/experiment_f/collection/F-A1-DDOSLIKE-A-01/raw/f_a1_ddoslike_a_01_raw_84.csv",
+        "status": "NOT_YET_COLLECTED"
+      },
+      "session_metadata": {
+        "path": "reports/experiment_f/collection/F-A1-DDOSLIKE-A-01/metadata/f_a1_ddoslike_a_01_session_metadata.json",
+        "status": "NOT_YET_COLLECTED"
+      }
+    },
+    "planned_destinations": {
+      "checksums": "reports/experiment_f/collection/F-A1-DDOSLIKE-A-01/SHA256SUMS",
+      "extraction_provenance": "reports/experiment_f/collection/F-A1-DDOSLIKE-A-01/provenance/f_a1_ddoslike_a_01_extraction_provenance.json",
+      "lineage_record": "reports/experiment_f/collection/F-A1-DDOSLIKE-A-01/lineage/f_a1_ddoslike_a_01_lineage.json",
+      "locust_execution_log": "reports/experiment_f/collection/F-A1-DDOSLIKE-A-01/logs/f_a1_ddoslike_a_01_locust.log",
+      "locust_statistics_report": "reports/experiment_f/collection/F-A1-DDOSLIKE-A-01/logs/f_a1_ddoslike_a_01_locust_stats.csv",
+      "model_input_78_matrix": "reports/experiment_f/collection/F-A1-DDOSLIKE-A-01/model_input/f_a1_ddoslike_a_01_model_input_78.csv",
+      "pcap": "reports/experiment_f/collection/F-A1-DDOSLIKE-A-01/pcap/f_a1_ddoslike_a_01.pcap",
+      "pre_execution_manifest": "reports/experiment_f/collection/manifests/f_a1_ddoslike_a_01_preexecution_manifest.json",
+      "raw_cicflowmeter_84_csv": "reports/experiment_f/collection/F-A1-DDOSLIKE-A-01/raw/f_a1_ddoslike_a_01_raw_84.csv",
+      "session_metadata": "reports/experiment_f/collection/F-A1-DDOSLIKE-A-01/metadata/f_a1_ddoslike_a_01_session_metadata.json"
+    },
+    "rule": "Paths are frozen; no traffic-derived evidence file is created or claimed by this manifest."
+  },
+  "frozen_workload": {
+    "endpoint": "/",
+    "maximum_duration_seconds": 60,
+    "maximum_users_concurrency": 4,
+    "parameter_mutation_prohibited": true,
+    "profile_family_id": "F-A1-DDOSLIKE-A-01..03",
+    "profile_id": "F-A1-DDOSLIKE-A-01",
+    "request_behavior": "GET / only with a fixed 1.0\u20132.0 second wait between requests per simulated user; no adaptive optimization from model outputs.",
+    "spawn_rate_users_per_second": 1,
+    "stop_conditions": [
+      "duration limit reached",
+      "target/route/observer failure",
+      "out-of-scope endpoint",
+      "operator safety stop"
+    ],
+    "target_url": "http://10.10.20.2:8080/",
+    "timeout_seconds": 10,
+    "tool": "Locust"
+  },
+  "integrity_snapshot": {
+    "no_model_modification": true,
+    "source_hashes": {
+      "config/experiment_f_thesis_scope.yaml": "b782cc162b70d5827052f2f30c92202c331dfee8bf965a23a63aa05d3fa56b5a",
+      "models/experiment_d/random_forest_rf_v2.joblib": "fb13a71a0287054d2630bf07529f113a153ba08d8f6835a605b04493408b8a31",
+      "models/experiment_e/random_forest_rf_v3_candidate.joblib": "6b01c7b3923c1a6bd471862d011f8f5b88a31378e51d1dde082bd2e72bedef86",
+      "models/experiment_e/random_forest_rf_v3_candidate_metadata.json": "30b6bdf2a6cb2d60e2be36d4db1e124d71504393081b229e6d94da7e70322cbc",
+      "reports/experiment_f/amendments/f0_amendment_a1.json": "2116e1272ffc93dcaacfd105eb8f90afda10b2ccf5c2111ed2d2dd1179f6b95e",
+      "reports/experiment_f/preflight/f1_a1_preflight_evidence.json": "a04fa37f5fccb32851d2a118316357d837aa7b61b1ad727b7a2e77a9711ddfd6",
+      "reports/experiment_f/preregistration/f0_a1_acceptance_gates.json": "799d745797b95f76383035f44ceb9e62487250c4f05c95cdd6ba603b711256bf",
+      "reports/experiment_f/preregistration/f0_a1_tool_profiles.json": "9b03fe6e6cfb2185ee9446e14364394a34a1b5b38728950c5c22105d08909ba2",
+      "reports/tables/cicflowmeter_v3_78_feature_crosswalk.csv": "66e517cdcea217f19de4d0a2cd45302ede999388393f539fb8ca4a2c68b74cf4"
+    },
+    "source_hashes_after": {
+      "config/experiment_f_thesis_scope.yaml": "b782cc162b70d5827052f2f30c92202c331dfee8bf965a23a63aa05d3fa56b5a",
+      "models/experiment_d/random_forest_rf_v2.joblib": "fb13a71a0287054d2630bf07529f113a153ba08d8f6835a605b04493408b8a31",
+      "models/experiment_e/random_forest_rf_v3_candidate.joblib": "6b01c7b3923c1a6bd471862d011f8f5b88a31378e51d1dde082bd2e72bedef86",
+      "models/experiment_e/random_forest_rf_v3_candidate_metadata.json": "30b6bdf2a6cb2d60e2be36d4db1e124d71504393081b229e6d94da7e70322cbc",
+      "reports/experiment_f/amendments/f0_amendment_a1.json": "2116e1272ffc93dcaacfd105eb8f90afda10b2ccf5c2111ed2d2dd1179f6b95e",
+      "reports/experiment_f/preflight/f1_a1_preflight_evidence.json": "a04fa37f5fccb32851d2a118316357d837aa7b61b1ad727b7a2e77a9711ddfd6",
+      "reports/experiment_f/preregistration/f0_a1_acceptance_gates.json": "799d745797b95f76383035f44ceb9e62487250c4f05c95cdd6ba603b711256bf",
+      "reports/experiment_f/preregistration/f0_a1_tool_profiles.json": "9b03fe6e6cfb2185ee9446e14364394a34a1b5b38728950c5c22105d08909ba2",
+      "reports/tables/cicflowmeter_v3_78_feature_crosswalk.csv": "66e517cdcea217f19de4d0a2cd45302ede999388393f539fb8ca4a2c68b74cf4"
+    },
+    "source_inputs_unchanged": true,
+    "verified_identities": {
+      "crosswalk_sha256": "66e517cdcea217f19de4d0a2cd45302ede999388393f539fb8ca4a2c68b74cf4",
+      "f1_a1_decision": "F1_A1_PASS",
+      "f2_a1_phase_authorized": true,
+      "feature_count": 78,
+      "feature_order_sha256": "9338f50fc3e7efc78d678cc65ab38d428a7f6912ed9467a2b99a449a7c8e3c13",
+      "rf_v2_sha256": "fb13a71a0287054d2630bf07529f113a153ba08d8f6835a605b04493408b8a31",
+      "rf_v3_metadata_sha256": "30b6bdf2a6cb2d60e2be36d4db1e124d71504393081b229e6d94da7e70322cbc",
+      "rf_v3_sha256": "6b01c7b3923c1a6bd471862d011f8f5b88a31378e51d1dde082bd2e72bedef86"
+    }
+  },
+  "manifest_status": "F2_A1_MANIFEST_READY",
+  "next_operator_action": "Review this immutable manifest against the F1-A1 authorization and frozen profile before separately beginning the authorized F2-A1 adaptation collection procedure.",
+  "schema": "experiment_f_f2_a1_preexecution_manifest",
+  "separation": {
+    "E10_E13_relabeling_prohibited": true,
+    "capture_session_reuse_prohibited": [
+      "F-VALIDATION",
+      "F-FINAL"
+    ],
+    "future_eligibility": "May be considered for future RF-v4 data remediation only after collection, extraction, integrity, and lineage gates pass."
+  },
+  "session": {
+    "experimental_ground_truth_scope": "controlled HTTP DDoS-like/load profile",
+    "ground_truth_limit": "One traffic-generator VM using a standardized bounded HTTP load tool; not genuine distributed DDoS ground truth.",
+    "model_class": "DDoS",
+    "profile_family_id": "F-A1-DDOSLIKE-A-01..03",
+    "session_id": "F-A1-DDOSLIKE-A-01",
+    "split": "F-ADAPTATION",
+    "split_role": "adaptation only; never validation or final"
+  },
+  "topology": {
+    "allowed_target_url": "http://10.10.20.2:8080/",
+    "generator": "ubuntu-traffic / 10.10.10.2",
+    "observer": "ubuntu-nids",
+    "scientific_capture_interface": "enp0s3",
+    "target": "10.10.20.2",
+    "target_port": 8080
+  },
+  "version": 1
+}

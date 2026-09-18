@@ -1,0 +1,65 @@
+{
+  "canonical_pcap": {
+    "path": "data/lab/experiment_f/adaptation/pcap/ddoslike/f-a1-ddoslike-a-02.pcap",
+    "sha256": "570bad40729414f718cc4d6831c636cfb2565e80324edfd6db7161e51f6eda9d",
+    "status": "VERIFIED"
+  },
+  "classification": {
+    "eligible_for_final": false,
+    "eligible_for_validation": false,
+    "model_class": "DDoS",
+    "scope": "controlled HTTP DDoS-like/load profile",
+    "split": "F-ADAPTATION",
+    "training_eligibility": "PENDING_EXTRACTION_AND_DATA_GATES"
+  },
+  "decision": "F2_A1_COLLECTION_SESSION_PASS",
+  "locust": {
+    "exceptions": {
+      "path": "reports/experiment_f/collection/F-A1-DDOSLIKE-A-02/locust/f_a1_ddoslike_a_02_exceptions.csv",
+      "sha256": "3e73e8f665731ee4e45a6a91202a31b06999f2c53240f14aee2532e0e0b42b09",
+      "status": "VERIFIED"
+    },
+    "failures": {
+      "path": "reports/experiment_f/collection/F-A1-DDOSLIKE-A-02/locust/f_a1_ddoslike_a_02_failures.csv",
+      "sha256": "51ba68968b591276c95496a6a9624797491ce4eb934b1f6392f44b95148fbb93",
+      "status": "VERIFIED"
+    },
+    "stats": {
+      "path": "reports/experiment_f/collection/F-A1-DDOSLIKE-A-02/locust/f_a1_ddoslike_a_02_stats.csv",
+      "sha256": "82680012c1ab5647bcc61f618c7cefa90c363064a990a3d469546ad560e9bb2d",
+      "status": "VERIFIED"
+    },
+    "stats_history": {
+      "path": "reports/experiment_f/collection/F-A1-DDOSLIKE-A-02/locust/f_a1_ddoslike_a_02_stats_history.csv",
+      "sha256": "5b5935bbcdc47508146f281666a2e29ca411e8a367a2f78b1be0c1e5a15f772c",
+      "status": "VERIFIED"
+    }
+  },
+  "observations_preserved": {
+    "exit_code": 0,
+    "failure_count": 0,
+    "final_machine_readable_stats_csv_request_count": 152,
+    "locust_version": "2.46.5",
+    "reconciliation": "NOT_PERFORMED",
+    "tcpdump": {
+      "packets_captured": 1554,
+      "packets_dropped_by_kernel": 0,
+      "packets_received_by_filter": 1554
+    },
+    "terminal_summary_request_count": 154,
+    "workload_sha256": "88c4f02b8ca06afe69eac9465b663d0089b69f7f00a7221b686f0bc7a4433aed"
+  },
+  "persisted_timestamp_evidence": {
+    "interpretation_limit": "Directly persisted telemetry timestamps only; not an independently persisted execution start/end log.",
+    "observed_unix_seconds_first": 1789539879,
+    "observed_unix_seconds_last": 1789539938,
+    "source": "locust/f_a1_ddoslike_a_02_stats_history.csv",
+    "timestamp_column": "Timestamp"
+  },
+  "schema": "experiment_f_f2_a1_collection_evidence",
+  "session_id": "F-A1-DDOSLIKE-A-02",
+  "unavailable_artifacts": {
+    "independent_exact_start_end_timestamp_file": "NOT_AVAILABLE_AS_PERSISTED_ARTIFACT",
+    "independent_execution_log": "NOT_AVAILABLE_AS_PERSISTED_ARTIFACT"
+  }
+}

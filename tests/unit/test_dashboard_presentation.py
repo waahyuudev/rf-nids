@@ -8,6 +8,90 @@ from dashboard.presentation import (
     prediction_context,
     split_evaluations,
 )
+from dashboard.pages.monitoring import model_metadata_for_display, session_model_display
+
+
+def test_monitoring_session_model_display_marks_only_current_demo_model():
+    assert session_model_display("rf-v3.0-candidate", "rf-v3.0-candidate") == "rf-v3.0-candidate · DEMO"
+    assert session_model_display("rf-v2.0", "rf-v3.0-candidate") == "rf-v2.0"
+
+
+def test_monitoring_model_metadata_follows_each_operator_selection():
+    models = {
+        model["model_id"]: model
+        for model in [
+            {
+                "model_id": "rf-v2.0", "model_version": "rf-v2.0",
+                "scientific_status": "ACTIVE", "selection_mode": "DEFAULT",
+                "scientific_decision": None,
+            },
+            {
+                "model_id": "rf-v5-candidate-01", "model_version": "rf-v5-candidate-01",
+                "scientific_status": "CANDIDATE / NOT_ACTIVE",
+                "selection_mode": "MANUAL / DEMO SELECTION",
+                "scientific_decision": "RF_V5_VALIDATION_FAIL",
+            },
+            {
+                "model_id": "rf-v3.0-candidate", "model_version": "rf-v3.0-candidate",
+                "scientific_status": "CANDIDATE / NOT_ACTIVE",
+                "selection_mode": "MANUAL / DEMO SELECTION",
+                "scientific_decision": None,
+            },
+            {
+                "model_id": "rf-v4.0-candidate-01",
+                "model_version": "rf-v4.0-candidate-01",
+                "scientific_status": "CANDIDATE / NOT_ACTIVE",
+                "selection_mode": "MANUAL / DEMO SELECTION",
+                "scientific_decision": "F4_A2_VALIDATION_FAIL",
+            },
+        ]
+    }
+
+    displayed = [
+        model_metadata_for_display(models, model_id, running=False, current_session=None)
+        for model_id in ("rf-v2.0", "rf-v5-candidate-01", "rf-v3.0-candidate")
+    ]
+
+    assert [model["model_version"] for model in displayed] == [
+        "rf-v2.0", "rf-v5-candidate-01", "rf-v3.0-candidate"
+    ]
+    assert displayed[1]["scientific_status"] == "CANDIDATE / NOT_ACTIVE"
+    assert displayed[1]["selection_mode"] == "MANUAL / DEMO SELECTION"
+    assert displayed[1]["scientific_decision"] == "RF_V5_VALIDATION_FAIL"
+    rf_v4 = model_metadata_for_display(
+        models, "rf-v4.0-candidate-01", running=False, current_session=None
+    )
+    assert rf_v4["model_version"] == "rf-v4.0-candidate-01"
+    assert rf_v4["scientific_status"] == "CANDIDATE / NOT_ACTIVE"
+    assert rf_v4["scientific_decision"] == "F4_A2_VALIDATION_FAIL"
+
+
+def test_running_monitoring_metadata_uses_frozen_session_model():
+    models = {
+        "rf-v2.0": {
+            "model_id": "rf-v2.0", "model_version": "rf-v2.0",
+            "scientific_status": "ACTIVE", "selection_mode": "DEFAULT",
+        },
+        "rf-v5-candidate-01": {
+            "model_id": "rf-v5-candidate-01", "model_version": "rf-v5-candidate-01",
+            "scientific_status": "CANDIDATE / NOT_ACTIVE",
+            "selection_mode": "MANUAL / DEMO SELECTION",
+            "scientific_decision": "RF_V5_VALIDATION_FAIL",
+        },
+    }
+    session = {
+        "selected_model_id": "rf-v5-candidate-01",
+        "selected_model_version": "rf-v5-candidate-01",
+        "model_version": "rf-v5-candidate-01",
+        "selection_mode": "MANUAL / DEMO SELECTION",
+    }
+
+    displayed = model_metadata_for_display(
+        models, "rf-v2.0", running=True, current_session=session
+    )
+
+    assert displayed["model_version"] == "rf-v5-candidate-01"
+    assert displayed["selection_mode"] == "MANUAL / DEMO SELECTION"
 
 
 def test_dataset_and_model_mapping_preserve_imported_values_and_nulls():

@@ -1,0 +1,39 @@
+{
+  "schema": "experiment_f_f0_normal_remediation_amendment_a4_integrity",
+  "version": 1,
+  "status": "PASS",
+  "amendment_sha256": "1ea33436455fb15c8a377be3db618626c252a7e1340239b33c6c796984f68d6c",
+  "operator_script_tests": "PASS",
+  "operator_scripts": {
+    "scripts/experiment_f_normal_remediation/common.sh": "15c751d255d92673fbcbab777c65d5cb19cdc745b25bf9ba3eef6da8f333316a",
+    "scripts/experiment_f_normal_remediation/capture_session.sh": "19a80322f784a9026f1f8981b900732c96af20275097011d0baa1e0e05741bd3",
+    "scripts/experiment_f_normal_remediation/generate_normal.sh": "43d5b30b78fa878411ab5fce8bbd98376f78698d0b93eebaad10851bfb830398",
+    "scripts/experiment_f_normal_remediation/test_operator_scripts.sh": "d44234b7365b5b09b733d5c5e886dc345b94a0990ab045afbd626626b333dcf6"
+  },
+  "frozen_inputs_verified": {
+    "RF-v2": "fb13a71a0287054d2630bf07529f113a153ba08d8f6835a605b04493408b8a31",
+    "RF-v3": "6b01c7b3923c1a6bd471862d011f8f5b88a31378e51d1dde082bd2e72bedef86",
+    "RF-v4": "d5dccd339a5c67635e760d7d3760e1d006278362c6f70ea06bf20928ccdece13",
+    "F4_validation_dataset": "d5dbc3e6a6de373526c46bb7220092c14e81779ec91ebfe5ef855db7f7d53d0e",
+    "F4_validation_lineage": "8c2697841de6df5d66e22836eee100cf53de08935f1832f265130a9a2419c909",
+    "F4_acceptance_evaluation": "4acb49d060d2e3fd6d383e9afa948cbb864eaff3180e7488d77f3fd5c68ebc73",
+    "original_acceptance_gates": "0d82ea5e4c6384484f58a4d5f3e248d9a3996fd1259bdc46506f4490773e74b3",
+    "A1_acceptance_gates": "799d745797b95f76383035f44ceb9e62487250c4f05c95cdd6ba603b711256bf",
+    "crosswalk": "66e517cdcea217f19de4d0a2cd45302ede999388393f539fb8ca4a2c68b74cf4"
+  },
+  "actions_performed": [
+    "prospective amendment creation",
+    "non-network operator-script syntax and allowlist tests"
+  ],
+  "actions_not_performed": [
+    "network traffic generation",
+    "PCAP capture",
+    "CICFlowMeter extraction",
+    "dataset assembly",
+    "training or retraining",
+    "inference",
+    "threshold or hyperparameter changes",
+    "activation or promotion",
+    "historical evidence mutation"
+  ]
+}

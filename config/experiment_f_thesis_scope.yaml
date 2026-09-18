@@ -1,0 +1,12 @@
+experiment_code: EXPERIMENT_F_A1
+title: Thesis Scope — Controlled HTTP DDoS-like Load Simulation
+phase: AMENDMENT_PREREGISTRATION_ONLY
+status: NOT_AUTHORIZED_TO_EXECUTE
+traffic_execution_authorized: false
+training_authorized: false
+topology: {traffic: 10.10.10.2, nids_source: 10.10.10.1, nids_target_capture: "10.10.20.1/enp0s3", target: "10.10.20.2:8080"}
+model_class: DDoS
+experimental_ground_truth_scope: controlled_HTTP_DDoS_like_load_profile
+tool: Locust
+claim_limit: no_genuine_distributed_DDoS_or_universal_recall_claim
+next_authorized_phase: F1_A1_PREFLIGHT_ONLY

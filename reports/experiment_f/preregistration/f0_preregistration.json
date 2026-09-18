@@ -1,0 +1,99 @@
+{
+  "acceptance_gates_file": "reports/experiment_f/preregistration/f0_acceptance_gates.json",
+  "frozen_contract": {
+    "Experiment_D_final_test_permanently_excluded": true,
+    "baselines_frozen": [
+      "RF-v2",
+      "RF-v3"
+    ],
+    "classes": [
+      "Normal",
+      "DDoS",
+      "PortScan"
+    ],
+    "classifier_family": "Random Forest",
+    "extractor": "CICFlowMeter V3 approved provenance",
+    "feature_count": 78,
+    "feature_order_sha256": "9338f50fc3e7efc78d678cc65ab38d428a7f6912ed9467a2b99a449a7c8e3c13",
+    "initial_training_policy": {
+      "justification": "Data-remediation effect must be tested before hyperparameter tuning; any tuning requires a separate preregistration.",
+      "same_RF_settings_as_RF_v3": {
+        "bootstrap": false,
+        "class_weight": "balanced",
+        "criterion": "gini",
+        "max_depth": null,
+        "max_features": "log2",
+        "min_samples_leaf": 4,
+        "min_samples_split": 5,
+        "n_estimators": 200,
+        "n_jobs": -1,
+        "random_state": 42
+      }
+    },
+    "no_silent_imputation": true,
+    "no_threshold_hacks_or_feature_changes": true,
+    "random_state": 42,
+    "session_capture_split": true
+  },
+  "gate": "PASS",
+  "generated_at_utc": "2026-09-15T14:55:20.254954+00:00",
+  "ground_truth_design_file": "reports/experiment_f/preregistration/f0_ground_truth_design.json",
+  "integrity_before": {
+    "models/experiment_d/random_forest_rf_v2.joblib": "fb13a71a0287054d2630bf07529f113a153ba08d8f6835a605b04493408b8a31",
+    "models/experiment_e/random_forest_rf_v3_candidate.joblib": "6b01c7b3923c1a6bd471862d011f8f5b88a31378e51d1dde082bd2e72bedef86",
+    "models/experiment_e/random_forest_rf_v3_candidate_metadata.json": "30b6bdf2a6cb2d60e2be36d4db1e124d71504393081b229e6d94da7e70322cbc",
+    "reports/experiment_d/final_test/dataset_audit.json": "a0a22100cd0c6b923349aa6e899c2221b84d64991ca7e20b0626d811879d88c1",
+    "reports/experiment_e/analysis/e10_runtime_validation_analysis.json": "a0f85f3110df012359fef7203065e5f70c6b766ef1c8fab1a9397b7452d013ac",
+    "reports/experiment_e/analysis/e13_final_analysis.json": "7b6cd1d53ee484afcc426cbf7f3c219ba8a167e7f4b2dc54830cd5e5cfda74e9",
+    "reports/experiment_e/audit/e4_dataset_construction_audit.json": "69cc278d2a6139b7b2d2e9d4db3312fb3a3b06cf70381a719d542ec624e2b45c",
+    "reports/experiment_e/decision/e14_remediation_decision.json": "e5c11c39f7401fe89551d927b193978c59adc32bf7bb3052f619d225a595278e",
+    "reports/experiment_e/diagnostic/e11_ddos_failure_diagnostic.json": "364e709bd5411f2965bef2c667d7d32d03c723537ffc5845315733e0d11b75a0",
+    "reports/experiment_e/diagnostic/e12_recovered_runtime_diagnostic.json": "dde02664a46a2dbafb76f3bb4f722655ea354164f70bf89d84b6d98d5d8e391f",
+    "reports/tables/cicflowmeter_v3_78_feature_crosswalk.csv": "66e517cdcea217f19de4d0a2cd45302ede999388393f539fb8ca4a2c68b74cf4"
+  },
+  "objective": "Future RF-v4 research may improve three-class runtime generalization while preserving PortScan remediation and preventing material Normal/DDoS regression.",
+  "phase": "DESIGN_PREREGISTRATION_ONLY",
+  "phase_sequence": [
+    "F0 preregistration and ground-truth design",
+    "F1 topology/preflight",
+    "F2 ground-truth collection",
+    "F3 extraction/provenance validation",
+    "F4 dataset construction/leakage audit",
+    "F5 RF-v4 candidate training",
+    "F6 validation evaluation",
+    "F7 unseen runtime validation",
+    "F8 sealed final evaluation",
+    "F9 comparison/scientific decision",
+    "F10 separate promotion decision"
+  ],
+  "prohibited_in_F0": [
+    "traffic or load commands",
+    "training/RF-v4 artifact",
+    "hyperparameter/threshold change",
+    "model activation/promotion",
+    "runtime DB writes",
+    "historical D/E modification"
+  ],
+  "safety": [
+    "F0 generates zero traffic",
+    "isolated private controlled lab target only",
+    "bounded/reproducible/non-destructive future workloads",
+    "no public/corporate/uncontrolled target"
+  ],
+  "schema": "experiment_f_f0_preregistration",
+  "topology": {
+    "independence": "Each traffic generator is a separately provisioned VM and network stack; IP aliases, shared namespaces, and a single generator acting as multiple sources are invalid.",
+    "isolation": "Private UTM lab only; no public/corporate routes; explicit deny/verification before capture.",
+    "nodes": {
+      "ubuntu-nids_egress_capture": "10.10.20.1/24, enp0s3",
+      "ubuntu-nids_ingress": "10.10.10.1/24",
+      "ubuntu-target": "10.10.20.2:8080/24",
+      "ubuntu-traffic-1": "10.10.10.11/24",
+      "ubuntu-traffic-2": "10.10.10.12/24",
+      "ubuntu-traffic-3": "10.10.10.13/24",
+      "ubuntu-traffic-4": "10.10.10.14/24"
+    },
+    "routing": "Each independent generator routes only to the controlled target via ubuntu-nids. ubuntu-nids forwards between lab subnets and captures at enp0s3; it is observer/router, not a generator."
+  },
+  "version": 1
+}

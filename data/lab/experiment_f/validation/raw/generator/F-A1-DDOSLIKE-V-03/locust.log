@@ -1,0 +1,6 @@
+[2026-09-16 08:36:13,692] ubuntu-traffic/INFO/locust.main: Starting Locust 2.46.5
+[2026-09-16 08:36:13,692] ubuntu-traffic/INFO/locust.main: Run time limit set to 90 seconds
+[2026-09-16 08:36:13,694] ubuntu-traffic/INFO/locust.runners: Ramping to 8 users at a rate of 2.00 per second
+[2026-09-16 08:36:16,701] ubuntu-traffic/INFO/locust.runners: All users spawned: {"ValidationLoadUser": 8} (8 total users)
+[2026-09-16 08:37:43,611] ubuntu-traffic/INFO/locust.main: --run-time limit reached, shutting down
+[2026-09-16 08:37:43,652] ubuntu-traffic/INFO/locust.main: Shutting down (exit code 0)

@@ -3,6 +3,7 @@ from datetime import datetime, timezone
 import streamlit as st
 
 from dashboard.components.styles import section_heading
+from dashboard.config import DashboardConfig
 
 PAGE_SIZE = 20
 ACTIVE = {"STARTING", "RUNNING", "STOPPING"}
@@ -18,6 +19,46 @@ def _elapsed(started_at: str | None) -> str:
     return f"{hours:02d}:{minutes:02d}:{seconds:02d}"
 
 
+def session_model_display(model_version: str | None, demo_model_version: str | None) -> str:
+    """Label only the current demo inference model; historical sessions stay literal."""
+    value = model_version or "—"
+    return f"{value} · DEMO" if value == demo_model_version else value
+
+
+def model_metadata_for_display(
+    model_by_id: dict[str, dict],
+    selected_model_id: str,
+    *,
+    running: bool,
+    current_session: dict | None,
+) -> dict | None:
+    """Resolve configuration metadata without confusing UI and runtime state."""
+    if not running:
+        return model_by_id.get(selected_model_id)
+    if current_session is None:
+        return None
+
+    session_model_id = session_model_id_from(current_session)
+    registered = model_by_id.get(session_model_id, {})
+    return {
+        **registered,
+        "model_id": session_model_id,
+        "model_version": current_session.get("selected_model_version")
+        or current_session.get("model_version")
+        or session_model_id,
+        "selection_mode": current_session.get("selection_mode")
+        or registered.get("selection_mode", "DEFAULT"),
+    }
+
+
+def session_model_id_from(current_session: dict) -> str | None:
+    return (
+        current_session.get("selected_model_id")
+        or current_session.get("selected_model_version")
+        or current_session.get("model_version")
+    )
+
+
 def render(client) -> None:
     section_heading(
         "Monitoring",
@@ -26,30 +67,57 @@ def render(client) -> None:
     state = client.monitoring_status()
     current = state.get("session")
     running = state["status"] in ACTIVE
+    dashboard_config = DashboardConfig.from_env()
 
     st.subheader("Monitoring Configuration")
     interfaces = client.monitoring_interfaces()
     choices = [item["name"] for item in interfaces["interfaces"]]
-    model = client.active_model()
-    with st.form("monitoring_configuration"):
-        target = st.text_input(
-            "Target IP", value="", placeholder="192.168.128.4", disabled=running
+    models = client.monitoring_models()
+    model_by_id = {item["model_id"]: item for item in models}
+    model_ids = list(model_by_id)
+    active_model = next(
+        (item for item in models if item["selection_mode"] == "DEFAULT"), None
+    )
+    session_model_id = session_model_id_from(current) if current else None
+    initial_model_id = (
+        session_model_id if running and session_model_id in model_by_id
+        else active_model["model_id"] if active_model else None
+    )
+    default_index = model_ids.index(initial_model_id) if initial_model_id else 0
+    target = st.text_input(
+        "Target IP", value="", placeholder="192.168.128.4", disabled=running
+    )
+    interface = st.selectbox(
+        "Capture Interface", choices or ["Interface discovery unavailable"],
+        disabled=running or not choices,
+    )
+    selected_model_id = st.selectbox(
+        "Model", model_ids or ["No verified runtime models available"],
+        index=default_index if model_ids else 0,
+        disabled=running or not model_ids,
+        key="selected_monitoring_model_id",
+    )
+    selected_model = model_by_id.get(selected_model_id)
+    session_model = model_metadata_for_display(
+        model_by_id, selected_model_id, running=running, current_session=current
+    )
+    displayed_model = session_model if running else selected_model
+    if displayed_model:
+        st.markdown(
+            f'**Model:** {displayed_model["model_version"]}  \n'
+            f'**Scientific status:** {displayed_model.get("scientific_status", "—")}  \n'
+            f'**Runtime mode:** {displayed_model["selection_mode"]}'
         )
-        interface = st.selectbox(
-            "Capture Interface", choices or ["Interface discovery unavailable"],
-            disabled=running or not choices,
-        )
-        st.text_input(
-            "Active Model", value=f'{model["model_name"]} ({model["model_version"]})',
-            disabled=True,
-        )
-        submitted = st.form_submit_button(
-            "START MONITORING", type="primary", disabled=running or not choices
-        )
+        if displayed_model.get("scientific_decision"):
+            st.caption(f'Scientific decision: {displayed_model["scientific_decision"]}')
+    submitted = st.button(
+        "START MONITORING", type="primary",
+        disabled=running or not choices or not model_ids,
+    )
     if not interfaces["discovery_available"]:
         st.warning("Network interface discovery is unavailable on the API host.")
     if submitted:
-        client.start_monitoring(target, interface)
+        client.start_monitoring(target, interface, selected_model_id)
         st.rerun()
 
     st.divider()
@@ -59,7 +127,8 @@ def render(client) -> None:
         columns = st.columns(4)
         values = [
             ("Session ID", current["id"]), ("Target", current["target_ip"]),
-            ("Interface", current["interface_name"]), ("Model", current["model_version"]),
+            ("Interface", current["interface_name"]),
+            ("Model", session_model_display(current["model_version"], dashboard_config.demo_model_version)),
             ("Elapsed", _elapsed(current["started_at"])), ("Flows", current["flow_count"]),
             ("Predictions", current["prediction_count"]), ("Alerts", current["alert_count"]),
         ]
@@ -68,6 +137,8 @@ def render(client) -> None:
         if current.get("last_error"):
             st.error(current["last_error"])
         st.caption(
+            f'Model SHA-256: {current.get("selected_model_sha256") or "—"} · '
+            f'Selection: {current.get("selection_mode") or "DEFAULT"} · '
             f'Extractor: {current.get("extractor_name") or "—"} · '
             f'Latest processing: {current.get("latest_processing_at") or "—"}'
         )
@@ -132,7 +203,8 @@ def render(client) -> None:
     st.subheader("Session History")
     page = int(st.number_input("Page", min_value=1, step=1, key="session_history_page"))
     rows = client.monitoring_sessions(limit=PAGE_SIZE, offset=(page - 1) * PAGE_SIZE)
-    fields = ["id", "target_ip", "interface_name", "model_version", "status",
+    fields = ["id", "target_ip", "interface_name", "selected_model_version",
+              "selected_model_sha256", "selection_mode", "status",
               "started_at", "stopped_at", "flow_count", "prediction_count", "alert_count"]
     st.dataframe([{key: row.get(key) for key in fields} for row in rows], use_container_width=True)
     st.caption(f"Page {page} · showing {len(rows)} of at most {PAGE_SIZE} sessions.")

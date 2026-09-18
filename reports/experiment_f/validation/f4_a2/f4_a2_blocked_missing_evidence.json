@@ -1,0 +1,75 @@
+{
+  "schema": "experiment_f_f4_a2_missing_evidence_gate",
+  "version": 1,
+  "phase": "F4-A2_VALIDATION_EXTRACTION_DATA_GATE_COMPARATIVE_MODEL_EVALUATION",
+  "decision": "F4_A2_BLOCKED_MISSING_EVIDENCE",
+  "scope": "Evidence inventory only; extraction and inference were not started.",
+  "required_scientific_sessions": [
+    "F-A1-NORMAL-V-01-R1",
+    "F-A1-NORMAL-V-02",
+    "F-A1-NORMAL-V-03",
+    "F-A1-DDOSLIKE-V-01",
+    "F-A1-DDOSLIKE-V-02",
+    "F-A1-DDOSLIKE-V-03",
+    "F-A1-PORTSCAN-V-01",
+    "F-A1-PORTSCAN-V-02",
+    "F-A1-PORTSCAN-V-03"
+  ],
+  "historical_failed_attempt": {
+    "session_id": "F-A1-NORMAL-V-01",
+    "required_status": "FAILED_PRE_TRAFFIC / EMPTY_CAPTURE",
+    "validation_dataset_eligible": false,
+    "copied_evidence_found": false,
+    "disposition": "Preserve and copy separately if present on the VMs; never include in validation."
+  },
+  "repository_inventory": {
+    "experiment_f_validation_pcap_count": 0,
+    "experiment_f_validation_observer_session_directory_count": 0,
+    "experiment_f_validation_generator_session_directory_count": 0,
+    "missing_scientific_sessions": 9,
+    "complete_scientific_sessions": 0
+  },
+  "missing_for_every_scientific_session": {
+    "observer_evidence": [
+      "<SESSION_ID>.pcap",
+      "capture_started_utc.txt",
+      "capture_ended_utc.txt",
+      "tcpdump_exit_status.txt",
+      "tcpdump.stderr.log",
+      "PCAP_SHA256SUM"
+    ],
+    "generator_common_evidence": [
+      "generator_started_utc.txt",
+      "generator_ended_utc.txt",
+      "generator_exit_status.txt"
+    ],
+    "generator_profile_evidence": {
+      "Normal": "requests.csv plus request_1..30 result/stderr files",
+      "DDoS": "Locust log and CSV outputs",
+      "PortScan": "nmap normal/XML/grepable outputs and stdout/stderr logs"
+    }
+  },
+  "model_hash_verification": {
+    "RF-v2": {"status": "PASS", "sha256": "fb13a71a0287054d2630bf07529f113a153ba08d8f6835a605b04493408b8a31"},
+    "RF-v3": {"status": "PASS", "sha256": "6b01c7b3923c1a6bd471862d011f8f5b88a31378e51d1dde082bd2e72bedef86"},
+    "RF-v4": {"status": "PASS", "sha256": "d5dccd339a5c67635e760d7d3760e1d006278362c6f70ea06bf20928ccdece13"}
+  },
+  "frozen_contract_verification": {
+    "feature_count": 78,
+    "feature_order_sha256": "9338f50fc3e7efc78d678cc65ab38d428a7f6912ed9467a2b99a449a7c8e3c13",
+    "crosswalk_sha256": "66e517cdcea217f19de4d0a2cd45302ede999388393f539fb8ca4a2c68b74cf4",
+    "extractor_source_commit": "a26aae27f21d165ff30b4b28e75124a5f9b4b2c4",
+    "approved_image_digest": "sha256:b12b3a4a4218968aba2436685a4eb113473e5681de70705409e834e4613a879b"
+  },
+  "actions_not_performed": [
+    "network traffic generation",
+    "CICFlowMeter extraction",
+    "adaptation or concatenation",
+    "model loading or inference",
+    "training or retraining",
+    "threshold or feature-contract change",
+    "activation or promotion",
+    "historical evidence mutation"
+  ],
+  "next_action": "Copy the complete create-new observer and generator session directories from ubuntu-nids and ubuntu-traffic, then rerun F4-A2 from the evidence gate."
+}

@@ -1,0 +1,31 @@
+{
+  "experiment_code": "EXPERIMENT_E",
+  "amendment_id": "E3-A1",
+  "status": "APPROVED",
+  "scope": "Experiment E only",
+  "historical_required_image_digest": "sha256:0227c7280e586d54144b9bb11b2a6b5d4b1c4ba9bc7c44199fa312a6b829caab",
+  "historical_artifact_available": false,
+  "approved_replacement": {
+    "image_tag": "rf-nids-cicflowmeter-v3:a26aae27",
+    "image_digest": "sha256:b12b3a4a4218968aba2436685a4eb113473e5681de70705409e834e4613a879b"
+  },
+  "compatibility_gate": {
+    "evidence": "reports/experiment_e/audit/e3_cicflowmeter_provenance_recovery_gate.json",
+    "verdict": "BYTE_IDENTICAL_ON_NINE_NON_FINAL_EXPERIMENT_D_ADAPTATION_REFERENCE_PCAPS",
+    "scope": "all three Normal, three PortScan, and three DDoS-like Experiment D adaptation PCAPs only"
+  },
+  "architecture_provenance_difference": "historical build toolchain amd64; approved candidate build toolchain aarch64",
+  "rationale": "The candidate produced byte-identical 84-column CSV outputs across the complete available non-final Experiment D adaptation reference corpus and was accepted identically by the pinned ordered 78-feature adapter.",
+  "limitation": "The candidate image artifact digest differs from the missing historical artifact; authorization is functional-output qualified and does not rewrite historical Experiment C or D provenance.",
+  "e3_extraction_authorized": true,
+  "prohibited_operations": {
+    "experiment_d_modified": false,
+    "rf_v2_modified": false,
+    "training": false,
+    "inference": false,
+    "evaluation": false,
+    "threshold_change": false,
+    "e4_action": false,
+    "final_test_collected": false
+  }
+}

@@ -164,6 +164,9 @@ class RFNIDSClient:
     def monitoring_interfaces(self):
         return self._request("GET", "/api/monitoring/interfaces")
 
+    def monitoring_models(self):
+        return self._request("GET", "/api/monitoring/models")
+
     def monitoring_sessions(self, *, limit=20, offset=0):
         return self._request("GET", "/api/monitoring/sessions", params={"limit": limit, "offset": offset})
 
@@ -173,8 +176,13 @@ class RFNIDSClient:
             params={"limit": limit},
         )
 
-    def start_monitoring(self, target_ip: str, interface_name: str):
-        return self._request("POST", "/api/monitoring/start", json={"target_ip": target_ip, "interface_name": interface_name})
+    def start_monitoring(
+        self, target_ip: str, interface_name: str, selected_model_id: str | None = None
+    ):
+        payload = {"target_ip": target_ip, "interface_name": interface_name}
+        if selected_model_id is not None:
+            payload["selected_model_id"] = selected_model_id
+        return self._request("POST", "/api/monitoring/start", json=payload)
 
     def stop_monitoring(self):
         return self._request("POST", "/api/monitoring/stop", timeout=max(self.timeout, 150))

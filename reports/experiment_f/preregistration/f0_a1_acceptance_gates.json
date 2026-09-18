@@ -1,0 +1,23 @@
+{
+  "amends": "wording/scope only; original f0_acceptance_gates.json remains authoritative for non-conflicting protections",
+  "mandatory": [
+    "Normal preservation",
+    "PortScan preservation",
+    "measurable DDoS-like improvement in amended scope",
+    "per-class recall/F1, macro F1, confusion matrix, false-positive assessment",
+    "identical-flow RF-v2/RF-v3 comparison and paired transitions",
+    "unseen validation and sealed final evaluation"
+  ],
+  "no_weakened_class_gates": true,
+  "promotion": "All mandatory validation and replicated sealed-final gates must pass; F10 remains separately authorized and cannot claim distributed-DDoS validation.",
+  "schema": "experiment_f_f0_a1_acceptance_gates",
+  "validation_success": {
+    "ddos_like_f1": ">= RF-v3 +0.10 absolute on the same amended-scope evaluation flows",
+    "ddos_like_recall": "On new F controlled HTTP DDoS-like validation sessions, >=0.20 and >=0.10 absolute improvement over RF-v3; not a universal DDoS-recall claim.",
+    "false_positives": "No >0.02 absolute increase in Normal->DDoS or Normal->PortScan versus RF-v3",
+    "macro_f1": ">= RF-v3 -0.02 with no class gate waived",
+    "normal_recall": ">=0.98 and no more than 0.02 below RF-v3 on identical validation flows",
+    "portscan_recall": ">=0.995 and no more than 0.005 below RF-v3 on identical validation flows"
+  },
+  "version": 1
+}

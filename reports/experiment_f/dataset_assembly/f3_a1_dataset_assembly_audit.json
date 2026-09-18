@@ -1,0 +1,236 @@
+{
+  "amendment_a2": {
+    "path": "reports/experiment_f/amendments/f0_composition_amendment_a2.json",
+    "sha256": "24840ecd9973e4028c0dd382da90d1a467f0190a654abcd2fbd50af9baed6afb",
+    "verified": true
+  },
+  "class_counts": {
+    "DDoS": 4023,
+    "Normal": 94,
+    "PortScan": 2581
+  },
+  "contamination_audit": {
+    "row_counts": {
+      "E10": 0,
+      "E13": 0,
+      "Experiment D final-test": 0,
+      "Experiment E final evaluation": 0,
+      "Experiment E unseen runtime validation": 0,
+      "Experiment E validation": 0,
+      "Experiment F final": 0,
+      "Experiment F validation": 0,
+      "future F sessions": 0,
+      "reconstructed historical pools": 0,
+      "unapproved sessions": 0
+    },
+    "status": "PASS"
+  },
+  "data_quality": {
+    "duplicate_feature_vector_count": 1987,
+    "duplicates_retained": true,
+    "inf_count": 0,
+    "label_validity": "PASS",
+    "nan_count": 336,
+    "unexpected_labels": []
+  },
+  "dataset": {
+    "columns": 79,
+    "feature_columns": 78,
+    "label_column": "ground_truth_class",
+    "path": "data/lab/experiment_f/datasets/rf_v4_candidate_01_training.csv",
+    "rows": 6698,
+    "sha256": "a65c812494917b2e6d18153b784fd0505b84229f86b6a6916c59fa1187bd778d"
+  },
+  "decision": "F3_A1_DATASET_ASSEMBLY_PASS",
+  "experiment_f_policy": {
+    "cap_applied": false,
+    "deduplication_performed": false,
+    "distributed_ddos_claim": false,
+    "label_scope": "controlled HTTP DDoS-like/load profile",
+    "resampling_performed": false,
+    "rows": 942
+  },
+  "f_session_distribution": {
+    "F-A1-DDOSLIKE-A-01": 311,
+    "F-A1-DDOSLIKE-A-02": 311,
+    "F-A1-DDOSLIKE-A-03": 320
+  },
+  "feature_contract": {
+    "count": 78,
+    "crosswalk_sha256": "66e517cdcea217f19de4d0a2cd45302ede999388393f539fb8ca4a2c68b74cf4",
+    "exact_order": [
+      "destination_port",
+      "flow_duration",
+      "total_fwd_packets",
+      "total_backward_packets",
+      "total_length_of_fwd_packets",
+      "total_length_of_bwd_packets",
+      "fwd_packet_length_max",
+      "fwd_packet_length_min",
+      "fwd_packet_length_mean",
+      "fwd_packet_length_std",
+      "bwd_packet_length_max",
+      "bwd_packet_length_min",
+      "bwd_packet_length_mean",
+      "bwd_packet_length_std",
+      "flow_bytes_s",
+      "flow_packets_s",
+      "flow_iat_mean",
+      "flow_iat_std",
+      "flow_iat_max",
+      "flow_iat_min",
+      "fwd_iat_total",
+      "fwd_iat_mean",
+      "fwd_iat_std",
+      "fwd_iat_max",
+      "fwd_iat_min",
+      "bwd_iat_total",
+      "bwd_iat_mean",
+      "bwd_iat_std",
+      "bwd_iat_max",
+      "bwd_iat_min",
+      "fwd_psh_flags",
+      "bwd_psh_flags",
+      "fwd_urg_flags",
+      "bwd_urg_flags",
+      "fwd_header_length",
+      "bwd_header_length",
+      "fwd_packets_s",
+      "bwd_packets_s",
+      "min_packet_length",
+      "max_packet_length",
+      "packet_length_mean",
+      "packet_length_std",
+      "packet_length_variance",
+      "fin_flag_count",
+      "syn_flag_count",
+      "rst_flag_count",
+      "psh_flag_count",
+      "ack_flag_count",
+      "urg_flag_count",
+      "cwe_flag_count",
+      "ece_flag_count",
+      "down_up_ratio",
+      "average_packet_size",
+      "avg_fwd_segment_size",
+      "avg_bwd_segment_size",
+      "fwd_header_length.1",
+      "fwd_avg_bytes_bulk",
+      "fwd_avg_packets_bulk",
+      "fwd_avg_bulk_rate",
+      "bwd_avg_bytes_bulk",
+      "bwd_avg_packets_bulk",
+      "bwd_avg_bulk_rate",
+      "subflow_fwd_packets",
+      "subflow_fwd_bytes",
+      "subflow_bwd_packets",
+      "subflow_bwd_bytes",
+      "init_win_bytes_forward",
+      "init_win_bytes_backward",
+      "act_data_pkt_fwd",
+      "min_seg_size_forward",
+      "active_mean",
+      "active_std",
+      "active_max",
+      "active_min",
+      "idle_mean",
+      "idle_std",
+      "idle_max",
+      "idle_min"
+    ],
+    "feature_order_sha256": "9338f50fc3e7efc78d678cc65ab38d428a7f6912ed9467a2b99a449a7c8e3c13",
+    "status": "PASS"
+  },
+  "historical_baseline_preservation": {
+    "caps_reapplied": false,
+    "logical_row_equality": true,
+    "reconstruction_performed": false,
+    "row_count": 5756
+  },
+  "inference_performed": false,
+  "lineage": {
+    "complete": true,
+    "path": "data/lab/experiment_f/datasets/rf_v4_candidate_01_training_lineage.csv",
+    "rows": 6698,
+    "sha256": "1ee2fdad6a9cb4321f6a85beb003e2eb2596518ddd9b54a7a9f151b1c65f4283"
+  },
+  "model_training_performed": false,
+  "schema": "experiment_f_f3_a1_dataset_assembly_audit",
+  "source_distribution": {
+    "EXPERIMENT_F_A2_CONTRIBUTION": 942,
+    "FROZEN_EXPERIMENT_E_TRAINING_CANDIDATE": 5756
+  },
+  "source_hash_verification": {
+    "experiment_f_chain": {
+      "F-A1-DDOSLIKE-A-01": {
+        "adapted": {
+          "path": "data/lab/experiment_f/adaptation/model_input/ddoslike/f-a1-ddoslike-a-01_model_input_78.csv",
+          "sha256": "77c2dc16264b2f0f1d53f0013a76574c5f9768c75d66db6954453d8acf0da453"
+        },
+        "pcap": {
+          "path": "data/lab/experiment_f/adaptation/pcap/ddoslike/f-a1-ddoslike-a-01.pcap",
+          "sha256": "71874ad8f9e6519548aeffc219bb64635f1cca24f1acdf8c9ebaef50ced01910"
+        },
+        "raw": {
+          "path": "data/lab/experiment_f/adaptation/flows/cicflowmeter-v3/ddoslike/f-a1-ddoslike-a-01/f-a1-ddoslike-a-01.pcap_ISCX.csv",
+          "sha256": "7ecfaa4439c1e0bcfea54c8a0c414e24a7492fbbe78106d8993e5f24c8487f80"
+        }
+      },
+      "F-A1-DDOSLIKE-A-02": {
+        "adapted": {
+          "path": "data/lab/experiment_f/adaptation/model_input/ddoslike/f-a1-ddoslike-a-02_model_input_78.csv",
+          "sha256": "84c101b76eefaa1cdf0a8b5a7bf7cabd3ae600f21dcdcd93d3cc5b84f6acae3e"
+        },
+        "pcap": {
+          "path": "data/lab/experiment_f/adaptation/pcap/ddoslike/f-a1-ddoslike-a-02.pcap",
+          "sha256": "570bad40729414f718cc4d6831c636cfb2565e80324edfd6db7161e51f6eda9d"
+        },
+        "raw": {
+          "path": "data/lab/experiment_f/adaptation/flows/cicflowmeter-v3/ddoslike/f-a1-ddoslike-a-02/f-a1-ddoslike-a-02.pcap_ISCX.csv",
+          "sha256": "8ade0fd34aafb35d0ce6fb0485710cf61c32ec667b028894ce92aad21eb046bf"
+        }
+      },
+      "F-A1-DDOSLIKE-A-03": {
+        "adapted": {
+          "path": "data/lab/experiment_f/adaptation/model_input/ddoslike/f-a1-ddoslike-a-03_model_input_78.csv",
+          "sha256": "ddf9ae064356f9f5444d2ff1829adc9b6b10ede71b2b032adca3adef9425deda"
+        },
+        "pcap": {
+          "path": "data/lab/experiment_f/adaptation/pcap/ddoslike/f-a1-ddoslike-a-03.pcap",
+          "sha256": "5911e90f0a4a605a213b33df87c9b9ea0f0ba7ccd1044ad4e254e6097e137c47"
+        },
+        "raw": {
+          "path": "data/lab/experiment_f/adaptation/flows/cicflowmeter-v3/ddoslike/f-a1-ddoslike-a-03/f-a1-ddoslike-a-03.pcap_ISCX.csv",
+          "sha256": "b458899f12118a52d826f5f51ebd4aaf3b94d079df39b9d4ef841f0b96c9ceeb"
+        }
+      }
+    },
+    "historical_dataset": "f716404391467b267cca2f989762c2d4740127a4e7dd11afe956e7e8940b2284",
+    "historical_lineage": "950868cc0e5f8943e7eb03dba544d535d4d20e74a018facf48dcb7ebcb38ecd9",
+    "historical_lineage_source_csvs": {
+      "data/lab/experiment_d/adaptation/flows/cicflowmeter-v3/ddos/ddos-like-d2-s01.pcap_ISCX.csv": "3c19e07d4365d1532d5ff72b0e97feab0bdc9883047d71c22763aa45043bc017",
+      "data/lab/experiment_d/adaptation/flows/cicflowmeter-v3/ddos/ddos-like-d2-s02.pcap_ISCX.csv": "5f9b415183633af092af785c06caeb7258b15467491f91140e61841840b385d8",
+      "data/lab/experiment_d/adaptation/flows/cicflowmeter-v3/ddos/ddos-like-d2-s04-replacement.pcap_ISCX.csv": "e7adaa0ed70c6a8c0be6634c85203e0229675d03a3aef12f2533aded4d0752f1",
+      "data/lab/experiment_d/adaptation/flows/cicflowmeter-v3/normal/normal-d2-s01.pcap_ISCX.csv": "a75d02bcc954c98cff052ed333d6da04cfcf069b7a28e8fd90ef89393da400df",
+      "data/lab/experiment_d/adaptation/flows/cicflowmeter-v3/normal/normal-d2-s02.pcap_ISCX.csv": "c22a5f23299064bdbf0a649df9b2591832ec903df1b236b7ed6fa46157dc9ec9",
+      "data/lab/experiment_d/adaptation/flows/cicflowmeter-v3/normal/normal-d2-s03.pcap_ISCX.csv": "548c1a3192cc1310edc923c9923ed7b79366ad048e8f82d23a1c5edb3a67681b",
+      "data/lab/experiment_d/adaptation/flows/cicflowmeter-v3/portscan/portscan-d2-s01.pcap_ISCX.csv": "b6b37ca630e4a17ea256f1c0ac32c105eaddc5d22721f95d60406c265955b04a",
+      "data/lab/experiment_d/adaptation/flows/cicflowmeter-v3/portscan/portscan-d2-s02.pcap_ISCX.csv": "76642114974d6317506f951d824f32ceee09f6333e3bef50ee4ce2c298f96e9f",
+      "data/lab/experiment_d/adaptation/flows/cicflowmeter-v3/portscan/portscan-d2-s03.pcap_ISCX.csv": "6c8c195b743ea8453347b1d91513f4eb5cf03ea53a9acad78811bee3ee1d49c4",
+      "data/lab/experiment_e/adaptation/flows/cicflowmeter-v3/normal/expe-normal-n-a1.pcap_ISCX.csv": "e0a4f6bb3e2148e0cd1a5be1409694c496b6e95ced34eee7468f2abbbd3aff1b",
+      "data/lab/experiment_e/adaptation/flows/cicflowmeter-v3/normal/expe-normal-n-a2.pcap_ISCX.csv": "100c7be956778ad41555c9b67cc2bb9031a2322f09e208f05e081afd92a9af85",
+      "data/lab/experiment_e/adaptation/flows/cicflowmeter-v3/normal/expe-normal-n-a3.pcap_ISCX.csv": "6a86409353c47a1922c28ecf3f506ec3d71b570d2cf6f2669ef790b05b8318d5",
+      "data/lab/experiment_e/adaptation/flows/cicflowmeter-v3/portscan/expe-portscan-p-a1.pcap_ISCX.csv": "2891b03c688ab73a1de9bbf748c5b67ceaabc8d8a8cd3afa6806a3e0a19ab514",
+      "data/lab/experiment_e/adaptation/flows/cicflowmeter-v3/portscan/expe-portscan-p-a2.pcap_ISCX.csv": "9a10fc286ae327a4af481eeb65b655c921211c274aebcc6422524b4c2d615886",
+      "data/lab/experiment_e/adaptation/flows/cicflowmeter-v3/portscan/expe-portscan-p-a3.pcap_ISCX.csv": "c22d170b574098ad2aa88aa51bd45b9231a1b34e2f19f7d8f0b85b99f1ebc424"
+    },
+    "status": "PASS"
+  },
+  "training_input_freeze": {
+    "path": "reports/experiment_f/dataset_assembly/rf_v4_candidate_01_training_input_freeze.json",
+    "sha256": "1e89b78779c15d2c9f9cd21ea89fd39c88275a888fd28fd7d08b8d62d5cf4142"
+  },
+  "training_readiness": "F3_A2_RF_V4_TRAINING_READY",
+  "validation_or_final_data_inspected": false,
+  "version": 1
+}

@@ -1,0 +1,278 @@
+{
+  "deltas_rf_v3_minus_rf_v2": {
+    "normal_f1": 0.949278734295021,
+    "normal_false_positive_as_portscan_change": 0,
+    "normal_recall": 0.0,
+    "overall_accuracy": 0.9881422924901185,
+    "portscan_f1": 0.9996667777407531,
+    "portscan_false_negative_reduction": 1500,
+    "portscan_recall": 0.9993337774816788
+  },
+  "e7_scientifically_authorized": true,
+  "limitations": [
+    "E6 does NOT validate DDoS recall: no new DDoS validation session exists.",
+    "DDoS predictions are counted for observed Normal/PortScan rows but are not DDoS performance evidence.",
+    "N-V1 has 17 rows; Normal conclusions have limited session/row coverage.",
+    "N-F1/P-F1 and Experiment D final-test remain sealed and unread."
+  ],
+  "rf_v2": {
+    "accuracy": 0.011198945981554678,
+    "confusion_matrix": [
+      [
+        17,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0
+      ],
+      [
+        1501,
+        0,
+        0
+      ]
+    ],
+    "confusion_matrix_labels": [
+      "Normal",
+      "DDoS",
+      "PortScan"
+    ],
+    "ddos_ground_truth_evaluated": false,
+    "ddos_predictions_on_observed_validation": 0,
+    "normal_false_positive_as_portscan_count": 0,
+    "normal_false_positive_as_portscan_rate": 0.0,
+    "observed_class_metrics": {
+      "Normal": {
+        "f1": 0.02214983713355049,
+        "precision": 0.011198945981554678,
+        "recall": 1.0,
+        "support": 17
+      },
+      "PortScan": {
+        "f1": 0.0,
+        "precision": 0.0,
+        "recall": 0.0,
+        "support": 1501
+      }
+    },
+    "portscan_false_negative_count": 1501,
+    "portscan_to_ddos_count": 0,
+    "portscan_to_normal_count": 1501,
+    "predicted_class_counts": {
+      "DDoS": 0,
+      "Normal": 1518,
+      "PortScan": 0
+    },
+    "session_results": {
+      "N-V1": {
+        "correct_count": 17,
+        "ground_truth_class": "Normal",
+        "incorrect_count": 0,
+        "predicted_distribution": {
+          "DDoS": 0,
+          "Normal": 17,
+          "PortScan": 0
+        },
+        "probability_summary": {
+          "DDoS": {
+            "max": 0.19169344345511027,
+            "mean": 0.08170702643782432,
+            "median": 0.0050117415162447745,
+            "min": 0.0,
+            "q1": 0.0,
+            "q3": 0.176985236979916
+          },
+          "Normal": {
+            "max": 1.0,
+            "mean": 0.887380982386776,
+            "median": 0.9553655158228374,
+            "min": 0.7391364728810059,
+            "q1": 0.7716452795474159,
+            "q3": 1.0
+          },
+          "PortScan": {
+            "max": 0.06917008366388389,
+            "mean": 0.030911991175399733,
+            "median": 0.03962274266091782,
+            "min": 0.0,
+            "q1": 0.0,
+            "q3": 0.059070968195553686
+          }
+        },
+        "recall_for_ground_truth_class": 1.0,
+        "row_count": 17
+      },
+      "P-V1": {
+        "correct_count": 0,
+        "ground_truth_class": "PortScan",
+        "incorrect_count": 1501,
+        "predicted_distribution": {
+          "DDoS": 0,
+          "Normal": 1501,
+          "PortScan": 0
+        },
+        "probability_summary": {
+          "DDoS": {
+            "max": 5.548223253494015e-05,
+            "mean": 3.6963512681505765e-08,
+            "median": 0.0,
+            "min": 0.0,
+            "q1": 0.0,
+            "q3": 0.0
+          },
+          "Normal": {
+            "max": 0.9939829426249888,
+            "mean": 0.5991606539073093,
+            "median": 0.5922984248091747,
+            "min": 0.5872984248091747,
+            "q1": 0.5922984248091747,
+            "q3": 0.5922984248091747
+          },
+          "PortScan": {
+            "max": 0.4127015751908251,
+            "mean": 0.400839309129178,
+            "median": 0.4077015751908251,
+            "min": 0.005961575142476278,
+            "q1": 0.4077015751908251,
+            "q3": 0.4077015751908251
+          }
+        },
+        "recall_for_ground_truth_class": 0.0,
+        "row_count": 1501
+      }
+    }
+  },
+  "rf_v3_candidate": {
+    "accuracy": 0.9993412384716732,
+    "confusion_matrix": [
+      [
+        17,
+        0,
+        0
+      ],
+      [
+        0,
+        0,
+        0
+      ],
+      [
+        1,
+        0,
+        1500
+      ]
+    ],
+    "confusion_matrix_labels": [
+      "Normal",
+      "DDoS",
+      "PortScan"
+    ],
+    "ddos_ground_truth_evaluated": false,
+    "ddos_predictions_on_observed_validation": 0,
+    "normal_false_positive_as_portscan_count": 0,
+    "normal_false_positive_as_portscan_rate": 0.0,
+    "observed_class_metrics": {
+      "Normal": {
+        "f1": 0.9714285714285714,
+        "precision": 0.9444444444444444,
+        "recall": 1.0,
+        "support": 17
+      },
+      "PortScan": {
+        "f1": 0.9996667777407531,
+        "precision": 1.0,
+        "recall": 0.9993337774816788,
+        "support": 1501
+      }
+    },
+    "portscan_false_negative_count": 1,
+    "portscan_to_ddos_count": 0,
+    "portscan_to_normal_count": 1,
+    "predicted_class_counts": {
+      "DDoS": 0,
+      "Normal": 18,
+      "PortScan": 1500
+    },
+    "session_results": {
+      "N-V1": {
+        "correct_count": 17,
+        "ground_truth_class": "Normal",
+        "incorrect_count": 0,
+        "predicted_distribution": {
+          "DDoS": 0,
+          "Normal": 17,
+          "PortScan": 0
+        },
+        "probability_summary": {
+          "DDoS": {
+            "max": 0.03054330352966824,
+            "mean": 0.00840291242960196,
+            "median": 0.004788929590339676,
+            "min": 0.0005623211664093661,
+            "q1": 0.004788929590339676,
+            "q3": 0.010826325826604003
+          },
+          "Normal": {
+            "max": 0.999243419264385,
+            "mean": 0.9830811241750685,
+            "median": 0.9869445482736029,
+            "min": 0.9349972209713567,
+            "q1": 0.9811128393111163,
+            "q3": 0.9888330084047032
+          },
+          "PortScan": {
+            "max": 0.06123451576862078,
+            "mean": 0.008515963395329245,
+            "median": 0.008206550208023586,
+            "min": 0.00013096578559168258,
+            "q1": 0.00019425956920569366,
+            "q3": 0.009098231098543762
+          }
+        },
+        "recall_for_ground_truth_class": 1.0,
+        "row_count": 17
+      },
+      "P-V1": {
+        "correct_count": 1500,
+        "ground_truth_class": "PortScan",
+        "incorrect_count": 1,
+        "predicted_distribution": {
+          "DDoS": 0,
+          "Normal": 1,
+          "PortScan": 1500
+        },
+        "probability_summary": {
+          "DDoS": {
+            "max": 0.04290439296398438,
+            "mean": 0.003152424642719772,
+            "median": 0.0034906074112497276,
+            "min": 0.0016101204881968916,
+            "q1": 0.0034906074112497276,
+            "q3": 0.0034906074112497276
+          },
+          "Normal": {
+            "max": 0.5611323775402144,
+            "mean": 0.010678018446976082,
+            "median": 0.00966971850722246,
+            "min": 0.0066626223056158,
+            "q1": 0.00966971850722246,
+            "q3": 0.00966971850722246
+          },
+          "PortScan": {
+            "max": 0.9917174785315784,
+            "mean": 0.986169556910304,
+            "median": 0.9868396740815275,
+            "min": 0.3959632294958015,
+            "q1": 0.9868396740815275,
+            "q3": 0.9868396740815275
+          }
+        },
+        "recall_for_ground_truth_class": 0.9993337774816788,
+        "row_count": 1501
+      }
+    }
+  },
+  "schema": "experiment_e_e6_rf_v2_vs_rf_v3_comparison",
+  "status": "PASS_WITH_DOCUMENTED_LIMITATION"
+}

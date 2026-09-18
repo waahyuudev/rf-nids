@@ -1,0 +1,26 @@
+                                             Table "public.alerts"
+         Column          |           Type           | Collation | Nullable |              Default               
+-------------------------+--------------------------+-----------+----------+------------------------------------
+ id                      | integer                  |           | not null | nextval('alerts_id_seq'::regclass)
+ prediction_id           | integer                  |           | not null | 
+ severity                | character varying(20)    |           | not null | 
+ title                   | character varying(200)   |           | not null | 
+ description             | text                     |           | not null | 
+ status                  | character varying(30)    |           | not null | 
+ acknowledged_at         | timestamp with time zone |           |          | 
+ created_at              | timestamp with time zone |           | not null | 
+ acknowledged_by_user_id | integer                  |           |          | 
+Indexes:
+    "alerts_pkey" PRIMARY KEY, btree (id)
+    "alerts_prediction_id_key" UNIQUE CONSTRAINT, btree (prediction_id)
+    "ix_alerts_acknowledged_by_user_id" btree (acknowledged_by_user_id)
+    "ix_alerts_severity" btree (severity)
+    "ix_alerts_status" btree (status)
+    "ix_alerts_status_severity" btree (status, severity)
+Check constraints:
+    "ck_alerts_severity" CHECK (severity::text = ANY (ARRAY['HIGH'::character varying, 'MEDIUM'::character varying]::text[]))
+    "ck_alerts_status" CHECK (status::text = ANY (ARRAY['ACTIVE'::character varying, 'ACKNOWLEDGED'::character varying]::text[]))
+Foreign-key constraints:
+    "alerts_prediction_id_fkey" FOREIGN KEY (prediction_id) REFERENCES predictions(id) ON DELETE CASCADE
+    "fk_alerts_acknowledged_by_user_id_users" FOREIGN KEY (acknowledged_by_user_id) REFERENCES users(id) ON DELETE SET NULL
+

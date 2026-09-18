@@ -1,0 +1,6 @@
+monitoring_session_id,predicted_label,prediction_count,mean_confidence,min_confidence,max_confidence
+20,Normal,46,0.957749,0.648820,0.998817
+20,PortScan,12,0.737636,0.521658,0.758674
+21,DDoS,453,0.895354,0.517614,1.000000
+21,Normal,82,0.786497,0.466686,0.977644
+22,PortScan,1000,0.987984,0.434502,0.991078

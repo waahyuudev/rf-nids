@@ -1,0 +1,21 @@
+{
+  "schema": "experiment_f_f2_a1_collection_evidence_repair",
+  "session_id": "F-A1-DDOSLIKE-A-01",
+  "repair_of": "collection_evidence.json",
+  "decision": "F2_A1_A01_REPAIR_PASS",
+  "scientific_capture_changed": false,
+  "manifest": {"path": "reports/experiment_f/collection/manifests/f_a1_ddoslike_a_01_preexecution_manifest.json", "sha256": "05e7038204fcc0e52d6f7b2d772a0cef9ed87f8f721388fc8b0f1cbb8ff82749", "status": "VERIFIED"},
+  "recovered_artifacts": {
+    "pcap": {"path": "data/lab/experiment_f/adaptation/pcap/ddoslike/f-a1-ddoslike-a-01.pcap", "sha256": "71874ad8f9e6519548aeffc219bb64635f1cca24f1acdf8c9ebaef50ced01910", "status": "VERIFIED"},
+    "locust": {
+      "exceptions": {"path": "reports/experiment_f/collection/F-A1-DDOSLIKE-A-01/locust/f_a1_ddoslike_a_01_exceptions.csv", "sha256": "3e73e8f665731ee4e45a6a91202a31b06999f2c53240f14aee2532e0e0b42b09", "status": "VERIFIED", "inspection": "header only; no exception rows"},
+      "failures": {"path": "reports/experiment_f/collection/F-A1-DDOSLIKE-A-01/locust/f_a1_ddoslike_a_01_failures.csv", "sha256": "51ba68968b591276c95496a6a9624797491ce4eb934b1f6392f44b95148fbb93", "status": "VERIFIED", "inspection": "header only; no failure rows"},
+      "stats": {"path": "reports/experiment_f/collection/F-A1-DDOSLIKE-A-01/locust/f_a1_ddoslike_a_01_stats.csv", "sha256": "f241d339bb8eddaf5a209f465248ece2f0d50ba7a6b3de18d02dd75d5ac0b66e", "status": "VERIFIED", "inspection": "GET / and Aggregated rows each report Request Count 153 and Failure Count 0"},
+      "stats_history": {"path": "reports/experiment_f/collection/F-A1-DDOSLIKE-A-01/locust/f_a1_ddoslike_a_01_stats_history.csv", "sha256": "0d596fc5c4bb9196ed7fed9d512d4b8c9d4638c4b660960542d92fd03a870112", "status": "VERIFIED"}
+    }
+  },
+  "observations_preserved": {"terminal_summary_request_count": 155, "final_machine_readable_stats_csv_request_count": 153, "reconciliation": "NOT_PERFORMED", "locust_version": "2.46.5", "python_version": "3.14.4", "workload_sha256": "88c4f02b8ca06afe69eac9465b663d0089b69f7f00a7221b686f0bc7a4433aed", "tcpdump": {"packets_captured": 1553, "packets_received_by_filter": 1553, "packets_dropped_by_kernel": 0}},
+  "persisted_timestamp_evidence": {"source": "locust stats_history.csv", "timestamp_column": "Timestamp", "observed_unix_seconds_first": 1789537822, "observed_unix_seconds_last": 1789537882, "interpretation_limit": "Directly persisted telemetry timestamps only; not represented as an independently recovered execution start/end timestamp file."},
+  "unavailable_artifacts": {"independent_execution_log": "NOT_AVAILABLE_AS_PERSISTED_ARTIFACT", "independent_exact_start_end_timestamp_file": "NOT_AVAILABLE_AS_PERSISTED_ARTIFACT"},
+  "classification": {"split": "F-ADAPTATION", "model_class": "DDoS", "scope": "controlled HTTP DDoS-like/load profile", "eligible_for_validation": false, "eligible_for_final": false, "training_eligibility": "PENDING_EXTRACTION_AND_DATA_GATES"}
+}

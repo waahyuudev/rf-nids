@@ -1,0 +1,97 @@
+{
+  "schema": "experiment_f_f3_a1_dataset_assembly_audit",
+  "version": 1,
+  "decision": "F3_A1_DATASET_ASSEMBLY_BLOCKED",
+  "training_readiness": "F3_A2_RF_V4_TRAINING_BLOCKED",
+  "scope": "Dataset-assembly authorization audit only; no dataset, lineage table, train/test split, predictions, inference, traffic, or model training were produced.",
+  "authorized_new_inputs": {
+    "label": "DDoS",
+    "label_scope": "controlled HTTP DDoS-like/load profile",
+    "split": "F-ADAPTATION",
+    "total_rows": 942,
+    "sessions": [
+      {
+        "session_id": "F-A1-DDOSLIKE-A-01",
+        "rows": 311,
+        "adapted_path": "data/lab/experiment_f/adaptation/model_input/ddoslike/f-a1-ddoslike-a-01_model_input_78.csv",
+        "adapted_sha256": "77c2dc16264b2f0f1d53f0013a76574c5f9768c75d66db6954453d8acf0da453"
+      },
+      {
+        "session_id": "F-A1-DDOSLIKE-A-02",
+        "rows": 311,
+        "adapted_path": "data/lab/experiment_f/adaptation/model_input/ddoslike/f-a1-ddoslike-a-02_model_input_78.csv",
+        "adapted_sha256": "84c101b76eefaa1cdf0a8b5a7bf7cabd3ae600f21dcdcd93d3cc5b84f6acae3e"
+      },
+      {
+        "session_id": "F-A1-DDOSLIKE-A-03",
+        "rows": 320,
+        "adapted_path": "data/lab/experiment_f/adaptation/model_input/ddoslike/f-a1-ddoslike-a-03_model_input_78.csv",
+        "adapted_sha256": "ddf9ae064356f9f5444d2ff1829adc9b6b10ede71b2b032adca3adef9425deda"
+      }
+    ]
+  },
+  "resolved_contract": {
+    "classes": ["Normal", "DDoS", "PortScan"],
+    "feature_count": 78,
+    "feature_order_sha256": "9338f50fc3e7efc78d678cc65ab38d428a7f6912ed9467a2b99a449a7c8e3c13",
+    "crosswalk_sha256": "66e517cdcea217f19de4d0a2cd45302ede999388393f539fb8ca4a2c68b74cf4",
+    "new_f_rows_unambiguously_authorized": true,
+    "historical_training_composition_unambiguously_authorized": false
+  },
+  "exact_ambiguity": {
+    "frozen_design_language": {
+      "DDoS": "frozen historical DDoS adaptation/training evidence",
+      "Normal": "eligible historical adaptation Normal",
+      "PortScan": "eligible historical PortScan; validated Experiment E runtime PortScan adaptation evidence"
+    },
+    "missing_preassembly_lock": [
+      "No frozen Experiment F artifact names the exact historical dataset artifact to use.",
+      "No frozen Experiment F artifact enumerates the historical session IDs, source row indices, or required per-source row counts.",
+      "No frozen Experiment F artifact states whether the complete Experiment E training candidate must be used as RF-v4's historical base.",
+      "No frozen Experiment F artifact states whether Experiment E's deterministic per-session caps for historical DDoS and Experiment E PortScan carry forward into Experiment F.",
+      "The phrase 'validated Experiment E runtime PortScan adaptation evidence' does not identify exact artifacts or rows and must not be resolved from repository availability alone."
+    ],
+    "materially_different_plausible_compositions": [
+      "Reuse the frozen 5,756-row Experiment E training candidate, then append the 942 eligible F rows.",
+      "Reconstruct all eligible Experiment D and Experiment E adaptation rows without Experiment E-specific caps, then append the F rows.",
+      "Use Experiment D historical adaptation rows as the historical base and append the F rows, excluding Experiment E adaptation rows.",
+      "Select a subset of historical sources by class under the broad F0 category descriptions."
+    ],
+    "why_selection_is_prohibited": "Choosing among these alternatives would invent the historical composition, row-selection rule, and class distribution after preregistration rather than execute a frozen Experiment F rule."
+  },
+  "excluded_sources_confirmed_for_any_future_assembly": {
+    "experiment_d_final_test_rows": 0,
+    "experiment_e_validation_rows": 0,
+    "experiment_e_unseen_runtime_validation_rows": 0,
+    "experiment_e_final_rows": 0,
+    "e10_e13_diagnostic_rows": 0,
+    "experiment_f_validation_rows": 0,
+    "experiment_f_final_rows": 0
+  },
+  "outputs": {
+    "candidate_dataset": "NOT_CREATED",
+    "row_lineage": "NOT_CREATED",
+    "dataset_sha256": null,
+    "lineage_sha256": null,
+    "dataset_rows": 0
+  },
+  "verified_input_hashes": {
+    "reports/experiment_f/data_gates/f2_a1_extraction_data_gate.json": "5e45cb8bbf8d0857345843f3a28e05c5d173f350528c3bee6b797e04783f43e0",
+    "reports/experiment_f/preregistration/f0_preregistration.json": "dfc628b60bbd56ea0a78c4585ed28cfece2154b56fe101567b89e434e83d6cfb",
+    "reports/experiment_f/preregistration/f0_ground_truth_design.json": "0ffac32992a82d01bbd03de2108047a701e579392f492a794f2bf2b6991dbab4",
+    "reports/experiment_f/preregistration/f0_acceptance_gates.json": "0d82ea5e4c6384484f58a4d5f3e248d9a3996fd1259bdc46506f4490773e74b3",
+    "reports/experiment_e/audit/e4_dataset_construction_audit.json": "69cc278d2a6139b7b2d2e9d4db3312fb3a3b06cf70381a719d542ec624e2b45c",
+    "data/lab/experiment_e/datasets/experiment_e_training_candidate.csv": "f716404391467b267cca2f989762c2d4740127a4e7dd11afe956e7e8940b2284",
+    "data/lab/experiment_e/datasets/experiment_e_training_candidate_lineage.csv": "950868cc0e5f8943e7eb03dba544d535d4d20e74a018facf48dcb7ebcb38ecd9"
+  },
+  "frozen_integrity": {
+    "rf_v2_sha256": "fb13a71a0287054d2630bf07529f113a153ba08d8f6835a605b04493408b8a31",
+    "rf_v3_sha256": "6b01c7b3923c1a6bd471862d011f8f5b88a31378e51d1dde082bd2e72bedef86",
+    "rf_v3_metadata_sha256": "30b6bdf2a6cb2d60e2be36d4db1e124d71504393081b229e6d94da7e70322cbc",
+    "crosswalk_sha256": "66e517cdcea217f19de4d0a2cd45302ede999388393f539fb8ca4a2c68b74cf4",
+    "experiment_d_final_test_audit_sha256": "a0a22100cd0c6b923349aa6e899c2221b84d64991ca7e20b0626d811879d88c1",
+    "experiment_e14_decision_sha256": "e5c11c39f7401fe89551d927b193978c59adc32bf7bb3052f619d225a595278e",
+    "status": "PASS"
+  },
+  "required_resolution": "Create a prospective immutable Experiment F composition amendment that names the exact historical dataset/artifacts, session IDs, source row-selection rules, per-source row counts, and whether the Experiment E candidate's deterministic caps are retained. Then re-authorize F3-A1 assembly."
+}

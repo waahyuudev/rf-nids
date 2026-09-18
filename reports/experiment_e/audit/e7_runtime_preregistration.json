@@ -1,0 +1,26 @@
+{
+  "schema": "experiment_e_e7_runtime_preregistration",
+  "schema_version": 1,
+  "status": "PREREGISTERED_NOT_EXECUTED",
+  "experiment": "Experiment E",
+  "phase": "E7_UNSEEN_3_VM_RUNTIME_VALIDATION",
+  "authorization_basis": {
+    "e6_verdict": "PASS_WITH_DOCUMENTED_LIMITATION",
+    "candidate_version": "rf-v3.0-candidate",
+    "candidate_sha256": "6b01c7b3923c1a6bd471862d011f8f5b88a31378e51d1dde082bd2e72bedef86"
+  },
+  "new_sessions": [
+    {"session_id": "expe-e7-normal-r1", "display_id": "E7-N-R1", "capture_id": "expe-e7-capture-normal-r1", "role": "unseen_runtime_validation", "class": "Normal", "pcap": "data/lab/experiment_e/runtime_validation/pcap/normal/expe-e7-normal-r1.pcap"},
+    {"session_id": "expe-e7-portscan-r1", "display_id": "E7-P-R1", "capture_id": "expe-e7-capture-portscan-r1", "role": "unseen_runtime_validation", "class": "PortScan", "pcap": "data/lab/experiment_e/runtime_validation/pcap/portscan/expe-e7-portscan-r1.pcap"}
+  ],
+  "topology": {"generator_host": "ubuntu-traffic", "generator_ip": "10.10.10.2", "observer_host": "ubuntu-nids", "capture_interface": "enp0s3", "capture_ip": "10.10.20.1", "capture_filter": "host 10.10.20.2", "target_host": "ubuntu-target", "target_ip": "10.10.20.2", "benign_http_url": "http://10.10.20.2:8080/"},
+  "scenarios": {
+    "E7-N-R1": {"scenario_id": "normal-http-sequential-twelve-fixed-idle", "predeclared_ground_truth": "Normal", "command": "for delay in 0.2 0.5 0.3 0.7 0.4 0.6 0.2 0.8 0.3 0.5 0.4 0; do curl --http1.1 --max-time 5 -sS -o /dev/null -A 'Experiment-E7-N-R1/1.0' http://10.10.20.2:8080/; sleep \"$delay\"; done", "request_count": 12, "distinctness": "Twelve sequential requests with the fixed listed idle sequence and E7-specific User-Agent; this differs from A1 six sequential 0.8-second requests, A2 mixed local paths, A3 concurrent pairs, and V1 eight variable-idle requests."},
+    "E7-P-R1": {"scenario_id": "portscan-syn-upper-range-rate-limited", "predeclared_ground_truth": "PortScan", "command": "sudo nmap -n -Pn -sS -T4 --max-retries 1 --min-rate 100 -p 3001-3600 10.10.20.2", "target": "10.10.20.2", "scan_type": "TCP SYN", "port_range": "3001-3600", "scanned_port_count": 600, "distinctness": "Range 3001-3600 and fixed T4/min-rate/retry pattern differ from A1 1-500 connect, A2 501-1500 SYN T2, A3 selected connect ports, and V1 1501-3000 SYN T3."}
+  },
+  "fixed_analysis_contract": {"extractor_amendment": "E3-A1 approved replacement rf-nids-cicflowmeter-v3:a26aae27 / sha256:b12b3a4a4218968aba2436685a4eb113473e5681de70705409e834e4613a879b", "adapter": "pinned CICFlowMeter 84-to-78 adapter; exact RF-v2 feature order", "models": ["rf-v2.0 baseline", "rf-v3.0-candidate"], "prohibited": ["retraining", "tuning", "threshold change", "prediction-based sampling", "feature-schema change", "promotion"]},
+  "required_reporting": ["PCAP SHA-256 and packet counts", "CICFlowMeter flow counts and raw/adapter schema", "per-model predicted distributions, Normal and PortScan recall, PortScan false negatives, Normal-to-PortScan false positives", "probability summaries", "RF-v2 versus RF-v3 comparison"],
+  "limitations": ["DDoS is out of scope; E7 will not estimate DDoS recall.", "One new session per observed class is a minimal time-constrained runtime validation, not a broad generalization estimate."],
+  "sealing": {"forbidden_reuse_sessions": ["N-A1", "N-A2", "N-A3", "P-A1", "P-A2", "P-A3", "N-V1", "P-V1"], "sealed_and_unread": ["N-F1", "P-F1", "Experiment D final-test"]},
+  "execution": "No E7 traffic, capture, extraction, inference, evaluation, or promotion has been executed by this preregistration."
+}

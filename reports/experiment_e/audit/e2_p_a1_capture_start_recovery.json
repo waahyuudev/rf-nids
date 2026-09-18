@@ -1,0 +1,40 @@
+{
+  "schema": "experiment_e_e2_capture_start_recovery_audit",
+  "schema_version": 1,
+  "experiment_code": "EXPERIMENT_E",
+  "session_id": "expe-portscan-p-a1",
+  "supersedes_for_authorization_only": "reports/experiment_e/audit/e2_p_a1_validation.json",
+  "original_operator_capture_start_utc": null,
+  "original_operator_capture_start_status": "not preserved; not inferred or fabricated",
+  "recovered_capture_start_evidence": {
+    "provenance": "direct ubuntu-nids stat and offline tcpdump inspection of the existing scientific PCAP",
+    "pcap_logical_path": "data/lab/experiment_e/adaptation/pcap/portscan/expe-portscan-p-a1.pcap",
+    "pcap_sha256": "dd8c595ddacc854d9241ddc4fdd58b6f8533031b4349897d5f90029d0a085065",
+    "pcap_file_birth_utc": "2026-09-09T08:30:23.292516062Z",
+    "first_packet_utc": "2026-09-09T08:30:59.107842Z",
+    "first_packet_summary": "10.10.10.2 -> 10.10.20.2:111 TCP SYN",
+    "last_packet_utc": "2026-09-09T08:31:04.239865Z",
+    "last_packet_summary": "ARP reply from 10.10.20.2",
+    "pcap_file_modify_utc": "2026-09-09T08:31:04.286629433Z",
+    "pcap_file_access_utc": "2026-09-09T08:32:22.063844530Z",
+    "capture_end_utc": "2026-09-09T08:32:16Z"
+  },
+  "protocol_determination": {
+    "required_record": "capture start timestamp",
+    "determination": "satisfied by explicit recovered filesystem/PCAP evidence",
+    "reason": "The E2 protocol requires that a start timestamp be recorded, but does not require that it originate from the original date -u transcript or prohibit direct forensic recovery from the retained scientific PCAP. The file-birth timestamp establishes PCAP existence at 08:30:23.292516062Z and the first packet independently establishes scientific traffic was captured no later than 08:30:59.107842Z.",
+    "limitation": "The recovered file-birth timestamp is not relabeled as original_operator_capture_start_utc."
+  },
+  "authorization_validation_status": "PASS",
+  "p_a1_final_status": "PASS_WITH_RECOVERED_START_EVIDENCE",
+  "p_a2_authorized": true,
+  "prohibited_operations": {
+    "cicflowmeter_run": false,
+    "inference_run": false,
+    "model_trained": false,
+    "evaluation_run": false,
+    "experiment_d_modified": false,
+    "rf_v2_modified": false,
+    "final_test_collected": false
+  }
+}

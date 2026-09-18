@@ -1,0 +1,124 @@
+{
+  "acceptance_gate_decision": "FAIL",
+  "authorization": "Not authorized to continue to F final evaluation",
+  "class_counts": {
+    "DDoS": 2819,
+    "Normal": 180,
+    "PortScan": 3000
+  },
+  "dataset_sha256": "d5dbc3e6a6de373526c46bb7220092c14e81779ec91ebfe5ef855db7f7d53d0e",
+  "metrics": {
+    "RF-v2": {
+      "accuracy": 0.030005000833472247,
+      "macro_f1": 0.01942061822301343,
+      "macro_precision": 0.010001666944490749,
+      "macro_recall": 0.3333333333333333,
+      "per_class": {
+        "DDoS": {
+          "correct": 0,
+          "f1": 0.0,
+          "precision": 0.0,
+          "recall": 0.0,
+          "support": 2819,
+          "total": 2819
+        },
+        "Normal": {
+          "correct": 180,
+          "f1": 0.0582618546690403,
+          "precision": 0.030005000833472247,
+          "recall": 1.0,
+          "support": 180,
+          "total": 180
+        },
+        "PortScan": {
+          "correct": 0,
+          "f1": 0.0,
+          "precision": 0.0,
+          "recall": 0.0,
+          "support": 3000,
+          "total": 3000
+        }
+      }
+    },
+    "RF-v3": {
+      "accuracy": 0.5295882647107851,
+      "macro_f1": 0.3708787140270324,
+      "macro_precision": 0.3533200088829669,
+      "macro_recall": 0.6663333333333333,
+      "per_class": {
+        "DDoS": {
+          "correct": 0,
+          "f1": 0.0,
+          "precision": 0.0,
+          "recall": 0.0,
+          "support": 2819,
+          "total": 2819
+        },
+        "Normal": {
+          "correct": 180,
+          "f1": 0.11313639220615965,
+          "precision": 0.05996002664890073,
+          "recall": 1.0,
+          "support": 180,
+          "total": 180
+        },
+        "PortScan": {
+          "correct": 2997,
+          "f1": 0.9994997498749375,
+          "precision": 1.0,
+          "recall": 0.999,
+          "support": 3000,
+          "total": 3000
+        }
+      }
+    },
+    "RF-v4": {
+      "accuracy": 0.9668278046341057,
+      "macro_f1": 0.8334656704202404,
+      "macro_precision": 0.812737008640623,
+      "macro_recall": 0.863784767385335,
+      "per_class": {
+        "DDoS": {
+          "correct": 2685,
+          "f1": 0.9642664751301849,
+          "precision": 0.9763636363636363,
+          "recall": 0.952465413267116,
+          "support": 2819,
+          "total": 2819
+        },
+        "Normal": {
+          "correct": 115,
+          "f1": 0.5361305361305362,
+          "precision": 0.46184738955823296,
+          "recall": 0.6388888888888888,
+          "support": 180,
+          "total": 180
+        },
+        "PortScan": {
+          "correct": 3000,
+          "f1": 1.0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "support": 3000,
+          "total": 3000
+        }
+      }
+    }
+  },
+  "phase_decision": "F4_A2_VALIDATION_FAIL",
+  "prohibited_actions_confirmed_not_performed": [
+    "training",
+    "retraining",
+    "hyperparameter tuning",
+    "threshold changes",
+    "feature-contract changes",
+    "model activation",
+    "model promotion",
+    "historical evidence mutation",
+    "silent deduplication",
+    "session exclusion"
+  ],
+  "rows": 5999,
+  "schema": "experiment_f_f4_a2_scientific_summary",
+  "scope": "Experiment F controlled three-VM laboratory validation only; DDoS ground truth denotes the controlled HTTP DDoS-like/load profile, not genuine distributed DDoS."
+}

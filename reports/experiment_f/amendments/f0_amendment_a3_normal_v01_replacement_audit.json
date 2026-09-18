@@ -1,0 +1,41 @@
+{
+  "schema": "experiment_f_f0_amendment_a3_normal_v01_replacement_audit",
+  "version": 1,
+  "generated_at_utc": "2026-09-16T09:02:25Z",
+  "status": "PASS",
+  "script_changes": {
+    "scripts/experiment_f_validation/common.sh": {"old_sha256":"29c41d830f24626e28f27cb842e8d8a32953ed874bef5346a69477dea861de2c","new_sha256":"c630df85b32c667b678356336a171a43dce8d882a2cbc519012a35512c6419ef","change":"Added exact global and Normal allowlist patterns containing V-01-R1."},
+    "scripts/experiment_f_validation/capture_session.sh": {"old_sha256":"ba7789a778ab40884a4844ae6980fceba4630a247a544735df2af05a29d4b1e5","new_sha256":"0e9dfbee9fc0f938a40125599de537790c0cab0fc29eeb675c60d0d3a9e04eb6","change":"Uses the amended exact validation-session allowlist."},
+    "scripts/experiment_f_validation/generate_normal.sh": {"old_sha256":"4c39450e32ef1c84558854e3853abb13bc33a61017339d392c479b199c1bf1a0","new_sha256":"fcdbd2ed32af30955b0c9f044a89277fb6a9812a7e0f0e703c2128d173e54477","change":"Uses the amended exact Normal-session allowlist."},
+    "scripts/experiment_f_validation/test_operator_scripts.sh": {"old_sha256":"252c4d5e92c9c478195d16aabeefa4149859a539f119458402c7f91a7f339e0c","new_sha256":"f2fccf484ca11564c6944573b83b2c84f8da10e600313fa9360cd1df33493348","change":"Adds non-traffic replacement, historical-directory, and complete allowlist tests."}
+  },
+  "unchanged_script_hashes": {
+    "scripts/experiment_f_validation/generate_ddoslike.sh":"3ad183270c5da1d3aa5d0c9f993e85cbb1197e88e9564f3c1c4c76750911e5ff",
+    "scripts/experiment_f_validation/generate_portscan.sh":"13a6e99849fb07cf89ffd007ee4db54651d49853c512ada9d70e06fb3e6c21b7",
+    "scripts/experiment_f_validation/locustfile_validation.py":"6857bfcb34947bc189753eb60c608a8fff1222bf4a42f36dd9fb77f24d1056e9"
+  },
+  "tests": {
+    "bash_n_all_validation_shell_scripts":"PASS",
+    "V-01-R1_global_allowlist":"PASS",
+    "V-01-R1_normal_allowlist":"PASS",
+    "original_V-01_recognized":"PASS",
+    "existing_original_V-01_directory_refused":"PASS",
+    "arbitrary_replacements_R2_and_DDoS_R1_rejected":"PASS",
+    "Normal_V-02_and_V-03":"PASS",
+    "all_existing_DDoS_ids":"PASS",
+    "all_existing_PortScan_ids":"PASS",
+    "network_traffic_generated":false
+  },
+  "profile_integrity": {"Normal":"UNCHANGED","DDoS":"UNCHANGED","PortScan":"UNCHANGED","target":"UNCHANGED","capture_interface_and_filters":"UNCHANGED","acceptance_gates":"UNCHANGED"},
+  "frozen_artifact_integrity": {
+    "RF-v2":"fb13a71a0287054d2630bf07529f113a153ba08d8f6835a605b04493408b8a31",
+    "RF-v3":"6b01c7b3923c1a6bd471862d011f8f5b88a31378e51d1dde082bd2e72bedef86",
+    "RF-v4":"d5dccd339a5c67635e760d7d3760e1d006278362c6f70ea06bf20928ccdece13",
+    "RF-v4_metadata":"9f8bb215740943b326b6ec6f76e55caef4d094290ac43ed30cb7e32884a47a1a",
+    "crosswalk":"66e517cdcea217f19de4d0a2cd45302ede999388393f539fb8ca4a2c68b74cf4",
+    "feature_order":"9338f50fc3e7efc78d678cc65ab38d428a7f6912ed9467a2b99a449a7c8e3c13",
+    "A3":"0682dc4d6508316d47927ad12700a75229fc3a1fb44054477c5c827692f3bd4a",
+    "status":"PASS"
+  },
+  "decision": "F4_A1_NORMAL_V01_REPLACEMENT_AUTHORIZED"
+}

@@ -1,0 +1,10 @@
+{
+  "schema": "experiment_f_f2_a1_evidence_path_mapping_addendum",
+  "session_id": "F-A1-DDOSLIKE-A-01",
+  "manifest_path": "reports/experiment_f/collection/manifests/f_a1_ddoslike_a_01_preexecution_manifest.json",
+  "manifest_sha256": "05e7038204fcc0e52d6f7b2d772a0cef9ed87f8f721388fc8b0f1cbb8ff82749",
+  "mapping": {"planned_manifest_evidence_destination": "reports/experiment_f/collection/F-A1-DDOSLIKE-A-01/pcap/f_a1_ddoslike_a_01.pcap", "actual_recovered_canonical_evidence_path": "data/lab/experiment_f/adaptation/pcap/ddoslike/f-a1-ddoslike-a-01.pcap", "actual_sha256": "71874ad8f9e6519548aeffc219bb64635f1cca24f1acdf8c9ebaef50ced01910"},
+  "administrative_only": true,
+  "scientific_capture_changed": false,
+  "immutable_manifest_modified": false
+}

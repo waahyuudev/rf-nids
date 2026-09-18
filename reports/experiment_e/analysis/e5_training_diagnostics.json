@@ -1,0 +1,20 @@
+{
+  "classification": "TRAINING_DIAGNOSTIC_ONLY / NON_EVALUATIVE",
+  "explicit_limitation": "No training accuracy, recall, F1, or validation performance is reported or interpreted as evidence.",
+  "feature_count": 78,
+  "fitting_duration_seconds": 0.12449791701510549,
+  "schema": "experiment_e_e5_training_diagnostics",
+  "status": "PASS",
+  "training_class_counts": {
+    "DDoS": 3081,
+    "Normal": 94,
+    "PortScan": 2581
+  },
+  "training_rows": 5756,
+  "training_set_prediction_distribution": {
+    "DDoS": 3097,
+    "Normal": 84,
+    "PortScan": 2575
+  },
+  "tree_count": 200
+}

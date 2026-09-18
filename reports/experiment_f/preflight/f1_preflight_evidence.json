@@ -1,0 +1,57 @@
+{
+  "F2_authorized": false,
+  "created_at_utc": "2026-09-15T15:05:52.203980+00:00",
+  "f0_consistency": "PASS",
+  "frozen_hashes_after": {
+    "config/experiment_f.yaml": "a501465a87367456fbdcda2504c38d4d8d974cc168c92a3bce6505c23d9fa65d",
+    "docs/experiment_f_operator_plan.md": "762831e0168239bd6f0266acd5955b7b7bd466fdc291a6a43722f3d166ee1c93",
+    "models/experiment_d/random_forest_rf_v2.joblib": "fb13a71a0287054d2630bf07529f113a153ba08d8f6835a605b04493408b8a31",
+    "models/experiment_e/random_forest_rf_v3_candidate.joblib": "6b01c7b3923c1a6bd471862d011f8f5b88a31378e51d1dde082bd2e72bedef86",
+    "models/experiment_e/random_forest_rf_v3_candidate_metadata.json": "30b6bdf2a6cb2d60e2be36d4db1e124d71504393081b229e6d94da7e70322cbc",
+    "reports/experiment_d/final_test/dataset_audit.json": "a0a22100cd0c6b923349aa6e899c2221b84d64991ca7e20b0626d811879d88c1",
+    "reports/experiment_f/preregistration/f0_acceptance_gates.json": "0d82ea5e4c6384484f58a4d5f3e248d9a3996fd1259bdc46506f4490773e74b3",
+    "reports/experiment_f/preregistration/f0_ground_truth_design.json": "0ffac32992a82d01bbd03de2108047a701e579392f492a794f2bf2b6991dbab4",
+    "reports/experiment_f/preregistration/f0_preregistration.json": "dfc628b60bbd56ea0a78c4585ed28cfece2154b56fe101567b89e434e83d6cfb",
+    "reports/tables/cicflowmeter_v3_78_feature_crosswalk.csv": "66e517cdcea217f19de4d0a2cd45302ede999388393f539fb8ca4a2c68b74cf4"
+  },
+  "frozen_hashes_before": {
+    "config/experiment_f.yaml": "a501465a87367456fbdcda2504c38d4d8d974cc168c92a3bce6505c23d9fa65d",
+    "docs/experiment_f_operator_plan.md": "762831e0168239bd6f0266acd5955b7b7bd466fdc291a6a43722f3d166ee1c93",
+    "models/experiment_d/random_forest_rf_v2.joblib": "fb13a71a0287054d2630bf07529f113a153ba08d8f6835a605b04493408b8a31",
+    "models/experiment_e/random_forest_rf_v3_candidate.joblib": "6b01c7b3923c1a6bd471862d011f8f5b88a31378e51d1dde082bd2e72bedef86",
+    "models/experiment_e/random_forest_rf_v3_candidate_metadata.json": "30b6bdf2a6cb2d60e2be36d4db1e124d71504393081b229e6d94da7e70322cbc",
+    "reports/experiment_d/final_test/dataset_audit.json": "a0a22100cd0c6b923349aa6e899c2221b84d64991ca7e20b0626d811879d88c1",
+    "reports/experiment_f/preregistration/f0_acceptance_gates.json": "0d82ea5e4c6384484f58a4d5f3e248d9a3996fd1259bdc46506f4490773e74b3",
+    "reports/experiment_f/preregistration/f0_ground_truth_design.json": "0ffac32992a82d01bbd03de2108047a701e579392f492a794f2bf2b6991dbab4",
+    "reports/experiment_f/preregistration/f0_preregistration.json": "dfc628b60bbd56ea0a78c4585ed28cfece2154b56fe101567b89e434e83d6cfb",
+    "reports/tables/cicflowmeter_v3_78_feature_crosswalk.csv": "66e517cdcea217f19de4d0a2cd45302ede999388393f539fb8ca4a2c68b74cf4"
+  },
+  "frozen_inputs_unchanged": true,
+  "live_gates": {
+    "78-feature contract": "PENDING",
+    "CICFlowMeter provenance": "PENDING",
+    "IP conflict clearance for 10.10.10.11-.14": "PENDING",
+    "RF-v2/RF-v3 hashes": "PENDING",
+    "controlled target and benign HTTP response": "PENDING",
+    "enp0s3 capture-interface identity/visibility": "PENDING",
+    "four independent generator VM identities": "PENDING",
+    "generator routes": "PENDING",
+    "no D/E frozen-evidence change": "PENDING",
+    "observer/router identity and IP forwarding": "PENDING",
+    "target return route": "PENDING"
+  },
+  "pass_condition": "Only an operator-completed evidence update showing every live gate PASS may support F1 PASS; configuration alone cannot.",
+  "provenance_expected": {
+    "capture_interface": "enp0s3",
+    "crosswalk_sha256": "66e517cdcea217f19de4d0a2cd45302ede999388393f539fb8ca4a2c68b74cf4",
+    "feature_count": 78,
+    "feature_order_sha256": "9338f50fc3e7efc78d678cc65ab38d428a7f6912ed9467a2b99a449a7c8e3c13",
+    "rf_v2_sha256": "fb13a71a0287054d2630bf07529f113a153ba08d8f6835a605b04493408b8a31",
+    "rf_v3_metadata_sha256": "30b6bdf2a6cb2d60e2be36d4db1e124d71504393081b229e6d94da7e70322cbc",
+    "rf_v3_sha256": "6b01c7b3923c1a6bd471862d011f8f5b88a31378e51d1dde082bd2e72bedef86"
+  },
+  "schema": "experiment_f_f1_preflight_evidence",
+  "scope": "Repository/F0 consistency audit and operator-plan creation only; no live VM/network check was performed.",
+  "status": "PENDING_OPERATOR_VALIDATION",
+  "version": 1
+}

@@ -1,0 +1,43 @@
+{
+  "contamination_checks": {
+    "deduplication_performed": false,
+    "e10_e13_rows_used": false,
+    "experiment_d_final_test_rows_used": false,
+    "experiment_e_validation_unseen_final_rows_used": false,
+    "historical_failed_attempt_excluded": true,
+    "rows_dropped": 0,
+    "session_capture_overlap": false,
+    "session_pcap_hash_reuse": false
+  },
+  "dataset": {
+    "class_counts": {
+      "DDoS": 2819,
+      "Normal": 180,
+      "PortScan": 3000
+    },
+    "columns": 79,
+    "model_feature_count": 78,
+    "path": "data/lab/experiment_f/validation/derived/f4_a2_run_03/frozen/f_validation_78_features_ground_truth.csv",
+    "rows": 5999,
+    "sha256": "d5dbc3e6a6de373526c46bb7220092c14e81779ec91ebfe5ef855db7f7d53d0e"
+  },
+  "decision": "F_VALIDATION_DATASET_FROZEN",
+  "feature_identity_sha256": "9338f50fc3e7efc78d678cc65ab38d428a7f6912ed9467a2b99a449a7c8e3c13",
+  "lineage": {
+    "path": "data/lab/experiment_f/validation/derived/f4_a2_run_03/frozen/f_validation_lineage.csv",
+    "rows": 5999,
+    "sha256": "8c2697841de6df5d66e22836eee100cf53de08935f1832f265130a9a2419c909"
+  },
+  "rows_per_session": {
+    "F-A1-DDOSLIKE-V-01": 937,
+    "F-A1-DDOSLIKE-V-02": 942,
+    "F-A1-DDOSLIKE-V-03": 940,
+    "F-A1-NORMAL-V-01-R1": 60,
+    "F-A1-NORMAL-V-02": 60,
+    "F-A1-NORMAL-V-03": 60,
+    "F-A1-PORTSCAN-V-01": 1000,
+    "F-A1-PORTSCAN-V-02": 1000,
+    "F-A1-PORTSCAN-V-03": 1000
+  },
+  "schema": "experiment_f_f4_a2_validation_dataset_freeze"
+}

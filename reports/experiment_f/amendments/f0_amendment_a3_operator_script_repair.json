@@ -1,0 +1,75 @@
+{
+  "schema": "experiment_f_f0_amendment_a3_operator_script_repair",
+  "version": 1,
+  "generated_at_utc": "2026-09-16T08:52:01Z",
+  "decision": "F4_A0_OPERATOR_SCRIPT_REPAIR_PASS",
+  "collection_readiness": "F4_A1_VALIDATION_COLLECTION_READY",
+  "prospective_status": "REPAIRED_BEFORE_ANY_VALIDATION_TRAFFIC_OR_SUCCESSFUL_CAPTURE",
+  "incident": {
+    "observed_error": "common.sh: line 18: root: unbound variable",
+    "root_cause": "Under set -u, destination expanded root while root was being initialized in the same multi-assignment local statement; Bash had not yet made that local value available for the later expansion.",
+    "effect": "create_new_session_dir returned no session path; capture_session.sh attempted /capture_started_utc.txt and failed permission checks.",
+    "scientific_effect": "None. No validation traffic was generated, no capture successfully started, no PCAP was produced, no inference occurred, and no scientific validation session began."
+  },
+  "repair": {
+    "changed_files": {
+      "scripts/experiment_f_validation/common.sh": {
+        "old_sha256": "eae249ca2593c1eae538987461213874ff0c575a9a1c8817632ac191ccc27211",
+        "new_sha256": "29c41d830f24626e28f27cb842e8d8a32953ed874bef5346a69477dea861de2c",
+        "change": "Initialize root, session_id, and destination in separate local statements; create a missing evidence root with mkdir -p; retain atomic refusal when the session directory exists."
+      }
+    },
+    "added_files": {
+      "scripts/experiment_f_validation/test_operator_scripts.sh": "252c4d5e92c9c478195d16aabeefa4149859a539f119458402c7f91a7f339e0c"
+    },
+    "audit": "All validation Bash scripts were inspected for same-statement variable dependencies under set -u. No equivalent dependency was found elsewhere. Multi-variable readonly/local declarations that do not reference one another are safe and unchanged."
+  },
+  "tests": {
+    "bash_n_all_validation_shell_scripts": "PASS",
+    "create_missing_tmp_evidence_root_and_TEST_ID": "PASS",
+    "second_TEST_ID_creation_refused": "PASS",
+    "session_allowlist_valid_and_invalid_cases": "PASS",
+    "target_url_exact_plain_value": "http://10.10.20.2:8080/",
+    "target_url_markdown_absent": true,
+    "fixed_target": "PASS",
+    "capture_interface_enp0s3": "PASS",
+    "normal_profile_unchanged": "PASS",
+    "ddos_like_profile_unchanged": "PASS",
+    "portscan_profile_unchanged": "PASS",
+    "arbitrary_target_argument_absent": "PASS",
+    "network_traffic_generated_by_tests": false
+  },
+  "profile_integrity": {
+    "Normal": "30 sequential GET requests; 1-second delay; 10-second per-request timeout; fixed User-Agent; 120-second maximum; unchanged",
+    "DDoS": "controlled HTTP DDoS-like/load profile; Locust 8 users, spawn rate 2/s, 90 seconds, timeout 10 seconds, wait 1-2 seconds; unchanged",
+    "PortScan": "one TCP SYN scan, -sS -Pn -n -T3 --max-retries 1 --host-timeout 120s -p 1-1000 10.10.20.2; unchanged",
+    "capture": "ubuntu-nids enp0s3 with frozen target-specific filters; unchanged"
+  },
+  "session_ids_unchanged": ["F-A1-NORMAL-V-01","F-A1-NORMAL-V-02","F-A1-NORMAL-V-03","F-A1-DDOSLIKE-V-01","F-A1-DDOSLIKE-V-02","F-A1-DDOSLIKE-V-03","F-A1-PORTSCAN-V-01","F-A1-PORTSCAN-V-02","F-A1-PORTSCAN-V-03"],
+  "historical_evidence": {
+    "amendment_a3_sha256": "0682dc4d6508316d47927ad12700a75229fc3a1fb44054477c5c827692f3bd4a",
+    "original_a3_checksum_manifest_sha256": "35b39ee19e63b01daea0911f27cea5f8a10679faa887aeafa82cfd17bc1fcd97",
+    "note": "The original A3 checksum manifest is intentionally preserved as the historical pre-repair identity. Its old common.sh entry is superseded prospectively by this repair record."
+  },
+  "frozen_integrity": {
+    "RF-v2": "fb13a71a0287054d2630bf07529f113a153ba08d8f6835a605b04493408b8a31",
+    "RF-v3": "6b01c7b3923c1a6bd471862d011f8f5b88a31378e51d1dde082bd2e72bedef86",
+    "RF-v4": "d5dccd339a5c67635e760d7d3760e1d006278362c6f70ea06bf20928ccdece13",
+    "RF-v4_metadata": "9f8bb215740943b326b6ec6f76e55caef4d094290ac43ed30cb7e32884a47a1a",
+    "crosswalk": "66e517cdcea217f19de4d0a2cd45302ede999388393f539fb8ca4a2c68b74cf4",
+    "feature_order": "9338f50fc3e7efc78d678cc65ab38d428a7f6912ed9467a2b99a449a7c8e3c13",
+    "Experiment_D_final_test_audit": "a0a22100cd0c6b923349aa6e899c2221b84d64991ca7e20b0626d811879d88c1",
+    "Experiment_E_dataset_audit": "69cc278d2a6139b7b2d2e9d4db3312fb3a3b06cf70381a719d542ec624e2b45c",
+    "Experiment_E14_decision": "e5c11c39f7401fe89551d927b193978c59adc32bf7bb3052f619d225a595278e",
+    "F0": "dfc628b60bbd56ea0a78c4585ed28cfece2154b56fe101567b89e434e83d6cfb",
+    "A1": "2116e1272ffc93dcaacfd105eb8f90afda10b2ccf5c2111ed2d2dd1179f6b95e",
+    "A2": "24840ecd9973e4028c0dd382da90d1a467f0190a654abcd2fbd50af9baed6afb",
+    "F1": "a04fa37f5fccb32851d2a118316357d837aa7b61b1ad727b7a2e77a9711ddfd6",
+    "F2": "5e45cb8bbf8d0857345843f3a28e05c5d173f350528c3bee6b797e04783f43e0",
+    "F3_dataset": "6dc316a4f27a39a4db81d3f0e787467236b2b4af42da87cacbb0524838464ee4",
+    "F3_training": "904913caa8c2c8b027a09b40eb5db9aff4688f28923fbae878bc469971e156de",
+    "A3": "0682dc4d6508316d47927ad12700a75229fc3a1fb44054477c5c827692f3bd4a",
+    "status": "PASS"
+  },
+  "authorization": "Collection only. Extraction, inference, prediction inspection, retraining, activation, and promotion remain prohibited."
+}

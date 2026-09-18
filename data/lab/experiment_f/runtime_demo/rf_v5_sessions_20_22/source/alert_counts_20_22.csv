@@ -1,0 +1,4 @@
+monitoring_session_id,predicted_label,severity,alert_count
+20,PortScan,MEDIUM,12
+21,DDoS,HIGH,453
+22,PortScan,MEDIUM,1000

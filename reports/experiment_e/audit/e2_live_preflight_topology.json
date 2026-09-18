@@ -1,0 +1,114 @@
+{
+  "experiment_code": "EXPERIMENT_E",
+  "phase": "E2_LIVE_3_VM_PREFLIGHT",
+  "status": "PASS",
+  "verified_at": "2026-09-09T07:15:49Z",
+  "git_head": "088524d0e6b28e680b9bb84051e665d8fb5d4de7",
+  "scope": "live topology preflight only; no Experiment E scientific traffic collection",
+  "source": "user-supplied empirical VM command outputs and screenshots",
+  "repository_integrity": {
+    "experiment_e_e1_validator": "PASS",
+    "topology_amendment_a1_present": true,
+    "experiment_d_frozen_integrity": "PASS",
+    "rf_v2_identity": "PASS",
+    "feature_contract_identity": "PASS",
+    "experiment_e_scientific_pcap_exists": false,
+    "final_test_sealed": true
+  },
+  "verified_topology": {
+    "architecture": "routed 3-VM design",
+    "traffic_generator": {
+      "hostname": "ubuntu-traffic",
+      "management_interface": "enp0s1",
+      "management_ipv4": "192.168.64.5/24",
+      "experiment_interface": "enp0s2",
+      "experiment_ipv4": "10.10.10.2/24",
+      "route_to_target": "10.10.20.2 via 10.10.10.1 dev enp0s2 src 10.10.10.2"
+    },
+    "nids": {
+      "hostname": "ubuntu-nids",
+      "management_interface": "enp0s1",
+      "management_ipv4": "192.168.64.20/24",
+      "source_side_interface": "enp0s2",
+      "source_side_ipv4": "10.10.10.1/24",
+      "target_side_interface": "enp0s3",
+      "target_side_ipv4": "10.10.20.1/24",
+      "ip_forwarding": "1",
+      "route_to_generator": "10.10.10.2 dev enp0s2 src 10.10.10.1",
+      "route_to_target": "10.10.20.2 dev enp0s3 src 10.10.20.1"
+    },
+    "target": {
+      "hostname": "ubuntu-target",
+      "management_interface": "enp0s1",
+      "management_ipv4": "192.168.64.5/24",
+      "experiment_interface": "enp0s2",
+      "experiment_ipv4": "10.10.20.2/24",
+      "return_route_to_generator": "10.10.10.2 via 10.10.20.1 dev enp0s2 src 10.10.20.2"
+    }
+  },
+  "verified_target_service": {
+    "url": "http://10.10.20.2:8080/",
+    "ip": "10.10.20.2",
+    "port": 8080,
+    "protocol": "HTTP",
+    "server": "SimpleHTTP/0.6 Python/3.10.4",
+    "example_request": "curl -v http://10.10.20.2:8080/",
+    "response_status": "HTTP/1.0 200 OK",
+    "response_body": "RF-NIDS Experiment E benign target",
+    "target_log": "10.10.10.2 ... \"GET / HTTP/1.1\" 200"
+  },
+  "packet_path_evidence": {
+    "diagnostic_command": "sudo tcpdump -i any -nn -c 20 'host 10.10.10.2 and host 10.10.20.2'",
+    "diagnostic_traffic": "benign curl request from ubuntu-traffic to http://10.10.20.2:8080/",
+    "packets_captured": 20,
+    "packets_received_by_filter": 20,
+    "packets_dropped_by_kernel": 0,
+    "forward_path": ["enp0s2 In", "enp0s3 Out"],
+    "return_path": ["enp0s3 In", "enp0s2 Out"],
+    "observed_protocol_events": [
+      "TCP handshake",
+      "HTTP GET",
+      "HTTP 200 response",
+      "connection teardown"
+    ],
+    "diagnostic_pcap_retained": false
+  },
+  "runtime_capture_configuration": {
+    "evidence": [
+      "docs/docker_runtime_monitoring.md lines 103-117 call RuntimePipeline.preflight('enp0s3')",
+      "docs/docker_runtime_monitoring.md lines 130-132 instruct operators to choose enp0s3 and target 10.10.20.2",
+      "docs/phase_10_runtime_capture_pipeline.md lines 11-18 describe use of the server-discovered selected interface with filter host <target>"
+    ],
+    "proves_interface_used_by_documented_runtime_path": true,
+    "database_runtime_session_evidence_inspected": false
+  },
+  "capture_interface_decision": {
+    "recommended_capture_interface": "enp0s3",
+    "reason": "enp0s3 is the target-side NIDS interface documented by the real runtime monitoring path and empirically observed to carry outbound generator-to-target traffic plus inbound target-to-generator return traffic for the verified benign service.",
+    "additional_interface_specific_observation_required": false
+  },
+  "rejected_capture_interfaces": [
+    {
+      "interface": "any",
+      "reason": "tcpdump -i any observed the same routed connection on both enp0s2 and enp0s3, creating duplicate observation risk for scientific PCAP collection."
+    }
+  ],
+  "differences_from_amendment_a1": {
+    "expected_generator_ip": "confirmed as 10.10.10.2",
+    "expected_nids_source_side_address": "confirmed as 10.10.10.1 on enp0s2",
+    "expected_nids_target_side_address": "confirmed as 10.10.20.1 on enp0s3",
+    "expected_target": "confirmed as 10.10.20.2",
+    "expected_capture_interface": "confirmed as enp0s3 for scientific capture",
+    "http_service_port": "confirmed as 8080"
+  },
+  "explicit_answers": {
+    "temporary_benign_diagnostic_traffic_generated": true,
+    "diagnostic_pcap_retained": false,
+    "experiment_e_scientific_pcap_created": false,
+    "cicflowmeter_run": false,
+    "inference_run": false,
+    "model_trained": false,
+    "experiment_d_modified": false,
+    "rf_v2_modified": false
+  }
+}

@@ -1,0 +1,27 @@
+experiment_code: EXPERIMENT_E13
+title: Controlled DDoS-like Runtime Validation Preregistration
+phase: PREREGISTRATION_ONLY
+status: NOT_AUTHORIZED_TO_EXECUTE
+create_new_only: true
+traffic_execution_authorized: false
+database_writes_authorized: false
+topology:
+  traffic_generator: {host: ubuntu-traffic, interface: enp0s2, ip: 10.10.10.2/24}
+  nids: {host: ubuntu-nids, source_interface: enp0s2, source_ip: 10.10.10.1/24, target_interface: enp0s3, target_ip: 10.10.20.1/24, capture_interface: enp0s3, ip_forwarding: true}
+  target: {host: ubuntu-target, ip: 10.10.20.2, http_url: http://10.10.20.2:8080/}
+scope:
+  allowed_networks: [10.10.10.0/24, 10.10.20.0/24]
+  allowed_target: 10.10.20.2:8080
+  prohibited_interfaces: [any, enp0s1]
+  prohibited_scope: [management_network, public_addresses, corporate_networks]
+frozen_models:
+  rf_v2: {path: models/experiment_d/random_forest_rf_v2.joblib, sha256: fb13a71a0287054d2630bf07529f113a153ba08d8f6835a605b04493408b8a31}
+  rf_v3_candidate: {path: models/experiment_e/random_forest_rf_v3_candidate.joblib, sha256: 6b01c7b3923c1a6bd471862d011f8f5b88a31378e51d1dde082bd2e72bedef86, status: CANDIDATE_NOT_ACTIVE}
+feature_contract: {count: 78, order_sha256: 9338f50fc3e7efc78d678cc65ab38d428a7f6912ed9467a2b99a449a7c8e3c13}
+profiles:
+  E13-N-R1: {ground_truth_profile: Normal, source_identities: [10.10.10.2], requests: {min: 20, max: 30, concurrency: 1, timeout_seconds: 10, maximum_duration_seconds: 300}}
+  E13-D1-R1: {ground_truth_profile: controlled_DDoS_like, source_identities: [10.10.10.11, 10.10.10.12, 10.10.10.13, 10.10.10.14], requests_per_source_max: 100, requests_total_max: 400, concurrency_total: 8, timeout_seconds: 10, maximum_duration_seconds: 300}
+  E13-D2-R1: {ground_truth_profile: controlled_DDoS_like, source_identities: [10.10.10.11, 10.10.10.12, 10.10.10.13, 10.10.10.14], requests_per_source_max: 200, requests_total_max: 800, concurrency_total: 32, timeout_seconds: 10, maximum_duration_seconds: 300}
+evidence_root: reports/experiment_e/runtime_validation/e13
+required_evidence: [capture.pcap, raw_84.csv, model_input_78.csv, predictions.csv, traffic_flows.csv, runtime_artifacts.csv, alerts.csv, provenance.json, SHA256SUMS]
+safety: {no_infinite_loop: true, no_sustained_packet_flood: true, no_syn_flood: true, no_udp_flood: true, no_raw_packet_flood: true, no_resource_exhaustion_objective: true}

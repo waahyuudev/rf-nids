@@ -8,7 +8,7 @@ import socket
 from uuid import uuid4
 
 from sqlalchemy import select
-from sqlalchemy.exc import IntegrityError
+from sqlalchemy.exc import IntegrityError, SQLAlchemyError
 from sqlalchemy.orm import Session
 
 from src.api.models import ModelRecord, MonitoringSession, User
@@ -32,7 +32,7 @@ class CollectorController:
 
     mode = "LIFECYCLE_ONLY"
 
-    def start(self, *, session_id: int, target_ip: str, interface_name: str) -> str:
+    def start(self, *, session_id: int, target_ip: str, interface_name: str, inference=None) -> str:
         return f"lifecycle:{session_id}"
 
     def stop(self, runtime_handle: str | None) -> None:
@@ -69,15 +69,24 @@ class MonitoringService:
         ).all()
         now = datetime.now(timezone.utc)
         for row in rows:
+            # A STOPPING worker may have already completed its final flush before
+            # the API restart.  We cannot prove failure from a lost in-memory
+            # handle, so preserve its non-terminal lifecycle state.
+            if row.status == "STOPPING":
+                continue
             row.status = "FAILED"
             row.stopped_at = now
             row.last_error = "API restarted; the prior in-memory controller cannot be recovered."
             row.runtime_handle = None
-        if rows:
+        reconciled = sum(row.status != "STOPPING" for row in rows)
+        if reconciled:
             db.commit()
-        return len(rows)
+        return reconciled
 
-    def start(self, db: Session, *, target_ip: str, interface_name: str, user: User):
+    def start(
+        self, db: Session, *, target_ip: str, interface_name: str, user: User,
+        model_id: int | None = None, inference=None, selection_mode: str = "DEFAULT",
+    ):
         try:
             address = ip_address(target_ip.strip())
             normalized_ip = str(address)
@@ -102,8 +111,10 @@ class MonitoringService:
             raise MonitoringValidation("interface_name is not an available local interface")
         if self.active(db) is not None:
             raise MonitoringConflict("A monitoring session is already active")
-        model = db.scalar(
-            select(ModelRecord).where(ModelRecord.is_active.is_(True)).order_by(ModelRecord.id.desc())
+        model = (
+            db.get(ModelRecord, model_id)
+            if model_id is not None else
+            db.scalar(select(ModelRecord).where(ModelRecord.is_active.is_(True)).order_by(ModelRecord.id.desc()))
         )
         if model is None:
             raise MonitoringValidation("No active model is available")
@@ -111,6 +122,9 @@ class MonitoringService:
             target_ip=normalized_ip,
             interface_name=interface_name,
             model_id=model.id,
+            selection_mode=selection_mode,
+            selected_model_version=model.model_version,
+            selected_model_sha256=model.artifact_sha256,
             created_by_user_id=user.id,
             status="STARTING",
             extractor_name="CICFlowMeter V3",
@@ -120,26 +134,41 @@ class MonitoringService:
         db.add(row)
         try:
             db.commit()
-            db.refresh(row)
-            handle = self.collector.start(
-                session_id=row.id, target_ip=normalized_ip, interface_name=interface_name
-            )
-            db.refresh(row)
-            if row.status != "FAILED":
-                row.runtime_handle = handle
-                row.started_at = datetime.now(timezone.utc)
-                row.status = "RUNNING"
-                db.commit()
         except IntegrityError as exc:
             db.rollback()
             raise MonitoringConflict("A monitoring session is already active") from exc
+        except SQLAlchemyError:
+            db.rollback()
+            raise
+
+        db.refresh(row)
+        try:
+            handle = self.collector.start(
+                session_id=row.id, target_ip=normalized_ip, interface_name=interface_name,
+                inference=inference,
+            )
         except Exception as exc:
             row.status = "FAILED"
             row.last_error = str(exc)[:2000] or exc.__class__.__name__
             row.stopped_at = datetime.now(timezone.utc)
             row.runtime_handle = None
             row.processing_state = None
-            db.commit()
+            try:
+                db.commit()
+            except SQLAlchemyError:
+                db.rollback()
+                raise
+        else:
+            db.refresh(row)
+            if row.status != "FAILED":
+                row.runtime_handle = handle
+                row.started_at = datetime.now(timezone.utc)
+                row.status = "RUNNING"
+                try:
+                    db.commit()
+                except SQLAlchemyError:
+                    db.rollback()
+                    raise
         db.refresh(row)
         return row
 
@@ -151,18 +180,34 @@ class MonitoringService:
         row = self.active(db)
         if row is None:
             raise MonitoringConflict("No active monitoring session")
-        row.status = "STOPPING"
-        db.flush()
+        if row.status != "STOPPING":
+            row.status = "STOPPING"
+            # Make STOPPING visible to the worker before waiting.  Holding this
+            # transaction during join previously prevented worker finalization.
+            db.commit()
+            db.refresh(row)
         try:
-            self.collector.stop(row.runtime_handle)
-            row.status = "STOPPED"
-            row.last_error = None
+            stopped = self.collector.stop(row.runtime_handle)
         except Exception as exc:
+            # A confirmed worker failure is terminal; an ordinary wait expiry is
+            # represented by a false return below and remains STOPPING.
             row.status = "FAILED"
             row.last_error = str(exc)[:2000] or exc.__class__.__name__
-        row.runtime_handle = None
-        row.processing_state = None
-        row.stopped_at = datetime.now(timezone.utc)
-        db.commit()
+            row.runtime_handle = None
+            row.processing_state = None
+            row.stopped_at = datetime.now(timezone.utc)
+            db.commit()
+        else:
+            # Test/lifecycle collectors predate the boolean contract and return
+            # None for an immediately completed stop.
+            if stopped is not False:
+                db.refresh(row)
+                if row.status == "STOPPING":
+                    row.status = "STOPPED"
+                    row.last_error = None
+                    row.runtime_handle = None
+                    row.processing_state = None
+                    row.stopped_at = datetime.now(timezone.utc)
+                    db.commit()
         db.refresh(row)
         return row

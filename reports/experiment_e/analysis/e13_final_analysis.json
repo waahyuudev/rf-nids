@@ -1,0 +1,915 @@
+{
+  "alert_analysis": {
+    "interpretation": "Offline anomalous predictions are not claimed as exact runtime alerts because alert exports are unavailable.",
+    "offline_anomalous_counts": {
+      "E13-D1-R1": 2,
+      "E13-D2-R1": 4,
+      "E13-N-R1": 0
+    },
+    "runtime_alert_counters": {
+      "D1": 2,
+      "D2": 4,
+      "N-R1": 0
+    }
+  },
+  "analysis_mode": "offline only; frozen evidence; no traffic, DB writes, retraining, threshold/model changes, or promotion",
+  "concurrency_response": {
+    "D1_concurrency": 8,
+    "D2_closer_to_E4": false,
+    "D2_concurrency": 32,
+    "D2_greater_P_DDoS": "See full probability summaries; no aggregate probability claim is made without the JSON summaries.",
+    "DDoS_predictions": {
+      "D1": 2,
+      "D2": 4
+    },
+    "caution": "Request concurrency is not equated with network DDoS intensity absent extracted-feature evidence."
+  },
+  "distribution_analysis": {
+    "D1_D2_median_robust_distance": 0.0,
+    "D2_closer_than_D1": false,
+    "aggregate_median_robust_distance_to_E4": {
+      "D1": 0.6094781617941959,
+      "D2": 1.0
+    },
+    "comparison_csv": "reports/experiment_e/analysis/e13_feature_distribution_comparison.csv",
+    "method": "median difference normalized by reference MAD; pooled-SD secondary statistic; all 78 features",
+    "reference_rows": 3081,
+    "top_shifted_features": {
+      "E13-D1 vs E10-Session-11": [
+        {
+          "absolute_median_difference": 160.0,
+          "feature": "fwd_iat_min",
+          "pooled_standardized_median_difference": 0.30426677620909,
+          "robust_median_distance": 7.619047619047619
+        },
+        {
+          "absolute_median_difference": 55.20487389892578,
+          "feature": "flow_iat_std",
+          "pooled_standardized_median_difference": 0.018790032537382217,
+          "robust_median_distance": 1.5956233458662272
+        },
+        {
+          "absolute_median_difference": 0.5,
+          "feature": "ack_flag_count",
+          "pooled_standardized_median_difference": 0.9993763543013905,
+          "robust_median_distance": 1.0
+        },
+        {
+          "absolute_median_difference": 113.66667000000001,
+          "feature": "flow_iat_mean",
+          "pooled_standardized_median_difference": 0.09357504177093912,
+          "robust_median_distance": 1.0
+        },
+        {
+          "absolute_median_difference": 261.5,
+          "feature": "flow_iat_max",
+          "pooled_standardized_median_difference": 0.03372512885048489,
+          "robust_median_distance": 0.9389587073608617
+        },
+        {
+          "absolute_median_difference": 25819.10915625,
+          "feature": "flow_bytes_s",
+          "pooled_standardized_median_difference": 0.3000643622149637,
+          "robust_median_distance": 0.788989818952828
+        },
+        {
+          "absolute_median_difference": 1773.0421855468749,
+          "feature": "flow_packets_s",
+          "pooled_standardized_median_difference": 0.006792616720118133,
+          "robust_median_distance": 0.7679938222136059
+        },
+        {
+          "absolute_median_difference": 154.0,
+          "feature": "fwd_iat_mean",
+          "pooled_standardized_median_difference": 0.060371942253187066,
+          "robust_median_distance": 0.7238542890716804
+        },
+        {
+          "absolute_median_difference": 295.5,
+          "feature": "fwd_iat_total",
+          "pooled_standardized_median_difference": 0.03894930010671434,
+          "robust_median_distance": 0.6530386740331492
+        },
+        {
+          "absolute_median_difference": 756.4475353515627,
+          "feature": "fwd_packets_s",
+          "pooled_standardized_median_difference": 0.0029043220790443258,
+          "robust_median_distance": 0.6367249674621182
+        }
+      ],
+      "E13-D1 vs E13-D2": [
+        {
+          "absolute_median_difference": 724.0238037109375,
+          "feature": "bwd_packets_s",
+          "pooled_standardized_median_difference": 0.23313802480697632,
+          "robust_median_distance": 3.2215662002563477
+        },
+        {
+          "absolute_median_difference": 5095.1044921875,
+          "feature": "flow_bytes_s",
+          "pooled_standardized_median_difference": 0.042496249079704285,
+          "robust_median_distance": 2.8149003982543945
+        },
+        {
+          "absolute_median_difference": 2255.74072265625,
+          "feature": "flow_packets_s",
+          "pooled_standardized_median_difference": 0.00904252752661705,
+          "robust_median_distance": 2.2307891845703125
+        },
+        {
+          "absolute_median_difference": 1011.0166625976562,
+          "feature": "fwd_packets_s",
+          "pooled_standardized_median_difference": 0.004061518236994743,
+          "robust_median_distance": 2.107301712036133
+        },
+        {
+          "absolute_median_difference": 452.5,
+          "feature": "fwd_iat_min",
+          "pooled_standardized_median_difference": 0.20386482775211334,
+          "robust_median_distance": 1.0851318836212158
+        },
+        {
+          "absolute_median_difference": 35.0,
+          "feature": "max_packet_length",
+          "pooled_standardized_median_difference": 0.3784928023815155,
+          "robust_median_distance": 1.0
+        },
+        {
+          "absolute_median_difference": 408.3333435058594,
+          "feature": "packet_length_variance",
+          "pooled_standardized_median_difference": 0.18991318345069885,
+          "robust_median_distance": 1.0
+        },
+        {
+          "absolute_median_difference": 20.207260131835938,
+          "feature": "packet_length_std",
+          "pooled_standardized_median_difference": 0.6171236634254456,
+          "robust_median_distance": 1.0
+        },
+        {
+          "absolute_median_difference": 11.666666984558105,
+          "feature": "packet_length_mean",
+          "pooled_standardized_median_difference": 0.6346040964126587,
+          "robust_median_distance": 1.0
+        },
+        {
+          "absolute_median_difference": 17.5,
+          "feature": "average_packet_size",
+          "pooled_standardized_median_difference": 0.8342639207839966,
+          "robust_median_distance": 1.0
+        }
+      ],
+      "E13-D1 vs E4-frozen-DDoS": [
+        {
+          "absolute_median_difference": 178.0,
+          "feature": "fwd_iat_min",
+          "pooled_standardized_median_difference": 0.3750332186898362,
+          "robust_median_distance": 59.333333333333336
+        },
+        {
+          "absolute_median_difference": 6748.78184375,
+          "feature": "flow_bytes_s",
+          "pooled_standardized_median_difference": 0.09922113855514923,
+          "robust_median_distance": 43.15891964117273
+        },
+        {
+          "absolute_median_difference": 185.0,
+          "feature": "bwd_packet_length_max",
+          "pooled_standardized_median_difference": 1.9866786833685963,
+          "robust_median_distance": 26.428571428571427
+        },
+        {
+          "absolute_median_difference": 185.0,
+          "feature": "max_packet_length",
+          "pooled_standardized_median_difference": 1.9866786833685963,
+          "robust_median_distance": 26.428571428571427
+        },
+        {
+          "absolute_median_difference": 210.0,
+          "feature": "subflow_bwd_bytes",
+          "pooled_standardized_median_difference": 1.9297143370913785,
+          "robust_median_distance": 14.0
+        },
+        {
+          "absolute_median_difference": 210.0,
+          "feature": "total_length_of_bwd_packets",
+          "pooled_standardized_median_difference": 1.9297143370913785,
+          "robust_median_distance": 14.0
+        },
+        {
+          "absolute_median_difference": 74.16199,
+          "feature": "bwd_packet_length_std",
+          "pooled_standardized_median_difference": 1.7479393557078824,
+          "robust_median_distance": 8.020425797911459
+        },
+        {
+          "absolute_median_difference": 54.204147,
+          "feature": "packet_length_std",
+          "pooled_standardized_median_difference": 1.7307942110060623,
+          "robust_median_distance": 7.122116157820324
+        },
+        {
+          "absolute_median_difference": 84.0,
+          "feature": "fwd_packet_length_max",
+          "pooled_standardized_median_difference": 1.990460395887745,
+          "robust_median_distance": 5.6
+        },
+        {
+          "absolute_median_difference": 136.0,
+          "feature": "bwd_header_length",
+          "pooled_standardized_median_difference": 2.003469426630904,
+          "robust_median_distance": 4.25
+        }
+      ],
+      "E13-D2 vs E10-Session-11": [
+        {
+          "absolute_median_difference": 612.5,
+          "feature": "fwd_iat_min",
+          "pooled_standardized_median_difference": 0.2809550603126107,
+          "robust_median_distance": 29.166666666666668
+        },
+        {
+          "absolute_median_difference": 110.0,
+          "feature": "flow_iat_min",
+          "pooled_standardized_median_difference": 0.04896852694781544,
+          "robust_median_distance": 22.0
+        },
+        {
+          "absolute_median_difference": 2259.0,
+          "feature": "flow_iat_max",
+          "pooled_standardized_median_difference": 0.054887424696445565,
+          "robust_median_distance": 8.111310592459605
+        },
+        {
+          "absolute_median_difference": 1476.5,
+          "feature": "fwd_iat_mean",
+          "pooled_standardized_median_difference": 0.11210568286337996,
+          "robust_median_distance": 6.940070505287896
+        },
+        {
+          "absolute_median_difference": 743.3332959765626,
+          "feature": "flow_iat_mean",
+          "pooled_standardized_median_difference": 0.12243379288050149,
+          "robust_median_distance": 6.539588922386505
+        },
+        {
+          "absolute_median_difference": 2698.5,
+          "feature": "fwd_iat_total",
+          "pooled_standardized_median_difference": 0.06561082992354816,
+          "robust_median_distance": 5.96353591160221
+        },
+        {
+          "absolute_median_difference": 2051.5,
+          "feature": "fwd_iat_max",
+          "pooled_standardized_median_difference": 0.05000955557027809,
+          "robust_median_distance": 5.651515151515151
+        },
+        {
+          "absolute_median_difference": 2928.0,
+          "feature": "flow_duration",
+          "pooled_standardized_median_difference": 0.07081283498005106,
+          "robust_median_distance": 3.2407304925290537
+        },
+        {
+          "absolute_median_difference": 4028.782908203125,
+          "feature": "flow_packets_s",
+          "pooled_standardized_median_difference": 0.01711819562756865,
+          "robust_median_distance": 1.745068678997861
+        },
+        {
+          "absolute_median_difference": 51.66235528320313,
+          "feature": "flow_iat_std",
+          "pooled_standardized_median_difference": 0.0033615825534971454,
+          "robust_median_distance": 1.493231563996352
+        }
+      ],
+      "E13-D2 vs E4-frozen-DDoS": [
+        {
+          "absolute_median_difference": 630.5,
+          "feature": "fwd_iat_min",
+          "pooled_standardized_median_difference": 0.29078389710836466,
+          "robust_median_distance": 210.16666666666666
+        },
+        {
+          "absolute_median_difference": 114.0,
+          "feature": "flow_iat_min",
+          "pooled_standardized_median_difference": 0.05096968593489954,
+          "robust_median_distance": 114.0
+        },
+        {
+          "absolute_median_difference": 185.0,
+          "feature": "bwd_packet_length_max",
+          "pooled_standardized_median_difference": 1.987569143096238,
+          "robust_median_distance": 26.428571428571427
+        },
+        {
+          "absolute_median_difference": 150.0,
+          "feature": "max_packet_length",
+          "pooled_standardized_median_difference": 1.6122950282409965,
+          "robust_median_distance": 21.428571428571427
+        },
+        {
+          "absolute_median_difference": 210.0,
+          "feature": "subflow_bwd_bytes",
+          "pooled_standardized_median_difference": 1.9305386192736345,
+          "robust_median_distance": 14.0
+        },
+        {
+          "absolute_median_difference": 210.0,
+          "feature": "total_length_of_bwd_packets",
+          "pooled_standardized_median_difference": 1.9305386192736345,
+          "robust_median_distance": 14.0
+        },
+        {
+          "absolute_median_difference": 1653.6773515625,
+          "feature": "flow_bytes_s",
+          "pooled_standardized_median_difference": 0.014204100533069013,
+          "robust_median_distance": 10.575379317470368
+        },
+        {
+          "absolute_median_difference": 74.16199,
+          "feature": "bwd_packet_length_std",
+          "pooled_standardized_median_difference": 1.7494324267373276,
+          "robust_median_distance": 8.020425797911459
+        },
+        {
+          "absolute_median_difference": 836.7777359765626,
+          "feature": "flow_iat_mean",
+          "pooled_standardized_median_difference": 0.06449499562681671,
+          "robust_median_distance": 5.958069086934816
+        },
+        {
+          "absolute_median_difference": 84.0,
+          "feature": "fwd_packet_length_max",
+          "pooled_standardized_median_difference": 1.9920811235045723,
+          "robust_median_distance": 5.6
+        }
+      ]
+    }
+  },
+  "gate_1_artifact_integrity": {
+    "preregistration_and_frozen_inputs": {
+      "config/experiment_e13.yaml": "a25f4e91a4676335899e20e31a9ea209485dc01ec646804f8f7aac91b599eb46",
+      "data/lab/experiment_e/datasets/experiment_e_training_candidate.csv": "f716404391467b267cca2f989762c2d4740127a4e7dd11afe956e7e8940b2284",
+      "docs/experiment_e13_operator_plan.md": "5f57b0cdfd8fa65be51ab78479d5aa9d85a620b3381df49be996d77b74427935",
+      "models/experiment_e/random_forest_rf_v3_candidate.joblib": "6b01c7b3923c1a6bd471862d011f8f5b88a31378e51d1dde082bd2e72bedef86",
+      "reports/experiment_e/preregistration/e13_preregistration.json": "0ac3ea4070d30eeb2c1b33a6d25d12d5913719263849a139659774cda585e84b",
+      "reports/experiment_e/preregistration/e13_preregistration_summary.md": "9d850043ecae03da58ac442b1c872ce2ca2678a92d312f70d6648c1da53b13bb"
+    },
+    "runtime_manifests": {
+      "E13-D1-R1": {
+        "files": {
+          "window-000002.pcap": "081eb66054c1f6a686ea6c51fe5a6a58017fa11bac01d7febc4c969dd37855ba",
+          "window-000002_raw_84.csv": "edfd60d1295ce69ea038fa6768ab7a95bde0d51afa26e16c56bd8dbd0e722b8a"
+        },
+        "matches_manifest": true
+      },
+      "E13-D2-R1": {
+        "files": {
+          "window-000003.pcap": "b2795007b7ca4f6c1dc32472a27e04db2ccd85e0839921204b701cc1b2aa53a8",
+          "window-000003_raw_84.csv": "244371f45716fe5056167e86557bdca141b6becb404eeed16a4eeb8dc94f83ab"
+        },
+        "matches_manifest": true
+      },
+      "E13-N-R1": {
+        "files": {
+          "window-000002.pcap": "d12e19a103889d20441a550082e6300ed6a65405c5789d4046dc4b96b27b9f6f",
+          "window-000002_raw_84.csv": "1f66b9c97166e24c4113226436fb028c9eb0074fd1327613c6a643d0f22de002",
+          "window-000003.pcap": "2fefc6c2db0f60bcc9292b13442cc10b21b9e42e9400f8719d1b87731a72b74d",
+          "window-000003_raw_84.csv": "671d2cc807bdb48ff41b2eb70272edfd5c9a8f4b817e8afae024fc5a372dc71a",
+          "window-000004.pcap": "46c5e637725928258d38e57aabcf66ab8c73188cd62836495c11858a0fb1033a",
+          "window-000004_raw_84.csv": "ac254e8023424f4dfe639149751bbe35b9946c63d38d25d8e2d2c0a6b708fbb8"
+        },
+        "matches_manifest": true
+      }
+    },
+    "status": "PASS"
+  },
+  "generated_at_utc": "2026-09-15T09:43:56.755022+00:00",
+  "integrity": {
+    "historical_hashes_after": {
+      "config/experiment_e13.yaml": "a25f4e91a4676335899e20e31a9ea209485dc01ec646804f8f7aac91b599eb46",
+      "data/lab/experiment_e/datasets/experiment_e_training_candidate.csv": "f716404391467b267cca2f989762c2d4740127a4e7dd11afe956e7e8940b2284",
+      "docs/experiment_e13_operator_plan.md": "5f57b0cdfd8fa65be51ab78479d5aa9d85a620b3381df49be996d77b74427935",
+      "models/experiment_e/random_forest_rf_v3_candidate.joblib": "6b01c7b3923c1a6bd471862d011f8f5b88a31378e51d1dde082bd2e72bedef86",
+      "reports/experiment_e/preregistration/e13_preregistration.json": "0ac3ea4070d30eeb2c1b33a6d25d12d5913719263849a139659774cda585e84b",
+      "reports/experiment_e/preregistration/e13_preregistration_summary.md": "9d850043ecae03da58ac442b1c872ce2ca2678a92d312f70d6648c1da53b13bb"
+    },
+    "historical_hashes_before": {
+      "config/experiment_e13.yaml": "a25f4e91a4676335899e20e31a9ea209485dc01ec646804f8f7aac91b599eb46",
+      "data/lab/experiment_e/datasets/experiment_e_training_candidate.csv": "f716404391467b267cca2f989762c2d4740127a4e7dd11afe956e7e8940b2284",
+      "docs/experiment_e13_operator_plan.md": "5f57b0cdfd8fa65be51ab78479d5aa9d85a620b3381df49be996d77b74427935",
+      "models/experiment_e/random_forest_rf_v3_candidate.joblib": "6b01c7b3923c1a6bd471862d011f8f5b88a31378e51d1dde082bd2e72bedef86",
+      "reports/experiment_e/preregistration/e13_preregistration.json": "0ac3ea4070d30eeb2c1b33a6d25d12d5913719263849a139659774cda585e84b",
+      "reports/experiment_e/preregistration/e13_preregistration_summary.md": "9d850043ecae03da58ac442b1c872ce2ca2678a92d312f70d6648c1da53b13bb"
+    }
+  },
+  "limitations": [
+    "Controlled DDoS-like profiles used four logical identities on one VM; they are not real distributed attacks.",
+    "Profile rates are scoped, not universal DDoS recall.",
+    "No persisted E13 prediction or alert exports were available for row-level runtime reproduction/alert identity."
+  ],
+  "offline_model_results": {
+    "E13-D1-R1": {
+      "matrix_sha256": "78ec5c04467bf3116098f41eb0298a2ea785036ee9117fd4fc60a12f8da9a4dc",
+      "matrix_shape": [
+        801,
+        78
+      ],
+      "offline_anomalous_rf_v3_predictions": [
+        {
+          "destination_ip": "10.10.20.2",
+          "destination_port": 8080,
+          "flow_id": "10.10.10.13-10.10.20.2-38042-8080-6",
+          "important_features": {
+            "flow_bytes_s": 7320.17822265625,
+            "flow_duration": 40846.0,
+            "flow_packets_s": 244.822021484375,
+            "total_backward_packets": 5.0,
+            "total_fwd_packets": 5.0
+          },
+          "matrix_row_index": 1,
+          "predicted_class": "DDoS",
+          "probabilities": {
+            "DDoS": 0.5309655203372189,
+            "Normal": 0.444103142564874,
+            "PortScan": 0.024931337097907114
+          },
+          "protocol": 6.0,
+          "raw_row_index": 1,
+          "source_ip": "10.10.10.13",
+          "source_port": 38042,
+          "source_window": 2
+        },
+        {
+          "destination_ip": "10.10.20.2",
+          "destination_port": 8080,
+          "flow_id": "10.10.10.13-10.10.20.2-38764-8080-6",
+          "important_features": {
+            "flow_bytes_s": 68925.7734375,
+            "flow_duration": 4338.0,
+            "flow_packets_s": 2305.209716796875,
+            "total_backward_packets": 5.0,
+            "total_fwd_packets": 5.0
+          },
+          "matrix_row_index": 682,
+          "predicted_class": "DDoS",
+          "probabilities": {
+            "DDoS": 0.6578717527292929,
+            "Normal": 0.32879283728468855,
+            "PortScan": 0.013335409986018534
+          },
+          "protocol": 6.0,
+          "raw_row_index": 682,
+          "source_ip": "10.10.10.13",
+          "source_port": 38764,
+          "source_window": 2
+        }
+      ],
+      "paired": {
+        "agreement_rate": 0.9875156054931336,
+        "ddos_to_normal": 9,
+        "disagreement_count": 10,
+        "transitions": {
+          "DDoS->DDoS": 1,
+          "DDoS->Normal": 9,
+          "DDoS->PortScan": 0,
+          "Normal->DDoS": 1,
+          "Normal->Normal": 790,
+          "Normal->PortScan": 0,
+          "PortScan->DDoS": 0,
+          "PortScan->Normal": 0,
+          "PortScan->PortScan": 0
+        }
+      },
+      "persisted_row_level_reproduction": {
+        "available": false,
+        "statement": "No Session 12/14/15 prediction exports are present in the frozen E13 evidence; offline output is not asserted as persisted row-level reproduction."
+      },
+      "rf_v2": {
+        "class_counts": {
+          "DDoS": 10,
+          "Normal": 791,
+          "PortScan": 0
+        },
+        "probability_summary": {
+          "DDoS": {
+            "max": 0.584182454197969,
+            "mean": 0.10473750707197542,
+            "median": 0.013334330215146567,
+            "min": 0.0,
+            "q1": 0.0,
+            "q3": 0.19293135789782376,
+            "std": 0.11530277817240124
+          },
+          "Normal": {
+            "max": 1.0,
+            "mean": 0.8674569904357913,
+            "median": 0.984723495859586,
+            "min": 0.3950116558946409,
+            "q1": 0.7473990712098489,
+            "q3": 1.0,
+            "std": 0.13953679783590908
+          },
+          "PortScan": {
+            "max": 0.07353734403382386,
+            "mean": 0.027805502492233285,
+            "median": 0.0019421739252673902,
+            "min": 0.0,
+            "q1": 0.0,
+            "q3": 0.05957349287635355,
+            "std": 0.02896004957692502
+          }
+        }
+      },
+      "rf_v3": {
+        "class_counts": {
+          "DDoS": 2,
+          "Normal": 799,
+          "PortScan": 0
+        },
+        "probability_summary": {
+          "DDoS": {
+            "max": 0.6578717527292929,
+            "mean": 0.042477261371671536,
+            "median": 0.026398400449173753,
+            "min": 0.0005423083360134911,
+            "q1": 0.006501532921852326,
+            "q3": 0.047899184226823266,
+            "std": 0.06394764848830525
+          },
+          "Normal": {
+            "max": 0.9985351599177251,
+            "mean": 0.9418318961073782,
+            "median": 0.9709326444455141,
+            "min": 0.32879283728468855,
+            "q1": 0.9308425037117034,
+            "q3": 0.9841704193176737,
+            "std": 0.08589013578760528
+          },
+          "PortScan": {
+            "max": 0.22751593173475915,
+            "mean": 0.015690842520950262,
+            "median": 0.008206550208023586,
+            "min": 0.00011623235524930599,
+            "q1": 0.0014489180199156566,
+            "q3": 0.01872075002272626,
+            "std": 0.031473638035478764
+          }
+        }
+      }
+    },
+    "E13-D2-R1": {
+      "matrix_sha256": "3c0ce6f14ae53208b4e833ef321852785f246a766deb3cdff8e69b6ffbc68f6f",
+      "matrix_shape": [
+        1612,
+        78
+      ],
+      "offline_anomalous_rf_v3_predictions": [
+        {
+          "destination_ip": "10.10.20.2",
+          "destination_port": 8080,
+          "flow_id": "10.10.10.11-10.10.20.2-50070-8080-6",
+          "important_features": {
+            "flow_bytes_s": 1929.144287109375,
+            "flow_duration": 154991.0,
+            "flow_packets_s": 64.5198745727539,
+            "total_backward_packets": 5.0,
+            "total_fwd_packets": 5.0
+          },
+          "matrix_row_index": 1,
+          "predicted_class": "DDoS",
+          "probabilities": {
+            "DDoS": 0.530779640556408,
+            "Normal": 0.4489376204765261,
+            "PortScan": 0.020282738967066002
+          },
+          "protocol": 6.0,
+          "raw_row_index": 1,
+          "source_ip": "10.10.10.11",
+          "source_port": 50070,
+          "source_window": 3
+        },
+        {
+          "destination_ip": "10.10.20.2",
+          "destination_port": 8080,
+          "flow_id": "10.10.10.11-10.10.20.2-50086-8080-6",
+          "important_features": {
+            "flow_bytes_s": 1841.348388671875,
+            "flow_duration": 162381.0,
+            "flow_packets_s": 61.583560943603516,
+            "total_backward_packets": 5.0,
+            "total_fwd_packets": 5.0
+          },
+          "matrix_row_index": 11,
+          "predicted_class": "DDoS",
+          "probabilities": {
+            "DDoS": 0.530779640556408,
+            "Normal": 0.4489376204765261,
+            "PortScan": 0.020282738967066002
+          },
+          "protocol": 6.0,
+          "raw_row_index": 11,
+          "source_ip": "10.10.10.11",
+          "source_port": 50086,
+          "source_window": 3
+        },
+        {
+          "destination_ip": "10.10.20.2",
+          "destination_port": 8080,
+          "flow_id": "10.10.10.11-10.10.20.2-50066-8080-6",
+          "important_features": {
+            "flow_bytes_s": 1810.0478515625,
+            "flow_duration": 165189.0,
+            "flow_packets_s": 60.536720275878906,
+            "total_backward_packets": 5.0,
+            "total_fwd_packets": 5.0
+          },
+          "matrix_row_index": 12,
+          "predicted_class": "DDoS",
+          "probabilities": {
+            "DDoS": 0.530779640556408,
+            "Normal": 0.4489376204765261,
+            "PortScan": 0.020282738967066002
+          },
+          "protocol": 6.0,
+          "raw_row_index": 12,
+          "source_ip": "10.10.10.11",
+          "source_port": 50066,
+          "source_window": 3
+        },
+        {
+          "destination_ip": "10.10.20.2",
+          "destination_port": 8080,
+          "flow_id": "10.10.10.14-10.10.20.2-39630-8080-6",
+          "important_features": {
+            "flow_bytes_s": 51569.5078125,
+            "flow_duration": 5798.0,
+            "flow_packets_s": 1724.732666015625,
+            "total_backward_packets": 5.0,
+            "total_fwd_packets": 5.0
+          },
+          "matrix_row_index": 554,
+          "predicted_class": "DDoS",
+          "probabilities": {
+            "DDoS": 0.535192844817147,
+            "Normal": 0.45037182384927826,
+            "PortScan": 0.014435331333574766
+          },
+          "protocol": 6.0,
+          "raw_row_index": 554,
+          "source_ip": "10.10.10.14",
+          "source_port": 39630,
+          "source_window": 3
+        }
+      ],
+      "paired": {
+        "agreement_rate": 0.9851116625310173,
+        "ddos_to_normal": 21,
+        "disagreement_count": 24,
+        "transitions": {
+          "DDoS->DDoS": 1,
+          "DDoS->Normal": 21,
+          "DDoS->PortScan": 0,
+          "Normal->DDoS": 3,
+          "Normal->Normal": 1587,
+          "Normal->PortScan": 0,
+          "PortScan->DDoS": 0,
+          "PortScan->Normal": 0,
+          "PortScan->PortScan": 0
+        }
+      },
+      "persisted_row_level_reproduction": {
+        "available": false,
+        "statement": "No Session 12/14/15 prediction exports are present in the frozen E13 evidence; offline output is not asserted as persisted row-level reproduction."
+      },
+      "rf_v2": {
+        "class_counts": {
+          "DDoS": 22,
+          "Normal": 1590,
+          "PortScan": 0
+        },
+        "probability_summary": {
+          "DDoS": {
+            "max": 0.6053593046741119,
+            "mean": 0.09428773594758658,
+            "median": 0.004802220729095483,
+            "min": 0.0,
+            "q1": 0.0,
+            "q3": 0.18628703602145935,
+            "std": 0.10977728457749752
+          },
+          "Normal": {
+            "max": 1.0,
+            "mean": 0.8786159305019245,
+            "median": 0.9885372077001435,
+            "min": 0.3651244767868024,
+            "q1": 0.7520402410733353,
+            "q3": 1.0,
+            "std": 0.1349515388157113
+          },
+          "PortScan": {
+            "max": 0.09699854895257054,
+            "mean": 0.02709633355048887,
+            "median": 0.004927754388425345,
+            "min": 0.0,
+            "q1": 0.0,
+            "q3": 0.05957349287635355,
+            "std": 0.030623914776805983
+          }
+        }
+      },
+      "rf_v3": {
+        "class_counts": {
+          "DDoS": 4,
+          "Normal": 1608,
+          "PortScan": 0
+        },
+        "probability_summary": {
+          "DDoS": {
+            "max": 0.535192844817147,
+            "mean": 0.04155848688691762,
+            "median": 0.014771839836500572,
+            "min": 0.00036923548971053675,
+            "q1": 0.006252611318554087,
+            "q3": 0.05387116380536768,
+            "std": 0.06386757567336414
+          },
+          "Normal": {
+            "max": 0.9992608040065042,
+            "mean": 0.938842853100651,
+            "median": 0.9781125406275635,
+            "min": 0.4489376204765261,
+            "q1": 0.9045851382974643,
+            "q3": 0.9869281006166019,
+            "std": 0.08424515998070808
+          },
+          "PortScan": {
+            "max": 0.22751593173475915,
+            "mean": 0.019598660012431563,
+            "median": 0.008206550208023586,
+            "min": 1.855863462625439e-05,
+            "q1": 0.0013196891804415367,
+            "q3": 0.021594838706792414,
+            "std": 0.03127640681180977
+          }
+        }
+      }
+    },
+    "E13-N-R1": {
+      "matrix_sha256": "c607793f0d334a51ebfbd71c61cbbc357234bb1bad9846bec34fb896aa401172",
+      "matrix_shape": [
+        32,
+        78
+      ],
+      "offline_anomalous_rf_v3_predictions": [],
+      "paired": {
+        "agreement_rate": 1.0,
+        "ddos_to_normal": 0,
+        "disagreement_count": 0,
+        "transitions": {
+          "DDoS->DDoS": 0,
+          "DDoS->Normal": 0,
+          "DDoS->PortScan": 0,
+          "Normal->DDoS": 0,
+          "Normal->Normal": 32,
+          "Normal->PortScan": 0,
+          "PortScan->DDoS": 0,
+          "PortScan->Normal": 0,
+          "PortScan->PortScan": 0
+        }
+      },
+      "persisted_row_level_reproduction": {
+        "available": false,
+        "statement": "No Session 12/14/15 prediction exports are present in the frozen E13 evidence; offline output is not asserted as persisted row-level reproduction."
+      },
+      "rf_v2": {
+        "class_counts": {
+          "DDoS": 0,
+          "Normal": 32,
+          "PortScan": 0
+        },
+        "probability_summary": {
+          "DDoS": {
+            "max": 0.19703316658483028,
+            "mean": 0.08639932208545799,
+            "median": 0.05900011905870075,
+            "min": 0.0,
+            "q1": 0.0,
+            "q3": 0.17960724704700368,
+            "std": 0.08920627607529061
+          },
+          "Normal": {
+            "max": 1.0,
+            "mean": 0.8809598208054739,
+            "median": 0.9096117003236937,
+            "min": 0.7427959040461283,
+            "q1": 0.7524958170937315,
+            "q3": 1.0,
+            "std": 0.12188004725498372
+          },
+          "PortScan": {
+            "max": 0.07477174290354241,
+            "mean": 0.03264085710906829,
+            "median": 0.02734294238692471,
+            "min": 0.0,
+            "q1": 0.0,
+            "q3": 0.06720785467643228,
+            "std": 0.033418141970686197
+          }
+        }
+      },
+      "rf_v3": {
+        "class_counts": {
+          "DDoS": 0,
+          "Normal": 32,
+          "PortScan": 0
+        },
+        "probability_summary": {
+          "DDoS": {
+            "max": 0.025582692229901595,
+            "mean": 0.005581017731519592,
+            "median": 0.004788929590339676,
+            "min": 0.00036395230288359143,
+            "q1": 0.004788929590339676,
+            "q3": 0.005607765654482125,
+            "std": 0.0045540403693430645
+          },
+          "Normal": {
+            "max": 0.9996174890624901,
+            "mean": 0.9895369839320309,
+            "median": 0.9870045202016365,
+            "min": 0.9738162350821404,
+            "q1": 0.9869445482736029,
+            "q3": 0.993781669790544,
+            "std": 0.00598219388782867
+          },
+          "PortScan": {
+            "max": 0.014098231098543761,
+            "mean": 0.004881998336449392,
+            "median": 0.005151671628279952,
+            "min": 1.855863462625439e-05,
+            "q1": 0.0005388993353992572,
+            "q3": 0.008206550208023586,
+            "std": 0.00448071259591569
+          }
+        }
+      }
+    }
+  },
+  "preregistered_case_decision": "No preregistered case fully supported",
+  "reconstruction": {
+    "E13-D1-R1": {
+      "lineage_file": "reports/experiment_e/runtime_validation/e13/E13-D1-R1/model_input_78_lineage.json",
+      "matrix_sha256": "78ec5c04467bf3116098f41eb0298a2ea785036ee9117fd4fc60a12f8da9a4dc",
+      "shape": [
+        801,
+        78
+      ]
+    },
+    "E13-D2-R1": {
+      "lineage_file": "reports/experiment_e/runtime_validation/e13/E13-D2-R1/model_input_78_lineage.json",
+      "matrix_sha256": "3c0ce6f14ae53208b4e833ef321852785f246a766deb3cdff8e69b6ffbc68f6f",
+      "shape": [
+        1612,
+        78
+      ]
+    },
+    "E13-N-R1": {
+      "lineage_file": "reports/experiment_e/runtime_validation/e13/E13-N-R1/model_input_78_lineage.json",
+      "matrix_sha256": "c607793f0d334a51ebfbd71c61cbbc357234bb1bad9846bec34fb896aa401172",
+      "shape": [
+        32,
+        78
+      ]
+    }
+  },
+  "root_cause_update": {
+    "BROADER_LAB_VS_TRAINING_DOMAIN_MISMATCH": "UNRESOLVED: profile/reference shifts are consistent with, but cannot establish, broader domain mismatch.",
+    "EXTRACTOR_PROVENANCE_MISMATCH": "NOT_SUPPORTED: manifests and locked adapter provenance verified; extractor identity causal claim remains bounded to evidence.",
+    "FEATURE_SCHEMA_MISMATCH": "NOT_SUPPORTED: each frozen 84-column CSV passed the locked adapter into the exact 78-feature contract.",
+    "INSUFFICIENT_EVIDENCE": "PARTIALLY_SUPPORTED: exact offline analysis is strong, but E13 persisted row-level exports are absent and no causal mechanism is isolated.",
+    "MODEL_CLASS_BOUNDARY_LIMITATION": "PARTIALLY_SUPPORTED: same vectors permit RF-v2/RF-v3 disagreements, including DDoS-to-Normal transitions.",
+    "MODEL_LOADING_OR_ORDERING_ERROR": "NOT_SUPPORTED: frozen artifact and ordered contract were used exactly; persisted row-level exports are unavailable.",
+    "RUNTIME_DISTRIBUTION_SHIFT": "SUPPORTED: all 78 feature comparisons show scale-aware shifts against frozen E4 reference.",
+    "WORKLOAD_NOT_REPRESENTATIVE_OF_TRAINED_DDOS": "PARTIALLY_SUPPORTED: E13 bounded HTTP profiles remain shifted from E4; aggregate closeness is diagnostic not causal proof."
+  },
+  "schema": "experiment_e_e13_final_analysis",
+  "schema_version": 1,
+  "scoped_profile_performance": {
+    "E10-Session-11": {
+      "controlled_ddos_like_detection_rate": 0.0,
+      "numerator_denominator": "0/802"
+    },
+    "E13-D1-R1": {
+      "controlled_ddos_like_detection_rate": 0.0024968789013732834
+    },
+    "E13-D2-R1": {
+      "controlled_ddos_like_detection_rate": 0.0024813895781637717
+    },
+    "E13-N-R1": {
+      "normal_classification_rate": 1.0
+    },
+    "not_universal_ddos_recall": true
+  }
+}

@@ -1,0 +1,83 @@
+{
+  "final_evaluation_progression_authorized": false,
+  "gates": {
+    "ddos_f1_vs_rf_v3": {
+      "actual_delta": 0.9642664751301849,
+      "status": "PASS",
+      "threshold": ">=+0.10"
+    },
+    "ddos_recall_absolute": {
+      "actual": 0.952465413267116,
+      "status": "PASS",
+      "threshold": ">=0.20"
+    },
+    "ddos_recall_vs_rf_v3": {
+      "actual_delta": 0.952465413267116,
+      "status": "PASS",
+      "threshold": ">=+0.10"
+    },
+    "macro_f1": {
+      "actual": 0.8334656704202404,
+      "actual_delta": 0.46258695639320807,
+      "rf_v3": 0.3708787140270324,
+      "status": "PASS",
+      "threshold": ">=RF-v3-0.02"
+    },
+    "normal_f1_preservation": {
+      "ratio": 4.738798238798239,
+      "status": "PASS",
+      "threshold": ">=0.98 of RF-v3"
+    },
+    "normal_recall_absolute": {
+      "actual": 0.6388888888888888,
+      "status": "FAIL",
+      "threshold": ">=0.98"
+    },
+    "normal_recall_vs_rf_v3": {
+      "actual_delta": -0.36111111111111116,
+      "status": "FAIL",
+      "threshold": ">=-0.02"
+    },
+    "normal_to_ddos_false_positive": {
+      "actual_delta": 0.3611111111111111,
+      "rf_v3": 0.0,
+      "rf_v4": 0.3611111111111111,
+      "status": "FAIL",
+      "threshold": "increase <=0.02"
+    },
+    "normal_to_portscan_false_positive": {
+      "actual_delta": 0.0,
+      "rf_v3": 0.0,
+      "rf_v4": 0.0,
+      "status": "PASS",
+      "threshold": "increase <=0.02"
+    },
+    "portscan_f1_preservation": {
+      "ratio": 1.0005005005005005,
+      "status": "PASS",
+      "threshold": ">=0.98 of RF-v3"
+    },
+    "portscan_recall_absolute": {
+      "actual": 1.0,
+      "status": "PASS",
+      "threshold": ">=0.995"
+    },
+    "portscan_recall_vs_rf_v3": {
+      "actual_delta": 0.0010000000000000009,
+      "status": "PASS",
+      "threshold": ">=-0.005"
+    },
+    "three_sessions_per_class_and_reporting": {
+      "aggregate_and_per_session_metrics": true,
+      "sessions_per_class": 3,
+      "status": "PASS"
+    },
+    "unseen_validation_and_sealed_final_evaluation": {
+      "reason": "Those are later preregistered stages, not F4-A2.",
+      "status": "NOT_EVALUABLE"
+    }
+  },
+  "promotion_or_activation_authorized": false,
+  "schema": "experiment_f_f4_a2_acceptance_gate_evaluation",
+  "validation_gate_decision": "FAIL"
+}

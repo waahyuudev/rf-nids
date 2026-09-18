@@ -1,0 +1,16 @@
+{
+  "collection_evidence": "collection_evidence.json",
+  "lineage_status": "COLLECTION_EVIDENCE_COMPLETE_PENDING_EXTRACTION_AND_DATA_GATES",
+  "schema": "experiment_f_f2_a1_lineage",
+  "separation": {
+    "eligible_for_final": false,
+    "eligible_for_validation": false,
+    "model_class": "DDoS",
+    "scope": "controlled HTTP DDoS-like/load profile",
+    "split": "F-ADAPTATION",
+    "training_eligibility": "PENDING_EXTRACTION_AND_DATA_GATES"
+  },
+  "session_id": "F-A1-DDOSLIKE-A-02",
+  "source_pcap": "data/lab/experiment_f/adaptation/pcap/ddoslike/f-a1-ddoslike-a-02.pcap",
+  "source_pcap_sha256": "570bad40729414f718cc4d6831c636cfb2565e80324edfd6db7161e51f6eda9d"
+}

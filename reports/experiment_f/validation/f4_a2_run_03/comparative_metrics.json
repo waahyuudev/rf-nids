@@ -1,0 +1,1765 @@
+{
+  "labels": [
+    "Normal",
+    "DDoS",
+    "PortScan"
+  ],
+  "models": {
+    "RF-v2": {
+      "accuracy": 0.030005000833472247,
+      "confusion_matrix": {
+        "labels": [
+          "Normal",
+          "DDoS",
+          "PortScan"
+        ],
+        "rows": [
+          [
+            180,
+            0,
+            0
+          ],
+          [
+            2819,
+            0,
+            0
+          ],
+          [
+            3000,
+            0,
+            0
+          ]
+        ]
+      },
+      "estimator_class_order": [
+        "DDoS",
+        "Normal",
+        "PortScan"
+      ],
+      "macro_f1": 0.01942061822301343,
+      "macro_precision": 0.010001666944490749,
+      "macro_recall": 0.3333333333333333,
+      "model_sha256": "fb13a71a0287054d2630bf07529f113a153ba08d8f6835a605b04493408b8a31",
+      "per_class": {
+        "DDoS": {
+          "correct": 0,
+          "f1": 0.0,
+          "precision": 0.0,
+          "recall": 0.0,
+          "support": 2819,
+          "total": 2819
+        },
+        "Normal": {
+          "correct": 180,
+          "f1": 0.0582618546690403,
+          "precision": 0.030005000833472247,
+          "recall": 1.0,
+          "support": 180,
+          "total": 180
+        },
+        "PortScan": {
+          "correct": 0,
+          "f1": 0.0,
+          "precision": 0.0,
+          "recall": 0.0,
+          "support": 3000,
+          "total": 3000
+        }
+      },
+      "per_session": {
+        "F-A1-DDOSLIKE-V-01": {
+          "accuracy": 0.0,
+          "confusion_matrix": {
+            "labels": [
+              "Normal",
+              "DDoS",
+              "PortScan"
+            ],
+            "rows": [
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                937,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ]
+            ]
+          },
+          "macro_f1": 0.0,
+          "macro_precision": 0.0,
+          "macro_recall": 0.0,
+          "per_class": {
+            "DDoS": {
+              "correct": 0,
+              "f1": 0.0,
+              "precision": 0.0,
+              "recall": 0.0,
+              "support": 937,
+              "total": 937
+            },
+            "Normal": {
+              "correct": 0,
+              "f1": 0.0,
+              "precision": 0.0,
+              "recall": 0.0,
+              "support": 0,
+              "total": 0
+            },
+            "PortScan": {
+              "correct": 0,
+              "f1": 0.0,
+              "precision": 0.0,
+              "recall": 0.0,
+              "support": 0,
+              "total": 0
+            }
+          }
+        },
+        "F-A1-DDOSLIKE-V-02": {
+          "accuracy": 0.0,
+          "confusion_matrix": {
+            "labels": [
+              "Normal",
+              "DDoS",
+              "PortScan"
+            ],
+            "rows": [
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                942,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ]
+            ]
+          },
+          "macro_f1": 0.0,
+          "macro_precision": 0.0,
+          "macro_recall": 0.0,
+          "per_class": {
+            "DDoS": {
+              "correct": 0,
+              "f1": 0.0,
+              "precision": 0.0,
+              "recall": 0.0,
+              "support": 942,
+              "total": 942
+            },
+            "Normal": {
+              "correct": 0,
+              "f1": 0.0,
+              "precision": 0.0,
+              "recall": 0.0,
+              "support": 0,
+              "total": 0
+            },
+            "PortScan": {
+              "correct": 0,
+              "f1": 0.0,
+              "precision": 0.0,
+              "recall": 0.0,
+              "support": 0,
+              "total": 0
+            }
+          }
+        },
+        "F-A1-DDOSLIKE-V-03": {
+          "accuracy": 0.0,
+          "confusion_matrix": {
+            "labels": [
+              "Normal",
+              "DDoS",
+              "PortScan"
+            ],
+            "rows": [
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                940,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ]
+            ]
+          },
+          "macro_f1": 0.0,
+          "macro_precision": 0.0,
+          "macro_recall": 0.0,
+          "per_class": {
+            "DDoS": {
+              "correct": 0,
+              "f1": 0.0,
+              "precision": 0.0,
+              "recall": 0.0,
+              "support": 940,
+              "total": 940
+            },
+            "Normal": {
+              "correct": 0,
+              "f1": 0.0,
+              "precision": 0.0,
+              "recall": 0.0,
+              "support": 0,
+              "total": 0
+            },
+            "PortScan": {
+              "correct": 0,
+              "f1": 0.0,
+              "precision": 0.0,
+              "recall": 0.0,
+              "support": 0,
+              "total": 0
+            }
+          }
+        },
+        "F-A1-NORMAL-V-01-R1": {
+          "accuracy": 1.0,
+          "confusion_matrix": {
+            "labels": [
+              "Normal",
+              "DDoS",
+              "PortScan"
+            ],
+            "rows": [
+              [
+                60,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ]
+            ]
+          },
+          "macro_f1": 0.3333333333333333,
+          "macro_precision": 0.3333333333333333,
+          "macro_recall": 0.3333333333333333,
+          "per_class": {
+            "DDoS": {
+              "correct": 0,
+              "f1": 0.0,
+              "precision": 0.0,
+              "recall": 0.0,
+              "support": 0,
+              "total": 0
+            },
+            "Normal": {
+              "correct": 60,
+              "f1": 1.0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "support": 60,
+              "total": 60
+            },
+            "PortScan": {
+              "correct": 0,
+              "f1": 0.0,
+              "precision": 0.0,
+              "recall": 0.0,
+              "support": 0,
+              "total": 0
+            }
+          }
+        },
+        "F-A1-NORMAL-V-02": {
+          "accuracy": 1.0,
+          "confusion_matrix": {
+            "labels": [
+              "Normal",
+              "DDoS",
+              "PortScan"
+            ],
+            "rows": [
+              [
+                60,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ]
+            ]
+          },
+          "macro_f1": 0.3333333333333333,
+          "macro_precision": 0.3333333333333333,
+          "macro_recall": 0.3333333333333333,
+          "per_class": {
+            "DDoS": {
+              "correct": 0,
+              "f1": 0.0,
+              "precision": 0.0,
+              "recall": 0.0,
+              "support": 0,
+              "total": 0
+            },
+            "Normal": {
+              "correct": 60,
+              "f1": 1.0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "support": 60,
+              "total": 60
+            },
+            "PortScan": {
+              "correct": 0,
+              "f1": 0.0,
+              "precision": 0.0,
+              "recall": 0.0,
+              "support": 0,
+              "total": 0
+            }
+          }
+        },
+        "F-A1-NORMAL-V-03": {
+          "accuracy": 1.0,
+          "confusion_matrix": {
+            "labels": [
+              "Normal",
+              "DDoS",
+              "PortScan"
+            ],
+            "rows": [
+              [
+                60,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ]
+            ]
+          },
+          "macro_f1": 0.3333333333333333,
+          "macro_precision": 0.3333333333333333,
+          "macro_recall": 0.3333333333333333,
+          "per_class": {
+            "DDoS": {
+              "correct": 0,
+              "f1": 0.0,
+              "precision": 0.0,
+              "recall": 0.0,
+              "support": 0,
+              "total": 0
+            },
+            "Normal": {
+              "correct": 60,
+              "f1": 1.0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "support": 60,
+              "total": 60
+            },
+            "PortScan": {
+              "correct": 0,
+              "f1": 0.0,
+              "precision": 0.0,
+              "recall": 0.0,
+              "support": 0,
+              "total": 0
+            }
+          }
+        },
+        "F-A1-PORTSCAN-V-01": {
+          "accuracy": 0.0,
+          "confusion_matrix": {
+            "labels": [
+              "Normal",
+              "DDoS",
+              "PortScan"
+            ],
+            "rows": [
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                1000,
+                0,
+                0
+              ]
+            ]
+          },
+          "macro_f1": 0.0,
+          "macro_precision": 0.0,
+          "macro_recall": 0.0,
+          "per_class": {
+            "DDoS": {
+              "correct": 0,
+              "f1": 0.0,
+              "precision": 0.0,
+              "recall": 0.0,
+              "support": 0,
+              "total": 0
+            },
+            "Normal": {
+              "correct": 0,
+              "f1": 0.0,
+              "precision": 0.0,
+              "recall": 0.0,
+              "support": 0,
+              "total": 0
+            },
+            "PortScan": {
+              "correct": 0,
+              "f1": 0.0,
+              "precision": 0.0,
+              "recall": 0.0,
+              "support": 1000,
+              "total": 1000
+            }
+          }
+        },
+        "F-A1-PORTSCAN-V-02": {
+          "accuracy": 0.0,
+          "confusion_matrix": {
+            "labels": [
+              "Normal",
+              "DDoS",
+              "PortScan"
+            ],
+            "rows": [
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                1000,
+                0,
+                0
+              ]
+            ]
+          },
+          "macro_f1": 0.0,
+          "macro_precision": 0.0,
+          "macro_recall": 0.0,
+          "per_class": {
+            "DDoS": {
+              "correct": 0,
+              "f1": 0.0,
+              "precision": 0.0,
+              "recall": 0.0,
+              "support": 0,
+              "total": 0
+            },
+            "Normal": {
+              "correct": 0,
+              "f1": 0.0,
+              "precision": 0.0,
+              "recall": 0.0,
+              "support": 0,
+              "total": 0
+            },
+            "PortScan": {
+              "correct": 0,
+              "f1": 0.0,
+              "precision": 0.0,
+              "recall": 0.0,
+              "support": 1000,
+              "total": 1000
+            }
+          }
+        },
+        "F-A1-PORTSCAN-V-03": {
+          "accuracy": 0.0,
+          "confusion_matrix": {
+            "labels": [
+              "Normal",
+              "DDoS",
+              "PortScan"
+            ],
+            "rows": [
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                1000,
+                0,
+                0
+              ]
+            ]
+          },
+          "macro_f1": 0.0,
+          "macro_precision": 0.0,
+          "macro_recall": 0.0,
+          "per_class": {
+            "DDoS": {
+              "correct": 0,
+              "f1": 0.0,
+              "precision": 0.0,
+              "recall": 0.0,
+              "support": 0,
+              "total": 0
+            },
+            "Normal": {
+              "correct": 0,
+              "f1": 0.0,
+              "precision": 0.0,
+              "recall": 0.0,
+              "support": 0,
+              "total": 0
+            },
+            "PortScan": {
+              "correct": 0,
+              "f1": 0.0,
+              "precision": 0.0,
+              "recall": 0.0,
+              "support": 1000,
+              "total": 1000
+            }
+          }
+        }
+      },
+      "prediction_artifact": {
+        "path": "reports/experiment_f/validation/f4_a2_run_03/predictions_rf_v2.csv",
+        "sha256": "572620ab3a2ebec80b7fed62b09f71a2b7b3cf9de8dde10761f8c0dd286471a8"
+      }
+    },
+    "RF-v3": {
+      "accuracy": 0.5295882647107851,
+      "confusion_matrix": {
+        "labels": [
+          "Normal",
+          "DDoS",
+          "PortScan"
+        ],
+        "rows": [
+          [
+            180,
+            0,
+            0
+          ],
+          [
+            2819,
+            0,
+            0
+          ],
+          [
+            3,
+            0,
+            2997
+          ]
+        ]
+      },
+      "estimator_class_order": [
+        "DDoS",
+        "Normal",
+        "PortScan"
+      ],
+      "macro_f1": 0.3708787140270324,
+      "macro_precision": 0.3533200088829669,
+      "macro_recall": 0.6663333333333333,
+      "model_sha256": "6b01c7b3923c1a6bd471862d011f8f5b88a31378e51d1dde082bd2e72bedef86",
+      "per_class": {
+        "DDoS": {
+          "correct": 0,
+          "f1": 0.0,
+          "precision": 0.0,
+          "recall": 0.0,
+          "support": 2819,
+          "total": 2819
+        },
+        "Normal": {
+          "correct": 180,
+          "f1": 0.11313639220615965,
+          "precision": 0.05996002664890073,
+          "recall": 1.0,
+          "support": 180,
+          "total": 180
+        },
+        "PortScan": {
+          "correct": 2997,
+          "f1": 0.9994997498749375,
+          "precision": 1.0,
+          "recall": 0.999,
+          "support": 3000,
+          "total": 3000
+        }
+      },
+      "per_session": {
+        "F-A1-DDOSLIKE-V-01": {
+          "accuracy": 0.0,
+          "confusion_matrix": {
+            "labels": [
+              "Normal",
+              "DDoS",
+              "PortScan"
+            ],
+            "rows": [
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                937,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ]
+            ]
+          },
+          "macro_f1": 0.0,
+          "macro_precision": 0.0,
+          "macro_recall": 0.0,
+          "per_class": {
+            "DDoS": {
+              "correct": 0,
+              "f1": 0.0,
+              "precision": 0.0,
+              "recall": 0.0,
+              "support": 937,
+              "total": 937
+            },
+            "Normal": {
+              "correct": 0,
+              "f1": 0.0,
+              "precision": 0.0,
+              "recall": 0.0,
+              "support": 0,
+              "total": 0
+            },
+            "PortScan": {
+              "correct": 0,
+              "f1": 0.0,
+              "precision": 0.0,
+              "recall": 0.0,
+              "support": 0,
+              "total": 0
+            }
+          }
+        },
+        "F-A1-DDOSLIKE-V-02": {
+          "accuracy": 0.0,
+          "confusion_matrix": {
+            "labels": [
+              "Normal",
+              "DDoS",
+              "PortScan"
+            ],
+            "rows": [
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                942,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ]
+            ]
+          },
+          "macro_f1": 0.0,
+          "macro_precision": 0.0,
+          "macro_recall": 0.0,
+          "per_class": {
+            "DDoS": {
+              "correct": 0,
+              "f1": 0.0,
+              "precision": 0.0,
+              "recall": 0.0,
+              "support": 942,
+              "total": 942
+            },
+            "Normal": {
+              "correct": 0,
+              "f1": 0.0,
+              "precision": 0.0,
+              "recall": 0.0,
+              "support": 0,
+              "total": 0
+            },
+            "PortScan": {
+              "correct": 0,
+              "f1": 0.0,
+              "precision": 0.0,
+              "recall": 0.0,
+              "support": 0,
+              "total": 0
+            }
+          }
+        },
+        "F-A1-DDOSLIKE-V-03": {
+          "accuracy": 0.0,
+          "confusion_matrix": {
+            "labels": [
+              "Normal",
+              "DDoS",
+              "PortScan"
+            ],
+            "rows": [
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                940,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ]
+            ]
+          },
+          "macro_f1": 0.0,
+          "macro_precision": 0.0,
+          "macro_recall": 0.0,
+          "per_class": {
+            "DDoS": {
+              "correct": 0,
+              "f1": 0.0,
+              "precision": 0.0,
+              "recall": 0.0,
+              "support": 940,
+              "total": 940
+            },
+            "Normal": {
+              "correct": 0,
+              "f1": 0.0,
+              "precision": 0.0,
+              "recall": 0.0,
+              "support": 0,
+              "total": 0
+            },
+            "PortScan": {
+              "correct": 0,
+              "f1": 0.0,
+              "precision": 0.0,
+              "recall": 0.0,
+              "support": 0,
+              "total": 0
+            }
+          }
+        },
+        "F-A1-NORMAL-V-01-R1": {
+          "accuracy": 1.0,
+          "confusion_matrix": {
+            "labels": [
+              "Normal",
+              "DDoS",
+              "PortScan"
+            ],
+            "rows": [
+              [
+                60,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ]
+            ]
+          },
+          "macro_f1": 0.3333333333333333,
+          "macro_precision": 0.3333333333333333,
+          "macro_recall": 0.3333333333333333,
+          "per_class": {
+            "DDoS": {
+              "correct": 0,
+              "f1": 0.0,
+              "precision": 0.0,
+              "recall": 0.0,
+              "support": 0,
+              "total": 0
+            },
+            "Normal": {
+              "correct": 60,
+              "f1": 1.0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "support": 60,
+              "total": 60
+            },
+            "PortScan": {
+              "correct": 0,
+              "f1": 0.0,
+              "precision": 0.0,
+              "recall": 0.0,
+              "support": 0,
+              "total": 0
+            }
+          }
+        },
+        "F-A1-NORMAL-V-02": {
+          "accuracy": 1.0,
+          "confusion_matrix": {
+            "labels": [
+              "Normal",
+              "DDoS",
+              "PortScan"
+            ],
+            "rows": [
+              [
+                60,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ]
+            ]
+          },
+          "macro_f1": 0.3333333333333333,
+          "macro_precision": 0.3333333333333333,
+          "macro_recall": 0.3333333333333333,
+          "per_class": {
+            "DDoS": {
+              "correct": 0,
+              "f1": 0.0,
+              "precision": 0.0,
+              "recall": 0.0,
+              "support": 0,
+              "total": 0
+            },
+            "Normal": {
+              "correct": 60,
+              "f1": 1.0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "support": 60,
+              "total": 60
+            },
+            "PortScan": {
+              "correct": 0,
+              "f1": 0.0,
+              "precision": 0.0,
+              "recall": 0.0,
+              "support": 0,
+              "total": 0
+            }
+          }
+        },
+        "F-A1-NORMAL-V-03": {
+          "accuracy": 1.0,
+          "confusion_matrix": {
+            "labels": [
+              "Normal",
+              "DDoS",
+              "PortScan"
+            ],
+            "rows": [
+              [
+                60,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ]
+            ]
+          },
+          "macro_f1": 0.3333333333333333,
+          "macro_precision": 0.3333333333333333,
+          "macro_recall": 0.3333333333333333,
+          "per_class": {
+            "DDoS": {
+              "correct": 0,
+              "f1": 0.0,
+              "precision": 0.0,
+              "recall": 0.0,
+              "support": 0,
+              "total": 0
+            },
+            "Normal": {
+              "correct": 60,
+              "f1": 1.0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "support": 60,
+              "total": 60
+            },
+            "PortScan": {
+              "correct": 0,
+              "f1": 0.0,
+              "precision": 0.0,
+              "recall": 0.0,
+              "support": 0,
+              "total": 0
+            }
+          }
+        },
+        "F-A1-PORTSCAN-V-01": {
+          "accuracy": 0.999,
+          "confusion_matrix": {
+            "labels": [
+              "Normal",
+              "DDoS",
+              "PortScan"
+            ],
+            "rows": [
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                1,
+                0,
+                999
+              ]
+            ]
+          },
+          "macro_f1": 0.33316658329164583,
+          "macro_precision": 0.3333333333333333,
+          "macro_recall": 0.333,
+          "per_class": {
+            "DDoS": {
+              "correct": 0,
+              "f1": 0.0,
+              "precision": 0.0,
+              "recall": 0.0,
+              "support": 0,
+              "total": 0
+            },
+            "Normal": {
+              "correct": 0,
+              "f1": 0.0,
+              "precision": 0.0,
+              "recall": 0.0,
+              "support": 0,
+              "total": 0
+            },
+            "PortScan": {
+              "correct": 999,
+              "f1": 0.9994997498749375,
+              "precision": 1.0,
+              "recall": 0.999,
+              "support": 1000,
+              "total": 1000
+            }
+          }
+        },
+        "F-A1-PORTSCAN-V-02": {
+          "accuracy": 0.999,
+          "confusion_matrix": {
+            "labels": [
+              "Normal",
+              "DDoS",
+              "PortScan"
+            ],
+            "rows": [
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                1,
+                0,
+                999
+              ]
+            ]
+          },
+          "macro_f1": 0.33316658329164583,
+          "macro_precision": 0.3333333333333333,
+          "macro_recall": 0.333,
+          "per_class": {
+            "DDoS": {
+              "correct": 0,
+              "f1": 0.0,
+              "precision": 0.0,
+              "recall": 0.0,
+              "support": 0,
+              "total": 0
+            },
+            "Normal": {
+              "correct": 0,
+              "f1": 0.0,
+              "precision": 0.0,
+              "recall": 0.0,
+              "support": 0,
+              "total": 0
+            },
+            "PortScan": {
+              "correct": 999,
+              "f1": 0.9994997498749375,
+              "precision": 1.0,
+              "recall": 0.999,
+              "support": 1000,
+              "total": 1000
+            }
+          }
+        },
+        "F-A1-PORTSCAN-V-03": {
+          "accuracy": 0.999,
+          "confusion_matrix": {
+            "labels": [
+              "Normal",
+              "DDoS",
+              "PortScan"
+            ],
+            "rows": [
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                1,
+                0,
+                999
+              ]
+            ]
+          },
+          "macro_f1": 0.33316658329164583,
+          "macro_precision": 0.3333333333333333,
+          "macro_recall": 0.333,
+          "per_class": {
+            "DDoS": {
+              "correct": 0,
+              "f1": 0.0,
+              "precision": 0.0,
+              "recall": 0.0,
+              "support": 0,
+              "total": 0
+            },
+            "Normal": {
+              "correct": 0,
+              "f1": 0.0,
+              "precision": 0.0,
+              "recall": 0.0,
+              "support": 0,
+              "total": 0
+            },
+            "PortScan": {
+              "correct": 999,
+              "f1": 0.9994997498749375,
+              "precision": 1.0,
+              "recall": 0.999,
+              "support": 1000,
+              "total": 1000
+            }
+          }
+        }
+      },
+      "prediction_artifact": {
+        "path": "reports/experiment_f/validation/f4_a2_run_03/predictions_rf_v3.csv",
+        "sha256": "456d387ef942a4438f31fddf1b4ed751eba6818f258b90c4be6cd76d31878d33"
+      }
+    },
+    "RF-v4": {
+      "accuracy": 0.9668278046341057,
+      "confusion_matrix": {
+        "labels": [
+          "Normal",
+          "DDoS",
+          "PortScan"
+        ],
+        "rows": [
+          [
+            115,
+            65,
+            0
+          ],
+          [
+            134,
+            2685,
+            0
+          ],
+          [
+            0,
+            0,
+            3000
+          ]
+        ]
+      },
+      "estimator_class_order": [
+        "DDoS",
+        "Normal",
+        "PortScan"
+      ],
+      "macro_f1": 0.8334656704202404,
+      "macro_precision": 0.812737008640623,
+      "macro_recall": 0.863784767385335,
+      "model_sha256": "d5dccd339a5c67635e760d7d3760e1d006278362c6f70ea06bf20928ccdece13",
+      "per_class": {
+        "DDoS": {
+          "correct": 2685,
+          "f1": 0.9642664751301849,
+          "precision": 0.9763636363636363,
+          "recall": 0.952465413267116,
+          "support": 2819,
+          "total": 2819
+        },
+        "Normal": {
+          "correct": 115,
+          "f1": 0.5361305361305362,
+          "precision": 0.46184738955823296,
+          "recall": 0.6388888888888888,
+          "support": 180,
+          "total": 180
+        },
+        "PortScan": {
+          "correct": 3000,
+          "f1": 1.0,
+          "precision": 1.0,
+          "recall": 1.0,
+          "support": 3000,
+          "total": 3000
+        }
+      },
+      "per_session": {
+        "F-A1-DDOSLIKE-V-01": {
+          "accuracy": 0.9711846318036286,
+          "confusion_matrix": {
+            "labels": [
+              "Normal",
+              "DDoS",
+              "PortScan"
+            ],
+            "rows": [
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                27,
+                910,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ]
+            ]
+          },
+          "macro_f1": 0.32846056668471396,
+          "macro_precision": 0.3333333333333333,
+          "macro_recall": 0.32372821060120954,
+          "per_class": {
+            "DDoS": {
+              "correct": 910,
+              "f1": 0.9853817000541418,
+              "precision": 1.0,
+              "recall": 0.9711846318036286,
+              "support": 937,
+              "total": 937
+            },
+            "Normal": {
+              "correct": 0,
+              "f1": 0.0,
+              "precision": 0.0,
+              "recall": 0.0,
+              "support": 0,
+              "total": 0
+            },
+            "PortScan": {
+              "correct": 0,
+              "f1": 0.0,
+              "precision": 0.0,
+              "recall": 0.0,
+              "support": 0,
+              "total": 0
+            }
+          }
+        },
+        "F-A1-DDOSLIKE-V-02": {
+          "accuracy": 0.9373673036093418,
+          "confusion_matrix": {
+            "labels": [
+              "Normal",
+              "DDoS",
+              "PortScan"
+            ],
+            "rows": [
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                59,
+                883,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ]
+            ]
+          },
+          "macro_f1": 0.3225570776255708,
+          "macro_precision": 0.3333333333333333,
+          "macro_recall": 0.31245576786978063,
+          "per_class": {
+            "DDoS": {
+              "correct": 883,
+              "f1": 0.9676712328767123,
+              "precision": 1.0,
+              "recall": 0.9373673036093418,
+              "support": 942,
+              "total": 942
+            },
+            "Normal": {
+              "correct": 0,
+              "f1": 0.0,
+              "precision": 0.0,
+              "recall": 0.0,
+              "support": 0,
+              "total": 0
+            },
+            "PortScan": {
+              "correct": 0,
+              "f1": 0.0,
+              "precision": 0.0,
+              "recall": 0.0,
+              "support": 0,
+              "total": 0
+            }
+          }
+        },
+        "F-A1-DDOSLIKE-V-03": {
+          "accuracy": 0.948936170212766,
+          "confusion_matrix": {
+            "labels": [
+              "Normal",
+              "DDoS",
+              "PortScan"
+            ],
+            "rows": [
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                48,
+                892,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ]
+            ]
+          },
+          "macro_f1": 0.3245997088791849,
+          "macro_precision": 0.3333333333333333,
+          "macro_recall": 0.31631205673758866,
+          "per_class": {
+            "DDoS": {
+              "correct": 892,
+              "f1": 0.9737991266375546,
+              "precision": 1.0,
+              "recall": 0.948936170212766,
+              "support": 940,
+              "total": 940
+            },
+            "Normal": {
+              "correct": 0,
+              "f1": 0.0,
+              "precision": 0.0,
+              "recall": 0.0,
+              "support": 0,
+              "total": 0
+            },
+            "PortScan": {
+              "correct": 0,
+              "f1": 0.0,
+              "precision": 0.0,
+              "recall": 0.0,
+              "support": 0,
+              "total": 0
+            }
+          }
+        },
+        "F-A1-NORMAL-V-01-R1": {
+          "accuracy": 0.6333333333333333,
+          "confusion_matrix": {
+            "labels": [
+              "Normal",
+              "DDoS",
+              "PortScan"
+            ],
+            "rows": [
+              [
+                38,
+                22,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ]
+            ]
+          },
+          "macro_f1": 0.2585034013605442,
+          "macro_precision": 0.3333333333333333,
+          "macro_recall": 0.2111111111111111,
+          "per_class": {
+            "DDoS": {
+              "correct": 0,
+              "f1": 0.0,
+              "precision": 0.0,
+              "recall": 0.0,
+              "support": 0,
+              "total": 0
+            },
+            "Normal": {
+              "correct": 38,
+              "f1": 0.7755102040816326,
+              "precision": 1.0,
+              "recall": 0.6333333333333333,
+              "support": 60,
+              "total": 60
+            },
+            "PortScan": {
+              "correct": 0,
+              "f1": 0.0,
+              "precision": 0.0,
+              "recall": 0.0,
+              "support": 0,
+              "total": 0
+            }
+          }
+        },
+        "F-A1-NORMAL-V-02": {
+          "accuracy": 0.5666666666666667,
+          "confusion_matrix": {
+            "labels": [
+              "Normal",
+              "DDoS",
+              "PortScan"
+            ],
+            "rows": [
+              [
+                34,
+                26,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ]
+            ]
+          },
+          "macro_f1": 0.24113475177304966,
+          "macro_precision": 0.3333333333333333,
+          "macro_recall": 0.18888888888888888,
+          "per_class": {
+            "DDoS": {
+              "correct": 0,
+              "f1": 0.0,
+              "precision": 0.0,
+              "recall": 0.0,
+              "support": 0,
+              "total": 0
+            },
+            "Normal": {
+              "correct": 34,
+              "f1": 0.723404255319149,
+              "precision": 1.0,
+              "recall": 0.5666666666666667,
+              "support": 60,
+              "total": 60
+            },
+            "PortScan": {
+              "correct": 0,
+              "f1": 0.0,
+              "precision": 0.0,
+              "recall": 0.0,
+              "support": 0,
+              "total": 0
+            }
+          }
+        },
+        "F-A1-NORMAL-V-03": {
+          "accuracy": 0.7166666666666667,
+          "confusion_matrix": {
+            "labels": [
+              "Normal",
+              "DDoS",
+              "PortScan"
+            ],
+            "rows": [
+              [
+                43,
+                17,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ]
+            ]
+          },
+          "macro_f1": 0.27831715210355984,
+          "macro_precision": 0.3333333333333333,
+          "macro_recall": 0.2388888888888889,
+          "per_class": {
+            "DDoS": {
+              "correct": 0,
+              "f1": 0.0,
+              "precision": 0.0,
+              "recall": 0.0,
+              "support": 0,
+              "total": 0
+            },
+            "Normal": {
+              "correct": 43,
+              "f1": 0.8349514563106796,
+              "precision": 1.0,
+              "recall": 0.7166666666666667,
+              "support": 60,
+              "total": 60
+            },
+            "PortScan": {
+              "correct": 0,
+              "f1": 0.0,
+              "precision": 0.0,
+              "recall": 0.0,
+              "support": 0,
+              "total": 0
+            }
+          }
+        },
+        "F-A1-PORTSCAN-V-01": {
+          "accuracy": 1.0,
+          "confusion_matrix": {
+            "labels": [
+              "Normal",
+              "DDoS",
+              "PortScan"
+            ],
+            "rows": [
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                1000
+              ]
+            ]
+          },
+          "macro_f1": 0.3333333333333333,
+          "macro_precision": 0.3333333333333333,
+          "macro_recall": 0.3333333333333333,
+          "per_class": {
+            "DDoS": {
+              "correct": 0,
+              "f1": 0.0,
+              "precision": 0.0,
+              "recall": 0.0,
+              "support": 0,
+              "total": 0
+            },
+            "Normal": {
+              "correct": 0,
+              "f1": 0.0,
+              "precision": 0.0,
+              "recall": 0.0,
+              "support": 0,
+              "total": 0
+            },
+            "PortScan": {
+              "correct": 1000,
+              "f1": 1.0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "support": 1000,
+              "total": 1000
+            }
+          }
+        },
+        "F-A1-PORTSCAN-V-02": {
+          "accuracy": 1.0,
+          "confusion_matrix": {
+            "labels": [
+              "Normal",
+              "DDoS",
+              "PortScan"
+            ],
+            "rows": [
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                1000
+              ]
+            ]
+          },
+          "macro_f1": 0.3333333333333333,
+          "macro_precision": 0.3333333333333333,
+          "macro_recall": 0.3333333333333333,
+          "per_class": {
+            "DDoS": {
+              "correct": 0,
+              "f1": 0.0,
+              "precision": 0.0,
+              "recall": 0.0,
+              "support": 0,
+              "total": 0
+            },
+            "Normal": {
+              "correct": 0,
+              "f1": 0.0,
+              "precision": 0.0,
+              "recall": 0.0,
+              "support": 0,
+              "total": 0
+            },
+            "PortScan": {
+              "correct": 1000,
+              "f1": 1.0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "support": 1000,
+              "total": 1000
+            }
+          }
+        },
+        "F-A1-PORTSCAN-V-03": {
+          "accuracy": 1.0,
+          "confusion_matrix": {
+            "labels": [
+              "Normal",
+              "DDoS",
+              "PortScan"
+            ],
+            "rows": [
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                0
+              ],
+              [
+                0,
+                0,
+                1000
+              ]
+            ]
+          },
+          "macro_f1": 0.3333333333333333,
+          "macro_precision": 0.3333333333333333,
+          "macro_recall": 0.3333333333333333,
+          "per_class": {
+            "DDoS": {
+              "correct": 0,
+              "f1": 0.0,
+              "precision": 0.0,
+              "recall": 0.0,
+              "support": 0,
+              "total": 0
+            },
+            "Normal": {
+              "correct": 0,
+              "f1": 0.0,
+              "precision": 0.0,
+              "recall": 0.0,
+              "support": 0,
+              "total": 0
+            },
+            "PortScan": {
+              "correct": 1000,
+              "f1": 1.0,
+              "precision": 1.0,
+              "recall": 1.0,
+              "support": 1000,
+              "total": 1000
+            }
+          }
+        }
+      },
+      "prediction_artifact": {
+        "path": "reports/experiment_f/validation/f4_a2_run_03/predictions_rf_v4.csv",
+        "sha256": "1bc15140976f13e53c630f8c6e223627bbd1c58ed59a23a0a125e2ced4f77a3c"
+      }
+    }
+  },
+  "paired_prediction_transitions": {
+    "RF-v2->RF-v3": {
+      "DDoS->DDoS": 0,
+      "DDoS->Normal": 0,
+      "DDoS->PortScan": 0,
+      "Normal->DDoS": 0,
+      "Normal->Normal": 3002,
+      "Normal->PortScan": 2997,
+      "PortScan->DDoS": 0,
+      "PortScan->Normal": 0,
+      "PortScan->PortScan": 0
+    },
+    "RF-v2->RF-v4": {
+      "DDoS->DDoS": 0,
+      "DDoS->Normal": 0,
+      "DDoS->PortScan": 0,
+      "Normal->DDoS": 2750,
+      "Normal->Normal": 249,
+      "Normal->PortScan": 3000,
+      "PortScan->DDoS": 0,
+      "PortScan->Normal": 0,
+      "PortScan->PortScan": 0
+    },
+    "RF-v3->RF-v4": {
+      "DDoS->DDoS": 0,
+      "DDoS->Normal": 0,
+      "DDoS->PortScan": 0,
+      "Normal->DDoS": 2750,
+      "Normal->Normal": 249,
+      "Normal->PortScan": 3,
+      "PortScan->DDoS": 0,
+      "PortScan->Normal": 0,
+      "PortScan->PortScan": 2997
+    }
+  },
+  "same_frozen_vectors": {
+    "dataset_sha256": "d5dbc3e6a6de373526c46bb7220092c14e81779ec91ebfe5ef855db7f7d53d0e",
+    "rows": 5999
+  },
+  "schema": "experiment_f_f4_a2_comparative_metrics"
+}

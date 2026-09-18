@@ -1,0 +1,67 @@
+{
+  "common": {
+    "allowed_endpoint": "/",
+    "evidence": [
+      "profile manifest",
+      "Locust execution log",
+      "start/end timestamps",
+      "configured and observed users/spawn rate/request counts/errors",
+      "target log where available",
+      "PCAP/hash, raw-84 CSV/hash, exact-78 matrix/hash, lineage manifest"
+    ],
+    "hard_stop": [
+      "duration limit reached",
+      "target/route/observer failure",
+      "out-of-scope endpoint",
+      "operator safety stop"
+    ],
+    "request_behavior": "GET / only with a fixed 1.0\u20132.0 second wait between requests per simulated user; no adaptive optimization from model outputs.",
+    "scope": "private owned lab target only",
+    "target": "http://10.10.20.2:8080/",
+    "timeout_seconds": 10
+  },
+  "labeling": {
+    "experimental_ground_truth_scope": "controlled HTTP DDoS-like/load profile",
+    "freeze_rule": "All parameters are frozen before F2; no post-prediction tuning or profile substitution.",
+    "model_class": "DDoS",
+    "prohibited_claims": [
+      "genuine distributed DDoS",
+      "universal DDoS recall",
+      "traffic is distributed merely because Locust is standardized"
+    ]
+  },
+  "profiles": {
+    "F-A1-DDOSLIKE-A-01..03": {
+      "max_users": 4,
+      "maximum_duration_seconds": 60,
+      "purpose": "bounded adaptation profile",
+      "sessions": 3,
+      "spawn_rate_users_per_second": 1,
+      "split": "F-ADAPTATION"
+    },
+    "F-A1-DDOSLIKE-F-01..03": {
+      "max_users": 12,
+      "maximum_duration_seconds": 120,
+      "purpose": "sealed distinct bounded final profile",
+      "sessions": 3,
+      "spawn_rate_users_per_second": 3,
+      "split": "F-FINAL"
+    },
+    "F-A1-DDOSLIKE-V-01..03": {
+      "max_users": 8,
+      "maximum_duration_seconds": 90,
+      "purpose": "distinct bounded validation profile",
+      "sessions": 3,
+      "spawn_rate_users_per_second": 2,
+      "split": "F-VALIDATION"
+    }
+  },
+  "schema": "experiment_f_f0_a1_tool_profiles",
+  "status": "PREREGISTERED_NOT_AUTHORIZED_TO_EXECUTE",
+  "tool": {
+    "does_not_establish": "genuine distributed DDoS or universal/real-world DDoS detection",
+    "name": "Locust",
+    "purpose": "standardized bounded controlled HTTP load simulation only"
+  },
+  "version": 1
+}

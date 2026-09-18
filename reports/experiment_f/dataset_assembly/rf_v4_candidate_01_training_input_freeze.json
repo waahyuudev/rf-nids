@@ -1,0 +1,38 @@
+{
+  "amendment_a2": {
+    "path": "reports/experiment_f/amendments/f0_composition_amendment_a2.json",
+    "sha256": "24840ecd9973e4028c0dd382da90d1a467f0190a654abcd2fbd50af9baed6afb"
+  },
+  "authorized_use": "Only authorized input for the first RF-v4 candidate training run; training requires separate authorization and exact frozen RF-v3 parameters.",
+  "candidate_dataset": {
+    "class_counts": {
+      "DDoS": 4023,
+      "Normal": 94,
+      "PortScan": 2581
+    },
+    "columns": 79,
+    "feature_columns": 78,
+    "label_column": "ground_truth_class",
+    "path": "data/lab/experiment_f/datasets/rf_v4_candidate_01_training.csv",
+    "rows": 6698,
+    "sha256": "a65c812494917b2e6d18153b784fd0505b84229f86b6a6916c59fa1187bd778d"
+  },
+  "created_at_utc": "2026-09-16T07:56:47.128961+00:00",
+  "experiment_f_adapted_sha256": {
+    "F-A1-DDOSLIKE-A-01": "77c2dc16264b2f0f1d53f0013a76574c5f9768c75d66db6954453d8acf0da453",
+    "F-A1-DDOSLIKE-A-02": "84c101b76eefaa1cdf0a8b5a7bf7cabd3ae600f21dcdcd93d3cc5b84f6acae3e",
+    "F-A1-DDOSLIKE-A-03": "ddf9ae064356f9f5444d2ff1829adc9b6b10ede71b2b032adca3adef9425deda"
+  },
+  "feature_order_sha256": "9338f50fc3e7efc78d678cc65ab38d428a7f6912ed9467a2b99a449a7c8e3c13",
+  "historical_dataset_sha256": "f716404391467b267cca2f989762c2d4740127a4e7dd11afe956e7e8940b2284",
+  "historical_lineage_sha256": "950868cc0e5f8943e7eb03dba544d535d4d20e74a018facf48dcb7ebcb38ecd9",
+  "model_training_performed": false,
+  "row_lineage": {
+    "path": "data/lab/experiment_f/datasets/rf_v4_candidate_01_training_lineage.csv",
+    "rows": 6698,
+    "sha256": "1ee2fdad6a9cb4321f6a85beb003e2eb2596518ddd9b54a7a9f151b1c65f4283"
+  },
+  "schema": "experiment_f_rf_v4_candidate_01_training_input_freeze",
+  "status": "F3_A2_RF_V4_TRAINING_READY",
+  "version": 1
+}

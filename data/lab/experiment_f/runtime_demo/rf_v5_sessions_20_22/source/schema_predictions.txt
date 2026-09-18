@@ -1,0 +1,38 @@
+                                            Table "public.predictions"
+        Column         |           Type           | Collation | Nullable |                 Default                 
+-----------------------+--------------------------+-----------+----------+-----------------------------------------
+ id                    | integer                  |           | not null | nextval('predictions_id_seq'::regclass)
+ traffic_flow_id       | integer                  |           | not null | 
+ model_id              | integer                  |           | not null | 
+ predicted_label       | character varying(50)    |           | not null | 
+ confidence_score      | double precision         |           | not null | 
+ class_probabilities   | jsonb                    |           | not null | 
+ prediction_time       | timestamp with time zone |           | not null | 
+ created_at            | timestamp with time zone |           | not null | 
+ experiment_id         | integer                  |           |          | 
+ source_type           | character varying(50)    |           |          | 
+ external_key          | character varying(255)   |           |          | 
+ monitoring_session_id | integer                  |           |          | 
+ runtime_artifact_id   | integer                  |           |          | 
+Indexes:
+    "predictions_pkey" PRIMARY KEY, btree (id)
+    "ix_predictions_experiment_id" btree (experiment_id)
+    "ix_predictions_label_time" btree (predicted_label, prediction_time)
+    "ix_predictions_model_id" btree (model_id)
+    "ix_predictions_monitoring_session_id" btree (monitoring_session_id)
+    "ix_predictions_predicted_label" btree (predicted_label)
+    "ix_predictions_runtime_artifact_id" btree (runtime_artifact_id)
+    "ix_predictions_source_type" btree (source_type)
+    "predictions_traffic_flow_id_key" UNIQUE CONSTRAINT, btree (traffic_flow_id)
+    "uq_predictions_source_external_key" UNIQUE CONSTRAINT, btree (source_type, external_key)
+Check constraints:
+    "ck_predictions_predicted_label" CHECK (predicted_label::text = ANY (ARRAY['Normal'::character varying, 'DDoS'::character varying, 'PortScan'::character varying]::text[]))
+Foreign-key constraints:
+    "fk_predictions_experiment_id_experiments" FOREIGN KEY (experiment_id) REFERENCES experiments(id) ON DELETE SET NULL
+    "fk_predictions_monitoring_session_id" FOREIGN KEY (monitoring_session_id) REFERENCES monitoring_sessions(id) ON DELETE SET NULL
+    "fk_predictions_runtime_artifact_id" FOREIGN KEY (runtime_artifact_id) REFERENCES runtime_capture_artifacts(id) ON DELETE SET NULL
+    "predictions_model_id_fkey" FOREIGN KEY (model_id) REFERENCES models(id) ON DELETE RESTRICT
+    "predictions_traffic_flow_id_fkey" FOREIGN KEY (traffic_flow_id) REFERENCES traffic_flows(id) ON DELETE CASCADE
+Referenced by:
+    TABLE "alerts" CONSTRAINT "alerts_prediction_id_fkey" FOREIGN KEY (prediction_id) REFERENCES predictions(id) ON DELETE CASCADE
+

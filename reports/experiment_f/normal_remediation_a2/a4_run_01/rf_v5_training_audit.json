@@ -1,0 +1,33 @@
+{
+  "activation": false,
+  "candidate": {
+    "metadata": "models/experiment_f/random_forest_rf_v5_candidate_01_metadata.json",
+    "metadata_sha256": "b9255fb4ad067611db60632e384e2cc5e8aaa2f989228cbc0e541ef421c7224e",
+    "path": "models/experiment_f/random_forest_rf_v5_candidate_01.joblib",
+    "sha256": "31d7d50fa79e3400e7d357cab05c780e038bc527b746d0be6ff894828c6b8d17",
+    "status": "CANDIDATE / NOT_ACTIVE"
+  },
+  "candidate_count": 1,
+  "class_counts": {
+    "DDoS": 4023,
+    "Normal": 699,
+    "PortScan": 2581
+  },
+  "decision": "RF_V5_CANDIDATE_TRAINING_PASS",
+  "promotion": false,
+  "same_preprocessing": true,
+  "same_rf_v4_parameters": true,
+  "schema": "experiment_f_a4_rf_v5_training_audit",
+  "training_dataset": {
+    "class_counts": {
+      "DDoS": 4023,
+      "Normal": 699,
+      "PortScan": 2581
+    },
+    "columns": 79,
+    "path": "data/lab/experiment_f/normal_remediation_a2/derived/a4_run_01/frozen/rf_v5_candidate_01_training.csv",
+    "rows": 7303,
+    "sha256": "d7392488e74a7f0ca4b0813faf5458b15ae4b8e5b3cb1ea25e1cd95a6b37df37"
+  },
+  "validation_data_used": false
+}

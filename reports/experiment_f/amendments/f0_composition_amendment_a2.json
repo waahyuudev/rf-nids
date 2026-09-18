@@ -1,0 +1,169 @@
+{
+  "schema": "experiment_f_f0_composition_amendment_a2",
+  "version": 1,
+  "amendment_id": "A2",
+  "decision": "F0_AMENDMENT_A2_ACCEPTED",
+  "prospective_status": "ACCEPTED_BEFORE_DATASET_ASSEMBLY_OR_RF_V4_TRAINING",
+  "generated_at_utc": "2026-09-16T07:48:16Z",
+  "reason": "Resolve the historical training-composition ambiguity recorded by the immutable F3-A1 blocked audit before any RF-v4 dataset assembly or training.",
+  "reauthorization": "F3_A1_DATASET_ASSEMBLY_REAUTHORIZED",
+  "scientific_intervention": "Addition of the three F2-A1-approved Experiment F controlled HTTP DDoS-like/load adaptation sessions to the exact frozen Experiment E RF-v3 training candidate; no other training-data or model-contract change.",
+  "historical_baseline": {
+    "policy": "Reuse byte/logically unchanged; do not reconstruct or reopen historical selection.",
+    "dataset_path": "data/lab/experiment_e/datasets/experiment_e_training_candidate.csv",
+    "dataset_sha256": "f716404391467b267cca2f989762c2d4740127a4e7dd11afe956e7e8940b2284",
+    "manifest_path": "data/lab/experiment_e/datasets/experiment_e_training_candidate_manifest.json",
+    "manifest_sha256": "fb2ba80d300a8e52fc3f441fca0d6b319be60633cc97f65f0f48e603428bfa0e",
+    "lineage_path": "data/lab/experiment_e/datasets/experiment_e_training_candidate_lineage.csv",
+    "lineage_sha256": "950868cc0e5f8943e7eb03dba544d535d4d20e74a018facf48dcb7ebcb38ecd9",
+    "verified_rows": 5756,
+    "verified_columns": 79,
+    "feature_columns": 78,
+    "label_column": "ground_truth_class",
+    "verified_class_counts": {
+      "Normal": 94,
+      "DDoS": 3081,
+      "PortScan": 2581
+    },
+    "historical_source_provenance": "Retain the existing Experiment E lineage and manifest without alteration."
+  },
+  "experiment_f_contribution": {
+    "split": "F-ADAPTATION",
+    "model_class": "DDoS",
+    "scientific_scope": "controlled HTTP DDoS-like/load profile",
+    "claim_limit": "These rows are not evidence of genuine distributed-DDoS representativeness.",
+    "inclusion_rule": "Include every row from each listed F2-A1-approved adapted artifact; preserve row order and row-level session lineage.",
+    "verified_total_rows": 942,
+    "sessions": [
+      {
+        "session_id": "F-A1-DDOSLIKE-A-01",
+        "adapted_path": "data/lab/experiment_f/adaptation/model_input/ddoslike/f-a1-ddoslike-a-01_model_input_78.csv",
+        "adapted_sha256": "77c2dc16264b2f0f1d53f0013a76574c5f9768c75d66db6954453d8acf0da453",
+        "verified_rows": 311,
+        "verified_columns": 78,
+        "extraction_lineage_path": "reports/experiment_f/collection/F-A1-DDOSLIKE-A-01/extraction_lineage.json",
+        "extraction_lineage_sha256": "5358171099b7127b10f227ca6b3b6a244e07257ee302ec78c048688a77f954f6"
+      },
+      {
+        "session_id": "F-A1-DDOSLIKE-A-02",
+        "adapted_path": "data/lab/experiment_f/adaptation/model_input/ddoslike/f-a1-ddoslike-a-02_model_input_78.csv",
+        "adapted_sha256": "84c101b76eefaa1cdf0a8b5a7bf7cabd3ae600f21dcdcd93d3cc5b84f6acae3e",
+        "verified_rows": 311,
+        "verified_columns": 78,
+        "extraction_lineage_path": "reports/experiment_f/collection/F-A1-DDOSLIKE-A-02/extraction_lineage.json",
+        "extraction_lineage_sha256": "4c858657f3cfe94c588780b0e4152a3d99d1fe92a1856c54f35fe864b6f4fede"
+      },
+      {
+        "session_id": "F-A1-DDOSLIKE-A-03",
+        "adapted_path": "data/lab/experiment_f/adaptation/model_input/ddoslike/f-a1-ddoslike-a-03_model_input_78.csv",
+        "adapted_sha256": "ddf9ae064356f9f5444d2ff1829adc9b6b10ede71b2b032adca3adef9425deda",
+        "verified_rows": 320,
+        "verified_columns": 78,
+        "extraction_lineage_path": "reports/experiment_f/collection/F-A1-DDOSLIKE-A-03/extraction_lineage.json",
+        "extraction_lineage_sha256": "d2b3b0d48d55066a3dd4ce1c4850c78319244478817ecde224da328eff1eae40"
+      }
+    ]
+  },
+  "expected_combined_candidate": {
+    "status": "EXPECTED_COUNTS_TO_BE_INDEPENDENTLY_VERIFIED_DURING_ASSEMBLY",
+    "total_rows": 6698,
+    "feature_columns": 78,
+    "separate_label_column": true,
+    "class_counts": {
+      "Normal": 94,
+      "DDoS": 4023,
+      "PortScan": 2581
+    },
+    "failure_rule": "Assembly must fail rather than adjust the amendment if independently verified source counts or hashes differ."
+  },
+  "feature_contract": {
+    "ordered_feature_count": 78,
+    "feature_order_sha256": "9338f50fc3e7efc78d678cc65ab38d428a7f6912ed9467a2b99a449a7c8e3c13",
+    "crosswalk_path": "reports/tables/cicflowmeter_v3_78_feature_crosswalk.csv",
+    "crosswalk_sha256": "66e517cdcea217f19de4d0a2cd45302ede999388393f539fb8ca4a2c68b74cf4",
+    "verification": "Historical and all three F inputs independently match the exact ordered feature identity.",
+    "mutation_prohibited": true
+  },
+  "duplicate_policy": {
+    "historical": "Preserve the Experiment E dataset exactly.",
+    "experiment_f": "Retain all adapted rows, including identical feature vectors.",
+    "cross_session_deduplication": "PROHIBITED_WITHOUT_FUTURE_PROSPECTIVE_AMENDMENT"
+  },
+  "cap_policy": {
+    "historical": "Preserve Experiment E deterministic caps exactly as represented in the frozen 5,756-row dataset.",
+    "combined_dataset": "Do not reapply historical caps.",
+    "experiment_f": "No cap; include all 942 rows by approved session."
+  },
+  "prohibited_training_sources": {
+    "Experiment D final-test": 0,
+    "Experiment E validation": 0,
+    "Experiment E unseen runtime validation": 0,
+    "Experiment E final evaluation": 0,
+    "E10 diagnostic sessions": 0,
+    "E13 diagnostic sessions": 0,
+    "Experiment F validation": 0,
+    "Experiment F final": 0,
+    "future Experiment F sessions": 0,
+    "unregistered or unapproved traffic": 0,
+    "reconstructed uncapped historical pool": 0
+  },
+  "rf_v3_training_parameter_reference": {
+    "metadata_path": "models/experiment_e/random_forest_rf_v3_candidate_metadata.json",
+    "metadata_sha256": "30b6bdf2a6cb2d60e2be36d4db1e124d71504393081b229e6d94da7e70322cbc",
+    "parameters": {
+      "bootstrap": false,
+      "class_weight": "balanced",
+      "criterion": "gini",
+      "max_depth": null,
+      "max_features": "log2",
+      "min_samples_leaf": 4,
+      "min_samples_split": 5,
+      "n_estimators": 200,
+      "n_jobs": -1,
+      "random_state": 42
+    },
+    "future_first_rf_v4_rule": "Use these exact parameters; hyperparameter tuning is not authorized."
+  },
+  "validation_final_separation": {
+    "rule": "Validation and final sessions remain sealed from training and candidate design. The first RF-v4 candidate must be frozen before validation is inspected.",
+    "prohibited_uses": [
+      "dataset composition",
+      "feature selection",
+      "hyperparameter selection",
+      "threshold selection",
+      "resampling decisions",
+      "candidate modification"
+    ]
+  },
+  "prior_blocked_evidence": {
+    "path": "reports/experiment_f/dataset_assembly/f3_a1_dataset_assembly_blocked.json",
+    "sha256": "2398f8298b55366347b2a6c07d04049ded07087911e4395695b71d55e7d72074",
+    "preserved_unchanged": true,
+    "resolution": "A2 prospectively selects the exact Experiment E candidate and existing lineage, eliminating the recorded composition ambiguity."
+  },
+  "integrity_snapshot": {
+    "models/experiment_d/random_forest_rf_v2.joblib": "fb13a71a0287054d2630bf07529f113a153ba08d8f6835a605b04493408b8a31",
+    "models/experiment_e/random_forest_rf_v3_candidate.joblib": "6b01c7b3923c1a6bd471862d011f8f5b88a31378e51d1dde082bd2e72bedef86",
+    "models/experiment_e/random_forest_rf_v3_candidate_metadata.json": "30b6bdf2a6cb2d60e2be36d4db1e124d71504393081b229e6d94da7e70322cbc",
+    "reports/experiment_d/final_test/dataset_audit.json": "a0a22100cd0c6b923349aa6e899c2221b84d64991ca7e20b0626d811879d88c1",
+    "reports/experiment_e/audit/e4_dataset_construction_audit.json": "69cc278d2a6139b7b2d2e9d4db3312fb3a3b06cf70381a719d542ec624e2b45c",
+    "reports/experiment_e/decision/e14_remediation_decision.json": "e5c11c39f7401fe89551d927b193978c59adc32bf7bb3052f619d225a595278e",
+    "config/experiment_f.yaml": "a501465a87367456fbdcda2504c38d4d8d974cc168c92a3bce6505c23d9fa65d",
+    "reports/experiment_f/preregistration/f0_preregistration.json": "dfc628b60bbd56ea0a78c4585ed28cfece2154b56fe101567b89e434e83d6cfb",
+    "reports/experiment_f/preregistration/f0_ground_truth_design.json": "0ffac32992a82d01bbd03de2108047a701e579392f492a794f2bf2b6991dbab4",
+    "reports/experiment_f/preregistration/f0_acceptance_gates.json": "0d82ea5e4c6384484f58a4d5f3e248d9a3996fd1259bdc46506f4490773e74b3",
+    "reports/experiment_f/amendments/f0_amendment_a1.json": "2116e1272ffc93dcaacfd105eb8f90afda10b2ccf5c2111ed2d2dd1179f6b95e",
+    "reports/experiment_f/preflight/f1_a1_preflight_evidence.json": "a04fa37f5fccb32851d2a118316357d837aa7b61b1ad727b7a2e77a9711ddfd6",
+    "reports/experiment_f/data_gates/f2_a1_extraction_data_gate.json": "5e45cb8bbf8d0857345843f3a28e05c5d173f350528c3bee6b797e04783f43e0",
+    "status": "PASS"
+  },
+  "actions_not_performed": [
+    "dataset assembly",
+    "RF-v4 training",
+    "traffic generation",
+    "validation or final inspection",
+    "prediction or inference",
+    "source artifact modification"
+  ],
+  "next_step": "Execute a separately authorized F3-A1 assembly that independently verifies every frozen hash/count and creates the immutable 6,698-row candidate dataset plus row-level lineage; stop before RF-v4 training."
+}

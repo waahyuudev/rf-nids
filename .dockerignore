@@ -17,6 +17,14 @@ reports/experiment_d/*
 !reports/experiment_d/final_test/
 reports/experiment_d/final_test/*
 !reports/experiment_d/final_test/metrics.json
+!reports/tables/
+reports/tables/*
+!reports/tables/cicflowmeter_v3_78_feature_crosswalk.csv
+!reports/experiment_e/
+reports/experiment_e/*
+!reports/experiment_e/audit/
+reports/experiment_e/audit/*
+!reports/experiment_e/audit/e3_provenance_amendment_a1.json
 scripts
 tests
 tmp
