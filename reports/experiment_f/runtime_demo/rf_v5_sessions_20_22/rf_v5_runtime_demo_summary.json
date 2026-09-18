@@ -1,0 +1,195 @@
+{
+  "freeze_decision": "RF_V5_RUNTIME_DEMO_EVIDENCE_FROZEN",
+  "scope": "Operational/runtime demonstration evidence only for monitoring Sessions 20, 21, and 22.",
+  "scientific_validation": {
+    "decision": "RF_V5_VALIDATION_FAIL",
+    "model_status": "CANDIDATE / NOT_ACTIVE",
+    "interpretation": "Runtime evidence does not constitute scientific validation and does not modify the existing scientific freeze."
+  },
+  "operational_runtime_demonstration": {
+    "session_20": "Normal HTTP produced Normal and PortScan predictions; PortScan predictions are false positives within this scoped runtime demonstration.",
+    "session_21": "controlled HTTP DDoS-like/load profile produced DDoS and Normal predictions; this is not genuine distributed DDoS validation.",
+    "session_22": "The bounded PortScan scenario produced PortScan predictions; the persisted target discrepancy is retained as a provenance limitation.",
+    "class_coverage": "Across the three scoped operational scenarios, the runtime pipeline produced all three model classes."
+  },
+  "sessions": {
+    "20": {
+      "session": {
+        "id": "20",
+        "status": "STOPPED",
+        "target_ip": "10.10.20.2",
+        "interface_name": "enp0s3",
+        "flow_count": "58",
+        "prediction_count": "58",
+        "alert_count": "12",
+        "started_at": "2026-09-17 09:13:14.130412+00",
+        "stopped_at": "2026-09-17 09:22:58.336831+00"
+      },
+      "model_provenance": {
+        "model_id": "rf-v5-candidate-01",
+        "model_sha256": "31d7d50fa79e3400e7d357cab05c780e038bc527b746d0be6ff894828c6b8d17",
+        "selection_mode": "MANUAL / DEMO SELECTION",
+        "scientific_status": "CANDIDATE / NOT_ACTIVE",
+        "scientific_decision": "RF_V5_VALIDATION_FAIL"
+      },
+      "extractor_provenance": {
+        "name": "CICFlowMeter V3",
+        "source_commit": "a26aae27f21d165ff30b4b28e75124a5f9b4b2c4",
+        "image_identity": "sha256:b12b3a4a4218968aba2436685a4eb113473e5681de70705409e834e4613a879b",
+        "crosswalk_sha256": "66e517cdcea217f19de4d0a2cd45302ede999388393f539fb8ca4a2c68b74cf4"
+      },
+      "prediction_class_counts": [
+        {
+          "label": "Normal",
+          "count": 46,
+          "mean_confidence": 0.957749,
+          "min_confidence": 0.64882,
+          "max_confidence": 0.998817
+        },
+        {
+          "label": "PortScan",
+          "count": 12,
+          "mean_confidence": 0.737636,
+          "min_confidence": 0.521658,
+          "max_confidence": 0.758674
+        }
+      ],
+      "alert_counts": [
+        {
+          "severity": "MEDIUM",
+          "count": 12
+        }
+      ],
+      "runtime_artifacts": {
+        "row_count": 56,
+        "states": {
+          "FAILED": 50,
+          "COMMITTED": 6
+        },
+        "source_csv": "source/runtime_capture_artifacts_20_22.csv"
+      },
+      "limitations": [
+        "Exact generator evidence is not present in the exported database records."
+      ]
+    },
+    "21": {
+      "session": {
+        "id": "21",
+        "status": "STOPPED",
+        "target_ip": "10.10.20.2",
+        "interface_name": "enp0s3",
+        "flow_count": "535",
+        "prediction_count": "535",
+        "alert_count": "453",
+        "started_at": "2026-09-17 09:23:27.547884+00",
+        "stopped_at": "2026-09-17 09:39:23.955967+00"
+      },
+      "model_provenance": {
+        "model_id": "rf-v5-candidate-01",
+        "model_sha256": "31d7d50fa79e3400e7d357cab05c780e038bc527b746d0be6ff894828c6b8d17",
+        "selection_mode": "MANUAL / DEMO SELECTION",
+        "scientific_status": "CANDIDATE / NOT_ACTIVE",
+        "scientific_decision": "RF_V5_VALIDATION_FAIL"
+      },
+      "extractor_provenance": {
+        "name": "CICFlowMeter V3",
+        "source_commit": "a26aae27f21d165ff30b4b28e75124a5f9b4b2c4",
+        "image_identity": "sha256:b12b3a4a4218968aba2436685a4eb113473e5681de70705409e834e4613a879b",
+        "crosswalk_sha256": "66e517cdcea217f19de4d0a2cd45302ede999388393f539fb8ca4a2c68b74cf4"
+      },
+      "prediction_class_counts": [
+        {
+          "label": "DDoS",
+          "count": 453,
+          "mean_confidence": 0.895354,
+          "min_confidence": 0.517614,
+          "max_confidence": 1.0
+        },
+        {
+          "label": "Normal",
+          "count": 82,
+          "mean_confidence": 0.786497,
+          "min_confidence": 0.466686,
+          "max_confidence": 0.977644
+        }
+      ],
+      "alert_counts": [
+        {
+          "severity": "HIGH",
+          "count": 453
+        }
+      ],
+      "runtime_artifacts": {
+        "row_count": 91,
+        "states": {
+          "FAILED": 85,
+          "COMMITTED": 6
+        },
+        "source_csv": "source/runtime_capture_artifacts_20_22.csv"
+      },
+      "limitations": [
+        "Exact generator evidence is not present in the exported database records."
+      ]
+    },
+    "22": {
+      "session": {
+        "id": "22",
+        "status": "STOPPED",
+        "target_ip": "10.10.10.2",
+        "interface_name": "enp0s3",
+        "flow_count": "1000",
+        "prediction_count": "1000",
+        "alert_count": "1000",
+        "started_at": "2026-09-17 09:39:47.317647+00",
+        "stopped_at": "2026-09-17 09:43:36.516838+00"
+      },
+      "model_provenance": {
+        "model_id": "rf-v5-candidate-01",
+        "model_sha256": "31d7d50fa79e3400e7d357cab05c780e038bc527b746d0be6ff894828c6b8d17",
+        "selection_mode": "MANUAL / DEMO SELECTION",
+        "scientific_status": "CANDIDATE / NOT_ACTIVE",
+        "scientific_decision": "RF_V5_VALIDATION_FAIL"
+      },
+      "extractor_provenance": {
+        "name": "CICFlowMeter V3",
+        "source_commit": "a26aae27f21d165ff30b4b28e75124a5f9b4b2c4",
+        "image_identity": "sha256:b12b3a4a4218968aba2436685a4eb113473e5681de70705409e834e4613a879b",
+        "crosswalk_sha256": "66e517cdcea217f19de4d0a2cd45302ede999388393f539fb8ca4a2c68b74cf4"
+      },
+      "prediction_class_counts": [
+        {
+          "label": "PortScan",
+          "count": 1000,
+          "mean_confidence": 0.987984,
+          "min_confidence": 0.434502,
+          "max_confidence": 0.991078
+        }
+      ],
+      "alert_counts": [
+        {
+          "severity": "MEDIUM",
+          "count": 1000
+        }
+      ],
+      "runtime_artifacts": {
+        "row_count": 18,
+        "states": {
+          "FAILED": 17,
+          "COMMITTED": 1
+        },
+        "source_csv": "source/runtime_capture_artifacts_20_22.csv"
+      },
+      "limitations": [
+        "Persisted monitoring_sessions.target_ip is 10.10.10.2, while the operator-bounded Nmap command targeted 10.10.20.2; values are preserved without normalization.",
+        "Exact generator evidence is not present in the exported database records."
+      ]
+    }
+  },
+  "session_22_operator_command": "nmap -sS -Pn -n -T3 --max-retries 1 --host-timeout 120s -p 1-1000 10.10.20.2",
+  "source_sha256_manifest": "source/SHA256SUMS",
+  "limitations": [
+    "No traffic was generated for this freeze.",
+    "No raw runtime artifacts were copied; exported artifact references remain source evidence.",
+    "Exact generator evidence was not persisted in the exported records."
+  ]
+}

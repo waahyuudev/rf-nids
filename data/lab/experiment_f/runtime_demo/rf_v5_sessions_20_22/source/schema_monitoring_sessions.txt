@@ -1,0 +1,49 @@
+                                             Table "public.monitoring_sessions"
+         Column         |           Type           | Collation | Nullable |                     Default                     
+------------------------+--------------------------+-----------+----------+-------------------------------------------------
+ id                     | integer                  |           | not null | nextval('monitoring_sessions_id_seq'::regclass)
+ target_ip              | character varying(45)    |           | not null | 
+ interface_name         | character varying(100)   |           | not null | 
+ model_id               | integer                  |           | not null | 
+ status                 | character varying(20)    |           | not null | 
+ started_at             | timestamp with time zone |           |          | 
+ stopped_at             | timestamp with time zone |           |          | 
+ created_by_user_id     | integer                  |           |          | 
+ created_at             | timestamp with time zone |           | not null | 
+ updated_at             | timestamp with time zone |           | not null | 
+ last_error             | text                     |           |          | 
+ runtime_handle         | character varying(100)   |           |          | 
+ flow_count             | integer                  |           | not null | 0
+ prediction_count       | integer                  |           | not null | 0
+ alert_count            | integer                  |           | not null | 0
+ extractor_name         | character varying(150)   |           |          | 
+ extractor_version      | character varying(100)   |           |          | 
+ latest_processing_at   | timestamp with time zone |           |          | 
+ extractor_identity     | character varying(300)   |           |          | 
+ artifact_key           | character varying(36)    |           |          | 
+ artifact_root          | character varying(1000)  |           |          | 
+ processing_state       | character varying(30)    |           |          | 
+ selection_mode         | character varying(64)    |           | not null | 'DEFAULT'::character varying
+ selected_model_version | character varying(100)   |           |          | 
+ selected_model_sha256  | character varying(64)    |           |          | 
+Indexes:
+    "monitoring_sessions_pkey" PRIMARY KEY, btree (id)
+    "ix_monitoring_sessions_created_by_user_id" btree (created_by_user_id)
+    "ix_monitoring_sessions_model_id" btree (model_id)
+    "ix_monitoring_sessions_status" btree (status)
+    "ix_monitoring_sessions_status_created" btree (status, created_at)
+    "uq_monitoring_sessions_artifact_key" UNIQUE CONSTRAINT, btree (artifact_key)
+    "uq_monitoring_sessions_single_active" UNIQUE, btree (status) WHERE status::text = ANY (ARRAY['STARTING'::character varying, 'RUNNING'::character varying, 'STOPPING'::character varying]::text[])
+Check constraints:
+    "ck_monitoring_sessions_alert_count" CHECK (alert_count >= 0)
+    "ck_monitoring_sessions_flow_count" CHECK (flow_count >= 0)
+    "ck_monitoring_sessions_prediction_count" CHECK (prediction_count >= 0)
+    "ck_monitoring_sessions_status" CHECK (status::text = ANY (ARRAY['STARTING'::character varying, 'RUNNING'::character varying, 'STOPPING'::character varying, 'STOPPED'::character varying, 'FAILED'::character varying]::text[]))
+Foreign-key constraints:
+    "monitoring_sessions_created_by_user_id_fkey" FOREIGN KEY (created_by_user_id) REFERENCES users(id) ON DELETE SET NULL
+    "monitoring_sessions_model_id_fkey" FOREIGN KEY (model_id) REFERENCES models(id) ON DELETE RESTRICT
+Referenced by:
+    TABLE "predictions" CONSTRAINT "fk_predictions_monitoring_session_id" FOREIGN KEY (monitoring_session_id) REFERENCES monitoring_sessions(id) ON DELETE SET NULL
+    TABLE "runtime_capture_artifacts" CONSTRAINT "runtime_capture_artifacts_monitoring_session_id_fkey" FOREIGN KEY (monitoring_session_id) REFERENCES monitoring_sessions(id) ON DELETE CASCADE
+    TABLE "runtime_validation_runs" CONSTRAINT "runtime_validation_runs_monitoring_session_id_fkey" FOREIGN KEY (monitoring_session_id) REFERENCES monitoring_sessions(id) ON DELETE CASCADE
+
