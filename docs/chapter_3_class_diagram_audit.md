@@ -1,523 +1,697 @@
-# RF-NIDS Chapter III Class Diagram Audit
+# Audit Class Diagram BAB III RF-NIDS
 
-## 1. Audit Scope
+## 1. Ruang Lingkup dan Metode
 
-Audit ini membaca implementasi aktual tanpa menjalankan migration, training, inference, atau penulisan database. Satu-satunya file yang dibuat adalah laporan ini.
+Status audit: **VERIFIED** melalui inspeksi statis source code. Audit ini tidak menjalankan migrasi, database, training, inference, monitoring, atau perubahan konfigurasi/dataset/model artifact. Satu-satunya file yang dibuat adalah laporan ini.
 
-Sumber utama:
+Konvensi:
 
-- Entity ORM: `src/api/models.py:34-443`.
-- Lifecycle monitoring: `src/api/monitoring.py:30-213`.
-- Runtime capture/controller: `src/api/runtime_monitoring.py:87-645`.
-- Runtime validation: `src/api/runtime_validation.py:30-200`.
-- Inference: `src/inference/predictor.py:24-169`.
-- Feature adaptation: `src/ingestion/feature_adapter.py:52-194`.
-- Persistence/alert generation: `src/api/service.py:11-130`.
-- Authentication: `src/api/auth.py:27-163`, `src/api/main.py:337-378`.
-- Dashboard client/UI: `dashboard/api_client.py:25-226`, `dashboard/pages/monitoring.py:62-181`.
+- **DATABASE COLUMN**: atribut hasil `mapped_column(...)`.
+- **ORM RELATIONSHIP**: atribut hasil `relationship(...)`.
+- **CLASS METHOD**: fungsi yang benar-benar didefinisikan dalam body class.
+- **FK-only**: foreign key fisik ada, tetapi atribut `relationship(...)` tidak didefinisikan.
+- Kardinalitas memakai `0..1`, `1`, dan `0..*`; nullability FK dan constraint `unique=True` menjadi dasar batas bawah/atas.
+- Semua path bersifat relatif terhadap root repository.
 
-Catatan penting: class entity yang mewakili tabel `models` bernama **`ModelRecord`**, bukan `Model`. Tidak ada class ORM bernama `Model`.
+Temuan utama:
 
-## 2. Entity / ORM Class Audit
+1. Dua belas entity ORM memang ada di satu file, tetapi nama Python aktual untuk entity `Model` adalah **`ModelRecord`**, bukan `Model` (`src/api/models.py:155-181`).
+2. Semua 12 entity ORM tidak mendefinisikan method, property, atau hybrid property: **NO EXPLICIT METHODS**.
+3. `EvidenceSource` menggunakan pemilik logis `owner_type`/`owner_key`; tidak mempunyai FK atau ORM relationship (`src/api/models.py:137-152`).
+4. `MonitoringSession -> TrafficFlow` **NOT PRESENT**. `TrafficFlow.capture_session_id` hanyalah string, bukan FK (`src/api/models.py:346-366`). Hubungan runtime yang fisik adalah `MonitoringSession <- Prediction.monitoring_session_id` (`src/api/models.py:391-392`).
+5. `RuntimeValidationRun.model_id` adalah FK fisik ke `models.id`, tetapi tidak ada ORM relationship ke `ModelRecord` (`src/api/models.py:338-343`). Hal serupa berlaku untuk `Prediction.monitoring_session_id`: FK ada, relationship ORM tidak ada (`src/api/models.py:391-410`).
 
-Seluruh entity mewarisi `Base`. Semua baris `relationship()` adalah navigasi ORM; FK fisik dibedakan secara eksplisit. Tidak satu pun dari 12 class entity mendefinisikan business method atau CRUD method. Fungsi `utcnow()` berada di tingkat modul, bukan method entity (`src/api/models.py:30-31`).
+## 2. Audit Persistence / ORM
 
-### 2.1 `User`
+Seluruh class berikut berada di `src/api/models.py` dan mewarisi `Base` dari `src/api/database.py:12`.
 
-- Table: `users` (`models.py:34-35`).
-- Attributes: `id: int`, `name: str`, `email: str`, `password_hash: str`, `role: str`, `is_active: bool`, `created_at: datetime`, `updated_at: datetime` (`models.py:39-48`).
-- PK: `id`.
-- FK: tidak ada.
-- ORM relationships:
-  - `datasets: list[Dataset]` ↔ `Dataset.created_by_user`.
-  - `acknowledged_alerts: list[Alert]` ↔ `Alert.acknowledged_by_user`.
-  - `monitoring_sessions: list[MonitoringSession]` ↔ `MonitoringSession.created_by_user` (`models.py:49-55`).
-- Cardinality: `User 1 — 0..* Dataset`; `User 1 — 0..* Alert` sebagai acknowledging user; `User 1 — 0..* MonitoringSession`. Pada sisi child, user opsional karena ketiga FK nullable.
-- Methods defined on class: none.
+### 2.1 `User` — VERIFIED
 
-### 2.2 `Dataset`
+- Evidence class/table: `src/api/models.py:34-55`; `__tablename__ = "users"` pada baris 35.
+- DATABASE COLUMNS: `id: int` PK (39); `name: str` (40); `email: str` unique/index (41); `password_hash: str` (42); `role: str` (43); `is_active: bool` (44); `created_at: datetime` (45); `updated_at: datetime` (46-48).
+- FOREIGN KEYS: tidak ada.
+- ORM RELATIONSHIPS: `datasets: list[Dataset]` (49); `acknowledged_alerts: list[Alert]` (50-52); `monitoring_sessions: list[MonitoringSession]` (53-55).
+- Methods/properties/hybrid properties: **NO EXPLICIT METHODS**.
 
-- Table: `datasets` (`models.py:58-59`).
-- Attributes: `id: int`, `name: str`, `source_path: str?`, `source_sha256: str?`, `total_rows: int?`, `total_features: int?`, `label_column: str?`, `class_distribution: dict?`, `created_by_user_id: int?`, `created_at: datetime`, `updated_at: datetime` (`models.py:60-74`).
-- PK: `id`.
-- FK: `created_by_user_id → users.id`, nullable, `ON DELETE SET NULL` (`models.py:68-70`).
-- ORM relationships: `created_by_user: User?`; `experiments: list[Experiment]` (`models.py:75-76`).
-- Cardinality: setiap `Dataset` mempunyai `0..1 User`; `Dataset 1 — 0..* Experiment` dan setiap experiment mempunyai `0..1 Dataset`.
-- Methods: none.
+### 2.2 `Dataset` — VERIFIED
 
-### 2.3 `Experiment`
+- Evidence class/table: `src/api/models.py:58-76`; table `datasets` (59).
+- DATABASE COLUMNS: `id: int` PK (60); `name: str` (61); `source_path: str | None` (62); `source_sha256: str | None` (63); `total_rows: int | None` (64); `total_features: int | None` (65); `label_column: str | None` (66); `class_distribution: dict | None` (67); `created_by_user_id: int | None` (68-70); `created_at: datetime` (71); `updated_at: datetime` (72-74).
+- FOREIGN KEY: `created_by_user_id -> users.id`, nullable, `ON DELETE SET NULL` (68-70).
+- ORM RELATIONSHIPS: `created_by_user: User | None` (75); `experiments: list[Experiment]` (76).
+- Methods/properties/hybrid properties: **NO EXPLICIT METHODS**.
 
-- Table: `experiments` (`models.py:79-80`).
-- Attributes: `id: int`, `experiment_code: str`, `experiment_name: str`, `experiment_type: str`, `dataset_id: int?`, `description: str?`, `status: str`, `source_path: str?`, `source_sha256: str?`, `schema_version: str?`, `imported_at: datetime?`, `created_at: datetime`, `updated_at: datetime` (`models.py:81-97`).
-- PK: `id`.
-- FK: `dataset_id → datasets.id`, nullable, `ON DELETE SET NULL` (`models.py:85-87`).
-- ORM relationships: `dataset: Dataset?`, `evaluation_results: list[EvaluationResult]`, `models: list[ModelRecord]`, `predictions: list[Prediction]` (`models.py:98-103`). `evaluation_results` memakai `cascade="all, delete-orphan"`.
-- Cardinality: `Experiment` mempunyai `0..1 Dataset`; `Experiment 1 — 0..* EvaluationResult/ModelRecord/Prediction`.
-- Methods: none.
+### 2.3 `Experiment` — VERIFIED
 
-### 2.4 `EvaluationResult`
+- Evidence class/table: `src/api/models.py:79-103`; table `experiments` (80).
+- DATABASE COLUMNS: `id: int` PK (81); `experiment_code: str` unique/index (82); `experiment_name: str` (83); `experiment_type: str` (84); `dataset_id: int | None` (85-87); `description: str | None` (88); `status: str` (89); `source_path: str | None` (90); `source_sha256: str | None` (91); `schema_version: str | None` (92); `imported_at: datetime | None` (93); `created_at: datetime` (94); `updated_at: datetime` (95-97).
+- FOREIGN KEY: `dataset_id -> datasets.id`, nullable, `ON DELETE SET NULL` (85-87).
+- ORM RELATIONSHIPS: `dataset: Dataset | None` (98); `evaluation_results: list[EvaluationResult]` with delete-orphan composition semantics (99-101); `models: list[ModelRecord]` (102); `predictions: list[Prediction]` (103).
+- Methods/properties/hybrid properties: **NO EXPLICIT METHODS**.
 
-- Table: `evaluation_results` (`models.py:106-107`).
-- Attributes: `id: int`, `experiment_id: int`, `class_name: str?`, `metric_key: str?`, `accuracy: float?`, `precision_score: float?`, `recall_score: float?`, `f1_score: float?`, `macro_precision: float?`, `macro_recall: float?`, `macro_f1: float?`, `false_positive_rate: float?`, `true_positive: int?`, `true_negative: int?`, `false_positive: int?`, `false_negative: int?`, `confusion_matrix: dict|list?`, `notes: str?`, `source_path: str?`, `source_sha256: str?`, `created_at: datetime` (`models.py:111-133`).
-- PK: `id`.
-- FK: `experiment_id → experiments.id`, non-null, `ON DELETE CASCADE` (`models.py:112-114`).
-- ORM relationship: `experiment: Experiment` (`models.py:134`).
-- Cardinality: setiap result tepat `1 Experiment`; `Experiment 1 — 0..* EvaluationResult`.
-- Methods: none.
+### 2.4 `EvaluationResult` — VERIFIED
 
-### 2.5 `EvidenceSource`
+- Evidence class/table: `src/api/models.py:106-134`; table `evaluation_results` (107).
+- DATABASE COLUMNS: `id: int` PK (111); `experiment_id: int` (112-114); `class_name: str | None` (115); `metric_key: str | None` (116); `accuracy`, `precision_score`, `recall_score`, `f1_score`, `macro_precision`, `macro_recall`, `macro_f1`, `false_positive_rate: float | None` (117-124); `true_positive`, `true_negative`, `false_positive`, `false_negative: int | None` (125-128); `confusion_matrix: dict | list | None` (129); `notes: str | None` (130); `source_path: str | None` (131); `source_sha256: str | None` (132); `created_at: datetime` (133).
+- PRIMARY/FOREIGN KEY: PK `id`; `experiment_id -> experiments.id`, non-null, `ON DELETE CASCADE` (112-114).
+- ORM RELATIONSHIP: `experiment: Experiment` (134).
+- Methods/properties/hybrid properties: **NO EXPLICIT METHODS**.
 
-- Table: `evidence_sources` (`models.py:137-138`).
-- Attributes: `id: int`, `owner_type: str`, `owner_key: str`, `evidence_role: str`, `source_path: str`, `source_sha256: str`, `schema_version: str?`, `imported_at: datetime` (`models.py:145-152`).
-- PK: `id`.
-- FK: none.
-- ORM relationships: none.
-- Cardinality: tidak ada physical/ORM association.
-- Logical relationship only: `owner_type` dan `owner_key` dipakai sinkronisasi evidence untuk menunjuk owner secara polimorfik, tetapi bukan FK dan tidak boleh digambar sebagai association fisik (`src/application/evidence_sync.py:290-299`).
-- Methods: none.
+### 2.5 `EvidenceSource` — VERIFIED
 
-### 2.6 `ModelRecord` (bukan `Model`)
+- Evidence class/table: `src/api/models.py:137-152`; table `evidence_sources` (138).
+- DATABASE COLUMNS: `id: int` PK (145); `owner_type: str` (146); `owner_key: str` (147); `evidence_role: str` (148); `source_path: str` (149); `source_sha256: str` (150); `schema_version: str | None` (151); `imported_at: datetime` (152).
+- FOREIGN KEYS: **NONE**.
+- ORM RELATIONSHIPS: **NONE**.
+- Ownership is logical/polymorphic by string only. Penggunaan query juga membandingkan `owner_type` dan `owner_key`, bukan join/FK (`src/application/evidence_sync.py:272-292`; `src/api/main.py:1000-1003`).
+- Methods/properties/hybrid properties: **NO EXPLICIT METHODS**.
 
-- Table: `models` (`models.py:155-156`).
-- Attributes: `id: int`, `model_name: str`, `model_version: str`, `algorithm: str`, `accuracy: float?`, `macro_f1: float?`, `ddos_recall: float?`, `portscan_recall: float?`, `feature_count: int?`, `is_active: bool`, `experiment_id: int?`, `artifact_path: str?`, `artifact_sha256: str?`, `parameters: dict?`, `created_at: datetime` (`models.py:157-173`).
-- PK: `id`.
-- FK: `experiment_id → experiments.id`, nullable, `ON DELETE SET NULL` (`models.py:167-169`).
-- ORM relationships: `predictions: list[Prediction]`, `experiment: Experiment?`, `monitoring_sessions: list[MonitoringSession]` (`models.py:174-181`). Prediction dan session collections memakai `passive_deletes=True`.
-- Cardinality: `ModelRecord` mempunyai `0..1 Experiment`; `ModelRecord 1 — 0..* Prediction`; `ModelRecord 1 — 0..* MonitoringSession`.
-- Physical FK tanpa ORM relationship: `ModelRecord 1 — 0..* RuntimeValidationRun` melalui `runtime_validation_runs.model_id`.
-- Methods: none.
+### 2.6 `ModelRecord` (bukan `Model`) — VERIFIED
 
-### 2.7 `MonitoringSession`
+- Evidence class/table: `src/api/models.py:155-181`; table `models` (156).
+- DATABASE COLUMNS: `id: int` PK (157); `model_name: str` (158); `model_version: str` unique/index (159); `algorithm: str` (160); `accuracy`, `macro_f1`, `ddos_recall`, `portscan_recall: float | None` (161-164); `feature_count: int | None` (165); `is_active: bool` (166); `experiment_id: int | None` (167-169); `artifact_path: str | None` (170); `artifact_sha256: str | None` (171); `parameters: dict | None` (172); `created_at: datetime` (173).
+- FOREIGN KEY: `experiment_id -> experiments.id`, nullable, `ON DELETE SET NULL` (167-169).
+- ORM RELATIONSHIPS: `predictions: list[Prediction]` (175-177); `experiment: Experiment | None` (178); `monitoring_sessions: list[MonitoringSession]` (179-181).
+- Tidak ada relationship ke `RuntimeValidationRun`, walaupun tabel tersebut menyimpan `model_id` FK.
+- Methods/properties/hybrid properties: **NO EXPLICIT METHODS**.
 
-- Table: `monitoring_sessions` (`models.py:184-187`).
-- Attributes: `id: int`, `target_ip: str`, `interface_name: str`, `model_id: int`, `selection_mode: str`, `selected_model_version: str?`, `selected_model_sha256: str?`, `status: str`, `started_at: datetime?`, `stopped_at: datetime?`, `created_by_user_id: int?`, `created_at: datetime`, `updated_at: datetime`, `last_error: str?`, `runtime_handle: str?`, `extractor_name: str?`, `extractor_version: str?`, `extractor_identity: str?`, `artifact_key: str?`, `artifact_root: str?`, `processing_state: str?`, `latest_processing_at: datetime?`, `flow_count: int`, `prediction_count: int`, `alert_count: int` (`models.py:205-235`).
-- PK: `id`.
-- FKs: `model_id → models.id`, non-null, `ON DELETE RESTRICT`; `created_by_user_id → users.id`, nullable, `ON DELETE SET NULL` (`models.py:208-219`).
-- ORM relationships: `model: ModelRecord`, `created_by_user: User?`, `validation_runs: list[RuntimeValidationRun]`, `runtime_artifacts: list[RuntimeCaptureArtifact]` (`models.py:236-245`). Dua child collections memakai `cascade="all, delete-orphan"`.
-- Cardinality: session tepat `1 ModelRecord`, `0..1 User`, dan mempunyai `0..*` validation/artifact.
-- Physical FK tanpa ORM relationship: `MonitoringSession 1 — 0..* Prediction` melalui `predictions.monitoring_session_id`.
-- Methods: none.
+### 2.7 `MonitoringSession` — VERIFIED
 
-### 2.8 `TrafficFlow`
+- Evidence class/table: `src/api/models.py:184-245`; table `monitoring_sessions` (187).
+- DATABASE COLUMNS: `id: int` PK (205); `target_ip: str` (206); `interface_name: str` (207); `model_id: int` (208-210); `selection_mode: str` (211); `selected_model_version: str | None` (212); `selected_model_sha256: str | None` (213); `status: str` (214); `started_at`, `stopped_at: datetime | None` (215-216); `created_by_user_id: int | None` (217-219); `created_at: datetime` (220); `updated_at: datetime` (221-223); `last_error: str | None` (224); `runtime_handle: str | None` (225); `extractor_name`, `extractor_version`, `extractor_identity: str | None` (226-228); `artifact_key: str | None` unique (229); `artifact_root: str | None` (230); `processing_state: str | None` (231); `latest_processing_at: datetime | None` (232); `flow_count`, `prediction_count`, `alert_count: int` (233-235).
+- FOREIGN KEYS: `model_id -> models.id`, non-null, RESTRICT (208-210); `created_by_user_id -> users.id`, nullable, SET NULL (217-219).
+- ORM RELATIONSHIPS: `model: ModelRecord` (236); `created_by_user: User | None` (237-239); `validation_runs: list[RuntimeValidationRun]` delete-orphan (240-242); `runtime_artifacts: list[RuntimeCaptureArtifact]` delete-orphan (243-245).
+- Tidak ada `traffic_flows` atau `predictions` relationship attribute.
+- Methods/properties/hybrid properties: **NO EXPLICIT METHODS**.
 
-- Table: `traffic_flows` (`models.py:346-347`).
-- Attributes: `id: int`, `capture_session_id: str?`, `capture_interface: str?`, `pcap_segment: str?`, `capture_time: datetime?`, `source_ip: str?`, `source_port: int?`, `destination_ip: str?`, `destination_port: int?`, `protocol: str?`, `raw_features: dict`, `created_at: datetime` (`models.py:348-359`).
-- PK: `id`.
-- FK: none. Tidak terdapat `monitoring_session_id`.
-- ORM relationship: `prediction: Prediction?`, `cascade="all, delete-orphan"`, `passive_deletes=True`, `single_parent=True` (`models.py:360-366`).
-- Cardinality: `TrafficFlow 1 — 0..1 Prediction`; setiap `Prediction` wajib mempunyai tepat `1 TrafficFlow`, dipaksa oleh FK non-null dan unique.
-- Methods: none.
+### 2.8 `RuntimeCaptureArtifact` — VERIFIED
 
-### 2.9 `Prediction`
+- Evidence class/table: `src/api/models.py:248-289`; table `runtime_capture_artifacts` (251).
+- DATABASE COLUMNS: `id: int` PK (263); `monitoring_session_id: int` (264-266); `artifact_key: str` (267); `window_number: int` (268); `state: str` (269); `pcap_relative_path: str | None` (270); `pcap_sha256: str | None` (271); `pcap_size: int | None` (272); `csv_relative_path: str | None` (273); `csv_sha256: str | None` (274); `csv_size: int | None` (275); `extractor_identity: str | None` (276); `extracted_row_count`, `adapted_row_count: int` (277-278); `error_stage`, `error_message: str | None` (279-280); `capture_started_at`, `capture_finished_at`, `extraction_finished_at`, `committed_at: datetime | None` (281-284); `created_at: datetime` (285).
+- FOREIGN KEY: `monitoring_session_id -> monitoring_sessions.id`, non-null, CASCADE (264-266).
+- ORM RELATIONSHIPS: `monitoring_session: MonitoringSession` (286-288); `predictions: list[Prediction]` (289).
+- Methods/properties/hybrid properties: **NO EXPLICIT METHODS**.
 
-- Table: `predictions` (`models.py:369-370`).
-- Attributes: `id: int`, `traffic_flow_id: int`, `model_id: int`, `experiment_id: int?`, `monitoring_session_id: int?`, `runtime_artifact_id: int?`, `source_type: str?`, `external_key: str?`, `predicted_label: str`, `confidence_score: float`, `class_probabilities: dict`, `prediction_time: datetime`, `created_at: datetime` (`models.py:381-403`).
-- PK: `id`.
-- FKs: `traffic_flow_id → traffic_flows.id` CASCADE, non-null/unique; `model_id → models.id` RESTRICT, non-null; `experiment_id → experiments.id` SET NULL; `monitoring_session_id → monitoring_sessions.id` SET NULL; `runtime_artifact_id → runtime_capture_artifacts.id` SET NULL (`models.py:382-396`).
-- ORM relationships: `traffic_flow: TrafficFlow`, `model: ModelRecord`, `experiment: Experiment?`, `runtime_artifact: RuntimeCaptureArtifact?`, `alert: Alert?` (`models.py:404-415`). `alert` memakai delete-orphan, passive deletes, single parent.
-- Missing ORM navigation: tidak ada `monitoring_session` relationship walaupun physical FK ada.
-- Cardinality: tepat `1 TrafficFlow`, tepat `1 ModelRecord`, `0..1 Experiment`, `0..1 MonitoringSession`, `0..1 RuntimeCaptureArtifact`, dan `0..1 Alert`.
-- Methods: none.
+### 2.9 `RuntimeValidationRun` — VERIFIED
 
-### 2.10 `Alert`
+- Evidence class/table: `src/api/models.py:292-343`; table `runtime_validation_runs` (295).
+- DATABASE COLUMNS: `id: int` PK (315); `monitoring_session_id: int` (316-318); `scenario: str` (319); `status: str` (320); `target_ip: str` (321); `interface_name: str` (322); `started_at: datetime` (323); `finished_at: datetime | None` (324); counters `pcap_files_processed`, `pcap_bytes_processed`, `flows_extracted`, `flows_adapter_valid`, `predictions_committed`, `alerts_committed`, `normal_predictions`, `portscan_predictions`, `ddos_predictions: int` (325-333); `pipeline_result`, `detection_result: str` (334-335); `extractor_identity`, `adapter_identity: str | None` (336-337); `model_id: int` (338); `model_version: str` (339); `evidence_json: dict` (340); `notes: str | None` (341); `created_at: datetime` (342).
+- FOREIGN KEYS: `monitoring_session_id -> monitoring_sessions.id`, non-null, CASCADE (316-318); `model_id -> models.id`, non-null, RESTRICT (338).
+- ORM RELATIONSHIP: hanya `monitoring_session: MonitoringSession` (343). Relasi model adalah **FK-only**.
+- Methods/properties/hybrid properties: **NO EXPLICIT METHODS**.
 
-- Table: `alerts` (`models.py:418-419`).
-- Attributes: `id: int`, `prediction_id: int`, `severity: str`, `title: str`, `description: str`, `status: str`, `acknowledged_at: datetime?`, `acknowledged_by_user_id: int?`, `created_at: datetime` (`models.py:427-439`).
-- PK: `id`.
-- FKs: `prediction_id → predictions.id`, non-null/unique, CASCADE; `acknowledged_by_user_id → users.id`, nullable, SET NULL (`models.py:428-438`).
-- ORM relationships: `prediction: Prediction`, `acknowledged_by_user: User?` (`models.py:440-443`).
-- Cardinality: tepat `1 Prediction`; `0..1 User` dalam peran acknowledging user. `Prediction 1 — 0..1 Alert`.
-- Methods: none.
+### 2.10 `TrafficFlow` — VERIFIED
 
-### 2.11 `RuntimeCaptureArtifact`
+- Evidence class/table: `src/api/models.py:346-366`; table `traffic_flows` (347).
+- DATABASE COLUMNS: `id: int` PK (348); `capture_session_id: str | None` (349); `capture_interface: str | None` (350); `pcap_segment: str | None` (351); `capture_time: datetime | None` (352); `source_ip: str | None` (353); `source_port: int | None` (354); `destination_ip: str | None` (355); `destination_port: int | None` (356); `protocol: str | None` (357); `raw_features: dict` (358); `created_at: datetime` (359).
+- FOREIGN KEYS: **NONE**.
+- ORM RELATIONSHIP: `prediction: Prediction | None` (361-366).
+- `capture_session_id` bukan FK dan bertipe string; jangan gambar association fisik ke `MonitoringSession`.
+- Methods/properties/hybrid properties: **NO EXPLICIT METHODS**.
 
-- Table: `runtime_capture_artifacts` (`models.py:248-251`).
-- Attributes: `id: int`, `monitoring_session_id: int`, `artifact_key: str`, `window_number: int`, `state: str`, `pcap_relative_path: str?`, `pcap_sha256: str?`, `pcap_size: int?`, `csv_relative_path: str?`, `csv_sha256: str?`, `csv_size: int?`, `extractor_identity: str?`, `extracted_row_count: int`, `adapted_row_count: int`, `error_stage: str?`, `error_message: str?`, `capture_started_at: datetime?`, `capture_finished_at: datetime?`, `extraction_finished_at: datetime?`, `committed_at: datetime?`, `created_at: datetime` (`models.py:263-285`).
-- PK: `id`.
-- FK: `monitoring_session_id → monitoring_sessions.id`, non-null, CASCADE (`models.py:264-266`).
-- ORM relationships: `monitoring_session: MonitoringSession`, `predictions: list[Prediction]` (`models.py:286-289`).
-- Cardinality: tepat `1 MonitoringSession`; `RuntimeCaptureArtifact 1 — 0..* Prediction`, sedangkan prediction mempunyai `0..1` artifact.
-- Methods: none.
+### 2.11 `Prediction` — VERIFIED
 
-### 2.12 `RuntimeValidationRun`
+- Evidence class/table: `src/api/models.py:369-415`; table `predictions` (370).
+- DATABASE COLUMNS: `id: int` PK (381); `traffic_flow_id: int` unique (382-384); `model_id: int` (385-387); `experiment_id: int | None` (388-390); `monitoring_session_id: int | None` (391-393); `runtime_artifact_id: int | None` (394-396); `source_type: str | None` (397); `external_key: str | None` (398); `predicted_label: str` (399); `confidence_score: float` (400); `class_probabilities: dict` (401); `prediction_time: datetime` (402); `created_at: datetime` (403).
+- FOREIGN KEYS: `traffic_flow_id -> traffic_flows.id`, non-null, CASCADE, unique (382-384); `model_id -> models.id`, non-null, RESTRICT (385-387); `experiment_id -> experiments.id`, nullable, SET NULL (388-390); `monitoring_session_id -> monitoring_sessions.id`, nullable, SET NULL (391-393); `runtime_artifact_id -> runtime_capture_artifacts.id`, nullable, SET NULL (394-396).
+- ORM RELATIONSHIPS: `traffic_flow: TrafficFlow` (404); `model: ModelRecord` (405); `experiment: Experiment | None` (406); `runtime_artifact: RuntimeCaptureArtifact | None` (407-409); `alert: Alert | None` delete-orphan (410-415).
+- `monitoring_session_id` adalah **FK-only**; tidak ada atribut `monitoring_session`.
+- Methods/properties/hybrid properties: **NO EXPLICIT METHODS**.
 
-- Table: `runtime_validation_runs` (`models.py:292-295`).
-- Attributes: `id: int`, `monitoring_session_id: int`, `scenario: str`, `status: str`, `target_ip: str`, `interface_name: str`, `started_at: datetime`, `finished_at: datetime?`, `pcap_files_processed: int`, `pcap_bytes_processed: int`, `flows_extracted: int`, `flows_adapter_valid: int`, `predictions_committed: int`, `alerts_committed: int`, `normal_predictions: int`, `portscan_predictions: int`, `ddos_predictions: int`, `pipeline_result: str`, `detection_result: str`, `extractor_identity: str?`, `adapter_identity: str?`, `model_id: int`, `model_version: str`, `evidence_json: dict`, `notes: str?`, `created_at: datetime` (`models.py:315-342`).
-- PK: `id`.
-- FKs: `monitoring_session_id → monitoring_sessions.id`, non-null, CASCADE; `model_id → models.id`, non-null, RESTRICT (`models.py:316-338`).
-- ORM relationship: hanya `monitoring_session: MonitoringSession` (`models.py:343`).
-- Missing ORM navigation: tidak ada `model: ModelRecord` relationship walaupun physical FK `model_id` ada.
-- Cardinality: tepat `1 MonitoringSession` dan tepat `1 ModelRecord` secara fisik.
-- Methods: none.
+### 2.12 `Alert` — VERIFIED
 
-## 3. Service / Controller Class Audit
+- Evidence class/table: `src/api/models.py:418-443`; table `alerts` (419).
+- DATABASE COLUMNS: `id: int` PK (427); `prediction_id: int` unique (428-430); `severity: str` (431); `title: str` (432); `description: str` (433); `status: str` (434); `acknowledged_at: datetime | None` (435); `acknowledged_by_user_id: int | None` (436-438); `created_at: datetime` (439).
+- FOREIGN KEYS: `prediction_id -> predictions.id`, non-null, CASCADE, unique (428-430); `acknowledged_by_user_id -> users.id`, nullable, SET NULL (436-438).
+- ORM RELATIONSHIPS: `prediction: Prediction` (440); `acknowledged_by_user: User | None` (441-443).
+- Methods/properties/hybrid properties: **NO EXPLICIT METHODS**.
 
-Kelima class yang diminta semuanya ditemukan. Tiga collaborator pipeline yang benar-benar diperlukan untuk menjelaskan alur runtime juga dicatat, tetapi exception/data helper tidak dimasukkan ke rekomendasi diagram.
+## 3. Verifikasi Relationship Persistence
 
-### 3.1 `MonitoringService`
-
-- File: `src/api/monitoring.py:54-213`.
-- Purpose: orkestrasi lifecycle persisten satu monitoring session dan delegasi ke collector.
-- Important attributes: `collector: CollectorController` (`monitoring.py:55-56`).
-- Actual methods:
-  - `__init__(collector: CollectorController | None = None)`.
-  - `active(db: Session) -> MonitoringSession | None` (static) (`:59-64`).
-  - `reconcile_stale_sessions(db: Session) -> int` (`:66-84`).
-  - `start(db: Session, *, target_ip: str, interface_name: str, user: User, model_id: int? = None, inference=None, selection_mode: str = "DEFAULT") -> MonitoringSession` (return type not annotated, verified from returned `row`; `:86-173`).
-  - `shutdown(db: Session) -> None` (`:175-177`).
-  - `stop(db: Session) -> MonitoringSession` (return type not annotated; `:179-213`).
-
-### 3.2 `RuntimeCollectorController`
-
-- File: `src/api/runtime_monitoring.py:554-645`.
-- Purpose: registry dan lifecycle thread worker runtime per handle.
-- Important attributes: `session_factory`, `inference`, `settings`, `worker_factory`, `_workers: dict`, `_lock`, `runtime_root`, class attribute `mode="RUNTIME_V3"` (`:554-567`).
-- Actual methods:
-  - `__init__(*, session_factory, inference, settings, worker_factory=RuntimeWorker)`.
-  - `start(*, session_id: int, target_ip: str, interface_name: str, inference=None) -> str` (`:569-596`).
-  - `stop(runtime_handle: str | None) -> bool` (`:598-613`).
-  - `status(runtime_handle: str | None) -> str` (`:615-618`).
-  - `shutdown()`; return annotation absent (`:620-627`).
-  - `_on_exit(session_id, failure)` private callback (`:629-645`).
-
-### 3.3 `RuntimeValidationService`
-
-- File: `src/api/runtime_validation.py:30-200`.
-- Purpose: membuat validation run dan menurunkan hasilnya dari evidence server yang persisten.
-- Attributes: `artifact_root: Path`, `expected_feature_names: tuple` (`:31-33`).
-- Methods:
-  - `__init__(artifact_root: Path, expected_feature_names: list[str])`.
-  - `create(db: Session, session_id: int, scenario: str) -> RuntimeValidationRun` (`:35-55`).
-  - `complete(db: Session, session_id: int, validation_id: int) -> RuntimeValidationRun` (`:57-75`).
-  - `_derive(db: Session, row: RuntimeValidationRun) -> None` private derivation (`:77-200`).
-
-### 3.4 `InferenceEngine`
-
-- File: `src/inference/predictor.py:24-169`.
-- Purpose: memuat satu fitted model, memvalidasi metadata/hash/feature order, dan melakukan prediksi single/batch.
-- Attributes: `metadata: dict`, `feature_names: list[str]`, `extra_feature_policy`, `model` (`predictor.py:35-74`).
-- Public methods:
-  - `__init__(model_path: Path, metadata_path: Path, *, extra_feature_policy: Literal["reject","ignore"]? = None, verify_model_hash: bool = True) -> None` (`:27-74`).
-  - `predict_one(features: Mapping[str, Any]) -> dict[str, Any]` (`:139-155`).
-  - `predict_batch(rows: Sequence[Mapping[str, Any]]) -> list[dict[str, Any]]` (`:157-169`).
-- Private/static helpers: `_normalize_demo_metadata`, `_load_metadata`, `_prepare_row` (`:76-138`).
-
-### 3.5 `RFNIDSClient`
-
-- File: `dashboard/api_client.py:25-226`.
-- Purpose: HTTP client dashboard untuk FastAPI RF-NIDS.
-- Attributes: `base_url`, `timeout`, `session`, `access_token`, `token_provider` (`api_client.py:26-38`).
-- Relevant public methods (return annotations generally absent):
-  - Auth: `health()`, `login(email, password)`, `current_user()`, `logout()` (`:99-111`).
-  - Presentation: `model_info()`, `active_model()`, `models()`, `datasets()`, `experiments()`, `experiment_evaluation(experiment_id)`, `evidence_sources(...)`, `summary()`, `timeline(minutes=60)` (`:113-141`).
-  - Runtime reads: `predictions(...)`, `prediction(prediction_id)`, `traffic_flows(...)`, `monitoring_summary()`, `monitoring_status()`, `monitoring_interfaces()`, `monitoring_models()`, `monitoring_sessions(...)`, `monitoring_session_predictions(...)` (`:143-177`).
-  - Runtime commands: `start_monitoring(target_ip, interface_name, selected_model_id=None)`, `stop_monitoring()`, `create_runtime_validation(session_id, scenario)`, `runtime_validations(session_id)`, `complete_runtime_validation(session_id, validation_id)` (`:179-197`).
-  - Alerts/export: `alerts(...)`, `alert(alert_id)`, `acknowledge_alert(alert_id)`, `export_dataset()`, `export_experiment(...)`, `export_confusion_matrix(...)`, `export_predictions(...)`, `export_alerts(...)` (`:199-226`).
-  - Private transport: `_access_token() -> str?`, `_request(...) -> Any`, `_download(...) -> Download` (`:40-97`).
-
-### 3.6 Pipeline collaborators relevant to the diagram
-
-#### `RuntimeWorker`
-
-- File: `src/api/runtime_monitoring.py:311-551`.
-- Purpose: background loop per session; capture, extraction, adaptation, batch inference, persistence, counter refresh.
-- Attributes: `session_id`, `session_factory`, `inference`, `settings`, `on_exit`, `stop_event`, `failure`, `pipeline: RuntimePipeline`, `thread` (`:312-332`).
-- Methods: `start()`, `stop(timeout: float)`, private `_set_processing_state`, `_fail_artifact`, `_run`, `_refresh_counts` (`:334-551`). Return annotations are absent.
-
-#### `RuntimePipeline`
-
-- File: `src/api/runtime_monitoring.py:87-308`.
-- Purpose: preflight, tcpdump capture, safe artifact-path mapping, dan CICFlowMeter V3 Docker extraction untuk satu window.
-- Important attributes: `root`, `host_root`, `image`, `expected_image_digest`, `source_commit`, `extractor_registry`, `window_seconds`, `extraction_timeout_seconds`, `resolved_image_identity`, `tcpdump_path` (`:90-117`).
-- Methods: `preflight(interface: str) -> None`, `request_stop() -> None`, `force_stop() -> None`, `capture(interface, target_ip, output, stop)`, `host_artifact_path(path: Path) -> Path`, `extract(pcap: Path, output_dir: Path) -> Path`; private `_terminate_process` (`:118-308`).
-
-#### `FeatureAdapter`
-
-- File: `src/ingestion/feature_adapter.py:52-194`.
-- Purpose: normalisasi, compatibility validation, ordering, dan numeric coercion fitur extractor menjadi input model.
-- Attributes: `feature_names: list[str]`, `compatibility_policy: str` (`:55-64`).
-- Methods: `from_metadata(...) -> FeatureAdapter` (class method), `compatibility(extractor_names: list[str]) -> dict[str, Any]`, `adapt(flow: ExtractedFlow) -> AdaptedFlow`; private `_normalized` dan static `_fingerprint` (`:66-194`).
-
-## 4. Authentication Audit
-
-Login/logout **bukan method pada `User`** dan tidak ada `AuthService` class.
-
-| Concern | Actual implementation | Evidence |
-|---|---|---|
-| Login UI client | `RFNIDSClient.login(email, password)` mengirim POST | `dashboard/api_client.py:102-105` |
-| Login API | nested FastAPI route function `login(payload, request, db)` dalam `create_app()` | `src/api/main.py:337-365` |
-| Email normalization | module function `normalize_email(email) -> str` | `src/api/auth.py:27-28` |
-| Password hashing | module function `hash_password(password) -> str` | `src/api/auth.py:31-52` |
-| Password verification | module function `verify_password(password, encoded) -> bool` | `src/api/auth.py:55-75` |
-| Session creation | module function `create_session(request, user_id) -> tuple[str, datetime]` | `src/api/auth.py:93-101` |
-| Logout API | nested route function `logout(...)`, memanggil `revoke_session` | `src/api/main.py:367-372` |
-| Token revocation | module function `revoke_session(request, token) -> None` | `src/api/auth.py:104-105` |
-| Bearer authentication/current user | `get_current_user(...) -> User` | `src/api/auth.py:125-149` |
-| Authorization admin | `require_admin(...) -> User` | `src/api/auth.py:152-159` |
-| Current-user API | nested route function `current_user(user)` | `src/api/main.py:374-378` |
-| Session representation | dataclass `SessionRecord(user_id, expires_at)`; in-memory `app.state.auth_sessions` | `src/api/auth.py:83-100`; `src/api/main.py:317` |
-
-Implikasi class diagram: jangan menambahkan `login()`, `logout()`, `verifyPassword()`, atau session method pada `User`. Bila authentication perlu tampak, gambarkan `RFNIDSClient` bergantung pada FastAPI auth functions atau buat note “module functions”, bukan class fiktif.
-
-## 5. Monitoring Flow Trace
-
-1. **Administrator/UI:** `dashboard.pages.monitoring.render(client)` membaca status/model/interface dan memanggil `RFNIDSClient.start_monitoring()`/`stop_monitoring()` (`dashboard/pages/monitoring.py:62-121,161-181`).
-2. **HTTP client/API:** `RFNIDSClient` mengirim request (`dashboard/api_client.py:158-197`); FastAPI route `start_monitoring`/`stop_monitoring` memvalidasi admin lalu memanggil service (`src/api/main.py:820-885`).
-3. **Lifecycle service:** `MonitoringService.start()` membuat `MonitoringSession`, membekukan model version/hash, lalu mendelegasikan kepada collector (`src/api/monitoring.py:86-173`).
-4. **Controller:** `RuntimeCollectorController.start()` membuat directory session, `RuntimeWorker`, dan thread (`runtime_monitoring.py:569-596`).
-5. **Capture/extraction:** `RuntimeWorker._run()` memakai `RuntimePipeline.capture()` (tcpdump) dan `RuntimePipeline.extract()` (pinned CICFlowMeter V3 Docker) (`runtime_monitoring.py:371-464`; pipeline methods `:218-308`).
-6. **Feature adaptation:** worker menggunakan `CICFlowMeterV3Adapter`; adapter runtime tersebut menghasilkan ordered features. General `FeatureAdapter` juga merupakan class adaptasi aktual (`runtime_monitoring.py:443-464`; `feature_adapter.py:52-194`).
-7. **Inference:** worker memanggil `InferenceEngine.predict_batch()` (`runtime_monitoring.py:489`; `predictor.py:157-169`).
-8. **Persistence/alerts:** worker memanggil module function `persist_predictions(...)`; fungsi membuat `TrafficFlow`, `Prediction`, dan untuk label DDoS/PortScan membuat `Alert` berdasarkan `SEVERITY` (`runtime_monitoring.py:505-518`; `src/api/service.py:11,76-130`).
-9. **Runtime validation:** UI/API memanggil `RuntimeValidationService.create/complete`, yang membaca session, artifact, prediction, flow, dan alert untuk membangun `RuntimeValidationRun` (`runtime_validation.py:35-200`).
-
-Tidak ada class bernama tcpdump atau CICFlowMeter. Keduanya external executables yang diorkestrasi `RuntimePipeline`, sehingga sebaiknya menjadi note/component, bukan class domain.
-
-## 6. Verified Relationships
-
-| Class A | Cardinality | Class B | Kind | Evidence |
+| Source | Target | Jenis | Kardinalitas | Status dan evidence |
 |---|---|---|---|---|
-| `User` | 1 → 0..* | `Dataset` | Physical FK + ORM | `models.py:49,68-75` |
-| `User` | 1 → 0..* | `MonitoringSession` | Physical FK + ORM | `models.py:53-55,217-239` |
-| `User` | 1 → 0..* | `Alert` (acknowledgement) | Physical FK + ORM | `models.py:50-52,436-443` |
-| `Dataset` | 1 → 0..* | `Experiment` | Physical FK + ORM | `models.py:75-76,85-98` |
-| `Experiment` | 1 → 0..* | `EvaluationResult` | Physical FK + ORM | `models.py:99-101,112-134` |
-| `Experiment` | 1 → 0..* | `ModelRecord` | Physical FK + ORM | `models.py:102,167-178` |
-| `Experiment` | 1 → 0..* | `Prediction` | Physical FK + ORM | `models.py:103,388-406` |
-| `ModelRecord` | 1 → 0..* | `Prediction` | Physical FK + ORM | `models.py:174-177,385-405` |
-| `ModelRecord` | 1 → 0..* | `MonitoringSession` | Physical FK + ORM | `models.py:179-181,208-236` |
-| `ModelRecord` | 1 → 0..* | `RuntimeValidationRun` | Physical FK only | `models.py:338`; no matching relationship |
-| `MonitoringSession` | 1 → 0..* | `RuntimeCaptureArtifact` | Physical FK + ORM | `models.py:243-245,264-288` |
-| `MonitoringSession` | 1 → 0..* | `RuntimeValidationRun` | Physical FK + ORM | `models.py:240-242,316-343` |
-| `MonitoringSession` | 1 → 0..* | `Prediction` | Physical FK only | `models.py:391-393`; no matching relationship |
-| `RuntimeCaptureArtifact` | 1 → 0..* | `Prediction` | Physical FK + ORM | `models.py:289,394-409` |
-| `TrafficFlow` | 1 → 0..1 | `Prediction` | Physical unique FK + ORM | `models.py:360-366,382-404` |
-| `Prediction` | 1 → 0..1 | `Alert` | Physical unique FK + ORM | `models.py:410-415,428-440` |
+| User | Dataset | ASSOCIATION, bidirectional ORM | User `0..1` — Dataset `0..*` | **VERIFIED**: nullable FK `Dataset.created_by_user_id` dan relationships (`src/api/models.py:49,68-76`) |
+| User | MonitoringSession | ASSOCIATION, bidirectional ORM | User `0..1` — Session `0..*` | **VERIFIED** (`src/api/models.py:53-55,217-239`) |
+| User | Alert | ASSOCIATION, bidirectional ORM | User `0..1` — Alert `0..*` | **VERIFIED**; makna khusus acknowledgment (`src/api/models.py:50-52,436-443`) |
+| Dataset | Experiment | ASSOCIATION, bidirectional ORM | Dataset `0..1` — Experiment `0..*` | **VERIFIED** (`src/api/models.py:76,85-98`) |
+| Experiment | EvaluationResult | COMPOSITION-like ORM (`delete-orphan`) | Experiment `1` — Result `0..*`; tiap Result tepat `1` Experiment | **VERIFIED** (`src/api/models.py:99-101,112-134`) |
+| Experiment | ModelRecord | ASSOCIATION, bidirectional ORM | Experiment `0..1` — Model `0..*` | **VERIFIED** (`src/api/models.py:102,167-178`) |
+| Experiment | Prediction | ASSOCIATION, bidirectional ORM | Experiment `0..1` — Prediction `0..*` | **VERIFIED** (`src/api/models.py:103,388-406`) |
+| ModelRecord | MonitoringSession | ASSOCIATION, bidirectional ORM | Model `1` — Session `0..*`; tiap Session tepat `1` Model | **VERIFIED** (`src/api/models.py:179-181,208-210,236`) |
+| ModelRecord | Prediction | ASSOCIATION, bidirectional ORM | Model `1` — Prediction `0..*`; tiap Prediction tepat `1` Model | **VERIFIED** (`src/api/models.py:175-177,385-405`) |
+| ModelRecord | RuntimeValidationRun | ASSOCIATION at database level, FK-only | Model `1` — Run `0..*`; tiap Run tepat `1` Model | **VERIFIED FK / NOT PRESENT ORM** (`src/api/models.py:338-343`) |
+| MonitoringSession | RuntimeCaptureArtifact | COMPOSITION-like ORM (`delete-orphan`, CASCADE FK) | Session `1` — Artifact `0..*` | **VERIFIED** (`src/api/models.py:240-245,264-289`) |
+| MonitoringSession | RuntimeValidationRun | COMPOSITION-like ORM (`delete-orphan`, CASCADE FK) | Session `1` — Run `0..*` | **VERIFIED** (`src/api/models.py:240-242,316-343`) |
+| MonitoringSession | Prediction | ASSOCIATION at database level, FK-only | Session `0..1` — Prediction `0..*` | **VERIFIED FK / NOT PRESENT ORM** (`src/api/models.py:391-393`); runtime query memakai FK (`src/api/runtime_monitoring.py:535-545`) |
+| RuntimeCaptureArtifact | Prediction | ASSOCIATION, bidirectional ORM | Artifact `0..1` — Prediction `0..*` | **VERIFIED** (`src/api/models.py:289,394-409`) |
+| TrafficFlow | Prediction | COMPOSITION-like ORM, one-to-zero-or-one | Flow `1` — Prediction `0..1`; tiap Prediction tepat `1` Flow | **VERIFIED**; unique FK (`src/api/models.py:361-366,382-404`) |
+| Prediction | Alert | COMPOSITION-like ORM, one-to-zero-or-one | Prediction `1` — Alert `0..1`; tiap Alert tepat `1` Prediction | **VERIFIED**; unique FK (`src/api/models.py:410-415,428-440`) |
+| MonitoringSession | TrafficFlow | tidak ada | — | **NOT PRESENT**: tidak ada FK/relationship; `capture_session_id` hanya string (`src/api/models.py:346-366`) |
+| EvidenceSource | entity mana pun | logical reference only | — | **NOT PRESENT sebagai association fisik**: tidak ada FK/relationship (`src/api/models.py:137-152`) |
 
-`EvidenceSource` sengaja tidak memiliki association pada daftar ini. Relasi service/controller berikut adalah dependency/application relationships, bukan FK:
+Catatan kardinalitas: list relationship SQLAlchemy tidak menjamin minimal satu child, sehingga sisi collection ditulis `0..*`. FK nullable menghasilkan `0..1` pada sisi parent; FK non-null menghasilkan `1`.
 
-- `RFNIDSClient ..> FastAPI routes` melalui HTTP.
-- `MonitoringService --> RuntimeCollectorController` melalui collector interface.
-- `RuntimeCollectorController *-- RuntimeWorker` sebagai worker registry.
-- `RuntimeWorker *-- RuntimePipeline` dan `RuntimeWorker --> InferenceEngine`.
-- `RuntimeWorker ..> persist_predictions()`.
-- `RuntimeValidationService ..> MonitoringSession/RuntimeCaptureArtifact/Prediction/Alert` melalui query aplikasi.
+## 4. Audit Service / Application / Runtime
 
-## 7. Recommended Thesis Class Diagram
+### 4.1 `RFNIDSClient` — VERIFIED
 
-### A. Entity / Persistence Classes
+- File/class: `dashboard/api_client.py:25-226`.
+- Responsibility: facade HTTP dashboard menuju FastAPI backend.
+- Constructor: `__init__(base_url: str, timeout: float = 10, session=None, access_token: str | None=None, token_provider: Callable[[], str | None] | None=None)` (26-38).
+- Public methods (return type tidak dideklarasikan): `health()` (99-100), `login(email: str, password: str)` (102-105), `current_user()` (107-108), `logout()` (110-111), `model_info()` (113-114), `active_model()` (116-117), `models()` (119-120), `datasets()` (122-123), `experiments()` (125-126), `experiment_evaluation(experiment_id: int)` (128-129), `evidence_sources(*, owner_type=None, owner_key=None)` (131-135), `summary()` (137-138), `timeline(minutes: int=60)` (140-141), `predictions(*, limit=20, offset=0, **filters)` (143-145), `prediction(prediction_id: int)` (147-148), `traffic_flows(*, limit=20, offset=0, **filters)` (150-156), `monitoring_summary()` (158-159), `monitoring_status()` (161-162), `monitoring_interfaces()` (164-165), `monitoring_models()` (167-168), `monitoring_sessions(*, limit=20, offset=0)` (170-171), `monitoring_session_predictions(session_id: int, *, limit=5)` (173-177), `start_monitoring(target_ip: str, interface_name: str, selected_model_id: str | None=None)` (179-185), `stop_monitoring()` (187-188), `create_runtime_validation(session_id: int, scenario: str)` (190-191), `runtime_validations(session_id: int)` (193-194), `complete_runtime_validation(session_id: int, validation_id: int)` (196-197), `alerts(*, limit=20, offset=0, **filters)` (199-205), `alert(alert_id: int)` (207-208), `acknowledge_alert(alert_id: int)` (210-211), `export_dataset()` (213-214), `export_experiment(experiment_id: int, format: str="json")` (216-217), `export_confusion_matrix(experiment_id: int)` (219-220), `export_predictions(format: str="csv", **filters)` (222-223), `export_alerts(format: str="csv", **filters)` (225-226).
+- Private methods: `_access_token() -> str | None` (40-41), `_request(method: str, path: str, **kwargs) -> Any` (43-73), `_download(path: str, **params) -> Download` (75-97).
+- Dependencies: `requests.Session`, `APIError`, `Download`; komunikasi dengan service backend hanya lewat HTTP, bukan object association langsung.
 
-Gunakan seluruh 12 class aktual: `User`, `Dataset`, `Experiment`, `EvaluationResult`, `EvidenceSource`, `ModelRecord`, `MonitoringSession`, `TrafficFlow`, `Prediction`, `Alert`, `RuntimeCaptureArtifact`, `RuntimeValidationRun`. Gunakan attributes di Bagian 2. Jangan tampilkan method pada entity karena memang tidak ada.
+### 4.2 `MonitoringService` — VERIFIED
 
-Untuk keterbacaan, pisahkan visual menjadi package historical/presentation (`Dataset`, `Experiment`, `EvaluationResult`, `EvidenceSource`), shared (`User`, `ModelRecord`), dan runtime (`MonitoringSession`, `RuntimeCaptureArtifact`, `RuntimeValidationRun`, `TrafficFlow`, `Prediction`, `Alert`).
+- File/class: `src/api/monitoring.py:54-213`.
+- Responsibility: validasi dan lifecycle persistence monitoring; mendelegasikan eksekusi collector.
+- Constructor: `__init__(collector: CollectorController | None=None)` (55-56).
+- Public methods: static `active(db: Session) -> MonitoringSession | None` (58-64); `reconcile_stale_sessions(db: Session) -> int` (66-84); `start(db: Session, *, target_ip: str, interface_name: str, user: User, model_id: int | None=None, inference=None, selection_mode: str="DEFAULT")` tanpa declared return (86-173); `shutdown(db: Session) -> None` (175-177); `stop(db: Session)` tanpa declared return (179-213).
+- Dependencies: association ke collector melalui `self.collector` (55-56), serta dependencies `Session`, `MonitoringSession`, `ModelRecord`, `User`; pemanggilan `collector.start/stop` pada baris 146-149 dan 190.
+- Production wiring membangun `MonitoringService(RuntimeCollectorController(...))` (`src/api/main.py:290-300`).
 
-### B. Service / Controller Classes
+### 4.3 `RuntimeCollectorController` — VERIFIED
 
-Diagram utama disarankan memuat:
+- File/class: `src/api/runtime_monitoring.py:554-645`.
+- Responsibility: registry worker in-memory, pembuatan root artifact sesi, lifecycle start/stop/status/shutdown.
+- Constructor: `__init__(*, session_factory, inference, settings, worker_factory=RuntimeWorker)` (557-567).
+- Public methods: `start(*, session_id: int, target_ip: str, interface_name: str, inference=None) -> str` (569-596); `stop(runtime_handle: str | None) -> bool` (598-613); `status(runtime_handle: str | None) -> str` (615-618); `shutdown()` tanpa declared return (620-627).
+- Private method: `_on_exit(session_id, failure)` (629-645).
+- Dependencies: `MonitoringSession`, session factory, injected inference/settings; `worker_factory` default `RuntimeWorker` dan worker disimpan dalam `_workers` (557-563,586-595). Ini adalah **COMPOSITION** terhadap worker pada runtime.
 
-- `RFNIDSClient`: tampilkan `login`, `logout`, `start_monitoring`, `stop_monitoring`, `predictions`, `alerts`, `acknowledge_alert`, dan runtime-validation calls; method lain dapat disembunyikan agar tidak padat.
-- `MonitoringService`: `active`, `reconcile_stale_sessions`, `start`, `stop`, `shutdown`.
-- `RuntimeCollectorController`: `start`, `stop`, `status`, `shutdown`.
-- `RuntimeWorker`: `start`, `stop`; `_run` dapat ditandai private.
-- `RuntimePipeline`: `preflight`, `capture`, `extract`, `request_stop`.
-- `InferenceEngine`: `predict_one`, `predict_batch`.
-- `RuntimeValidationService`: `create`, `complete`.
-- `FeatureAdapter`: `from_metadata`, `compatibility`, `adapt` hanya bila ingin menunjukkan adaptasi generik. Untuk path runtime konkret, beri note bahwa worker memakai `CICFlowMeterV3Adapter`.
+### 4.4 `RuntimeWorker` — VERIFIED
 
-`SessionRecord`, `APIError`, `Download`, exception classes, dan registry verification classes tidak diperlukan pada class diagram skripsi utama.
+- File/class: `src/api/runtime_monitoring.py:311-551`.
+- Responsibility: loop capture → extraction → adaptation → inference → transactional persistence dan refresh counter.
+- Constructor: `__init__(*, session_id, session_factory, inference, settings, on_exit)` (312-332).
+- Public methods: `start()` tanpa declared return (334-340); `stop(timeout: float)` tanpa declared return (342-353).
+- Private methods: `_set_processing_state(state: str | None) -> None` (355-360), `_fail_artifact(artifact_id: int, stage: str, exc: Exception) -> None` (362-369), `_run()` (371-533), `_refresh_counts(db)` (535-551).
+- Dependencies: owns `RuntimePipeline` instance (320-329); owns `threading.Thread` (330-332); creates `CICFlowMeterV3ModelAdapter` (376); reads/writes `MonitoringSession`, `RuntimeCaptureArtifact`, `Prediction`, `Alert`; calls injected inference `predict_batch` (489); calls module-level `persist_predictions(...)` (506-513). `persist_predictions` is **not** a class method (`src/api/service.py:76-131`).
 
-## 8. PlantUML Draft
+### 4.5 `RuntimePipeline` — VERIFIED
 
-Draft berikut hitam-putih, memisahkan persistence dan service/controller, dan menampilkan attributes inti/FK agar tetap terbaca. Daftar attribute lengkap tetap berada di Bagian 2.
+- File/class: `src/api/runtime_monitoring.py:87-308`.
+- Responsibility: preflight capture/extractor, bounded packet capture, path mapping, dan CICFlowMeter Docker extraction.
+- Constructor: `__init__(*, root: Path, image: str, window_seconds: float, host_root: Path | None=None, expected_image_digest: str=..., extraction_timeout_seconds: float=120.0, source_commit: str=..., extractor_registry: RuntimeExtractorRegistry | None=None, popen=subprocess.Popen, run=subprocess.run)` (90-116).
+- Public methods: `preflight(interface: str) -> None` (118-178); `request_stop() -> None` (180-188); `force_stop() -> None` (212-216); `capture(interface: str, target_ip: str, output: Path, stop: threading.Event)` tanpa declared return (218-254); `host_artifact_path(path: Path) -> Path` (256-265); `extract(pcap: Path, output_dir: Path) -> Path` (267-308).
+- Private method: `_terminate_process(process, *, interrupt_first: bool=True) -> None` (190-210).
+- Dependencies: composes/defaults `RuntimeExtractorRegistry` (`src/api/runtime_monitoring.py:96-107`), depends on subprocess/Docker/tcpdump/filesystem, and module-level `list_capture_interfaces` / `validate_pcap`. Tidak bergantung langsung pada `InferenceEngine`.
 
-```plantuml
-@startuml
-skinparam monochrome true
-skinparam shadowing false
-skinparam classAttributeIconSize 0
-hide circle
+### 4.6 `InferenceEngine` — VERIFIED
 
-package "Persistence Entities" {
-  class User {
-    +id: int
-    +name: str
-    +email: str
-    +role: str
-    +is_active: bool
-  }
-  class Dataset {
-    +id: int
-    +name: str
-    +created_by_user_id: int?
-  }
-  class Experiment {
-    +id: int
-    +experiment_code: str
-    +dataset_id: int?
-    +status: str
-  }
-  class EvaluationResult {
-    +id: int
-    +experiment_id: int
-    +metric_key: str?
-    +accuracy: float?
-    +macro_f1: float?
-  }
-  class EvidenceSource {
-    +id: int
-    +owner_type: str
-    +owner_key: str
-    +evidence_role: str
-    +source_path: str
-  }
-  class ModelRecord {
-    +id: int
-    +model_version: str
-    +experiment_id: int?
-    +is_active: bool
-  }
-  class MonitoringSession {
-    +id: int
-    +model_id: int
-    +created_by_user_id: int?
-    +status: str
-    +selection_mode: str
-  }
-  class RuntimeCaptureArtifact {
-    +id: int
-    +monitoring_session_id: int
-    +artifact_key: str
-    +state: str
-  }
-  class RuntimeValidationRun {
-    +id: int
-    +monitoring_session_id: int
-    +model_id: int
-    +scenario: str
-    +status: str
-  }
-  class TrafficFlow {
-    +id: int
-    +source_ip: str?
-    +destination_ip: str?
-    +raw_features: dict
-  }
-  class Prediction {
-    +id: int
-    +traffic_flow_id: int
-    +model_id: int
-    +monitoring_session_id: int?
-    +runtime_artifact_id: int?
-    +predicted_label: str
-  }
-  class Alert {
-    +id: int
-    +prediction_id: int
-    +acknowledged_by_user_id: int?
-    +severity: str
-    +status: str
-  }
-}
+- File/class: `src/inference/predictor.py:24-161`.
+- Responsibility: load/verify model dan metadata, feature ordering/validation, single/batch prediction.
+- Constructor: `__init__(model_path: Path, metadata_path: Path, *, extra_feature_policy: Literal["reject", "ignore"] | None=None, verify_model_hash: bool=True) -> None` (27-74).
+- Public methods: `predict_one(features: Mapping[str, Any]) -> dict[str, Any]` (139-155); `predict_batch(rows: Sequence[Mapping[str, Any]]) -> list[dict[str, Any]]` (157-161).
+- Private methods: static `_normalize_demo_metadata(metadata: dict[str, Any]) -> dict[str, Any]` (76-91); static `_load_metadata(path: Path) -> dict[str, Any]` (93-103); `_prepare_row(features: Mapping[str, Any]) -> tuple[pd.DataFrame, list[str]]` (105-137).
+- Dependencies: `joblib`, sklearn `Pipeline`, pandas/numpy, metadata/model files, hashing and column normalization.
 
-User "0..1" -- "0..*" Dataset : created_by
-User "0..1" -- "0..*" MonitoringSession : created_by
-User "0..1" -- "0..*" Alert : acknowledged_by
-Dataset "0..1" -- "0..*" Experiment
-Experiment "1" -- "0..*" EvaluationResult
-Experiment "0..1" -- "0..*" ModelRecord
-Experiment "0..1" -- "0..*" Prediction
-ModelRecord "1" -- "0..*" MonitoringSession
-ModelRecord "1" -- "0..*" Prediction
-ModelRecord "1" -- "0..*" RuntimeValidationRun : physical FK
-MonitoringSession "1" -- "0..*" RuntimeCaptureArtifact
-MonitoringSession "1" -- "0..*" RuntimeValidationRun
-MonitoringSession "0..1" -- "0..*" Prediction : physical FK
-RuntimeCaptureArtifact "0..1" -- "0..*" Prediction
-TrafficFlow "1" -- "0..1" Prediction
-Prediction "1" -- "0..1" Alert
+### 4.7 `RuntimeValidationService` — VERIFIED
 
-note right of EvidenceSource
-  owner_type/owner_key are logical keys.
-  No physical FK or ORM association.
-end note
+- File/class: `src/api/runtime_validation.py:30-201`.
+- Responsibility: membuat validation run dan menurunkan evidence/result dari sesi, artifacts, predictions, flows, dan alerts.
+- Constructor: `__init__(artifact_root: Path, expected_feature_names: list[str])` (31-33).
+- Public methods: `create(db: Session, session_id: int, scenario: str) -> RuntimeValidationRun` (35-55); `complete(db: Session, session_id: int, validation_id: int) -> RuntimeValidationRun` (57-75).
+- Private method: `_derive(db: Session, row: RuntimeValidationRun) -> None` (77-201).
+- Dependencies: `MonitoringSession`, `RuntimeValidationRun`, `RuntimeCaptureArtifact`, `Prediction`, `Alert`, dan melalui prediction mengakses `TrafficFlow` (`src/api/runtime_validation.py:78-91,123-159`). Model identity disalin dari `session.model`, bukan melalui relationship `RuntimeValidationRun.model` (`src/api/runtime_validation.py:41-50`).
 
-package "Services and Controllers" {
-  class RFNIDSClient {
-    +login(email: str, password: str)
-    +logout()
-    +start_monitoring(target_ip: str, interface_name: str, selected_model_id: str?)
-    +stop_monitoring()
-    +predictions(...)
-    +alerts(...)
-    +acknowledge_alert(alert_id: int)
-  }
-  class MonitoringService {
-    +active(db: Session): MonitoringSession?
-    +reconcile_stale_sessions(db: Session): int
-    +start(db: Session, target_ip: str, interface_name: str, user: User, model_id: int?): MonitoringSession
-    +stop(db: Session): MonitoringSession
-    +shutdown(db: Session): None
-  }
-  class RuntimeCollectorController {
-    +start(session_id: int, target_ip: str, interface_name: str): str
-    +stop(runtime_handle: str?): bool
-    +status(runtime_handle: str?): str
-    +shutdown()
-  }
-  class RuntimeWorker {
-    +start()
-    +stop(timeout: float)
-    -_run()
-  }
-  class RuntimePipeline {
-    +preflight(interface: str): None
-    +capture(interface: str, target_ip: str, output: Path, stop: Event)
-    +extract(pcap: Path, output_dir: Path): Path
-    +request_stop(): None
-  }
-  class InferenceEngine {
-    +predict_one(features: Mapping): dict
-    +predict_batch(rows: Sequence): list[dict]
-  }
-  class RuntimeValidationService {
-    +create(db: Session, session_id: int, scenario: str): RuntimeValidationRun
-    +complete(db: Session, session_id: int, validation_id: int): RuntimeValidationRun
-  }
-}
+## 5. Controller / Client / Helper Arsitektural Tambahan
 
-RFNIDSClient ..> MonitoringService : HTTP/FastAPI
-MonitoringService --> RuntimeCollectorController : delegates
-MonitoringService ..> MonitoringSession : creates/updates
-RuntimeCollectorController *-- "0..*" RuntimeWorker
-RuntimeWorker *-- RuntimePipeline
-RuntimeWorker --> InferenceEngine
-RuntimeWorker ..> TrafficFlow : persist_predictions()
-RuntimeWorker ..> Prediction : persist_predictions()
-RuntimeWorker ..> Alert : conditional creation
-RuntimeValidationService ..> RuntimeValidationRun : creates/updates
-RuntimeValidationService ..> RuntimeCaptureArtifact : derives evidence
-RuntimeValidationService ..> Prediction : derives evidence
+Class berikut relevan karena berada langsung pada jalur runtime, tetapi sebaiknya menjadi pendukung, bukan fokus utama diagram BAB III.
 
-note bottom of RuntimePipeline
-  Orchestrates external tcpdump and CICFlowMeter V3.
-  They are not persistence/domain classes.
-end note
-@enduml
+### `CollectorController` — VERIFIED test/lifecycle adapter
+
+- File: `src/api/monitoring.py:30-42`.
+- Responsibility: deterministic lifecycle test double; docstring eksplisit menyebut production menggunakan `RuntimeCollectorController` (30-31).
+- Public methods: `start(*, session_id: int, target_ip: str, interface_name: str, inference=None) -> str` (35-36), `stop(runtime_handle: str | None) -> None` (38-39), `status(runtime_handle: str | None) -> str` (41-42).
+- Recommendation: jangan tampilkan dalam production diagram, atau beri stereotype `<<test double>>` bila kontrak collector perlu dijelaskan.
+
+### `RuntimeModelRegistry` — VERIFIED
+
+- File: `src/api/runtime_models.py:68-145`.
+- Responsibility: allowlist, verification, loading, dan resolution model runtime.
+- Constructor: `__init__(engine_factory=InferenceEngine)` (71-80).
+- Public methods: `resolve(model_id: str)` (117-136), `available()` (138-145), keduanya tanpa declared return type.
+- Private method: static `_verify_and_load(approved, engine_factory)` (82-115).
+- Dependency: creates `InferenceEngine` via factory (71-78,112-115); uses value object `ApprovedRuntimeModel` (`src/api/runtime_models.py:19-27`).
+
+### `RuntimeExtractorRegistry` — VERIFIED
+
+- File: `src/api/runtime_extractors.py:71-122`.
+- Responsibility: verify pinned extractor identity dan repository evidence.
+- Public method: `verify(image_digest: str, *, source_commit: str, adapter_identity: str=..., adapter_version: str=..., crosswalk_sha256: str=...) -> ApprovedRuntimeExtractor` (77-98).
+- Private method: static `_verify_repository_evidence(approved: ApprovedRuntimeExtractor) -> None` (101-122).
+- Dependency: digunakan/di-create oleh `RuntimePipeline` (`src/api/runtime_monitoring.py:96-107,167-170`).
+
+### Adapter/extractor helpers — VERIFIED, opsional
+
+- `CICFlowMeterV3ModelAdapter` adalah adapter yang benar-benar dibuat worker (`src/api/runtime_monitoring.py:376`) dan method `adapt(...)` dipanggil pada baris 454. Definisi: `src/ingestion/cicflowmeter_v3_adapter.py:135`.
+- `FeatureAdapter` (`src/ingestion/feature_adapter.py:52-199`) dan `FlowCsvExtractor` (`src/ingestion/flow_extractor.py:12-30`) penting untuk pipeline ingestion umum, tetapi worker runtime V3 memakai `CICFlowMeterV3ModelAdapter` secara langsung. Jangan campurkan ke diagram runtime inti kecuali alur ingestion offline juga dibahas.
+- `persist_predictions` adalah **MODULE-LEVEL FUNCTION**, bukan method service (`src/api/service.py:76-131`). Fungsi ini membuat `TrafficFlow`, `Prediction`, dan opsional `Alert` (`src/api/service.py:85-113`).
+
+## 6. Verifikasi Dependency Service / Runtime
+
+| Source | Target | UML | Evidence |
+|---|---|---|---|
+| RFNIDSClient | FastAPI endpoints | DEPENDENCY (HTTP) | Semua public operation mendelegasikan ke `_request`/`_download` (`dashboard/api_client.py:43-97,99-226`) |
+| MonitoringService | RuntimeCollectorController | ASSOCIATION | Production object diinjeksi pada construction (`src/api/main.py:290-300`), disimpan sebagai `self.collector` (`src/api/monitoring.py:55-56`) |
+| MonitoringService | MonitoringSession / ModelRecord / User | DEPENDENCY | Query/create/update ORM (`src/api/monitoring.py:59-173`) |
+| RuntimeCollectorController | RuntimeWorker | COMPOSITION | Default factory, creates worker, stores in `_workers`, owns shutdown (`src/api/runtime_monitoring.py:557-567,586-627`) |
+| RuntimeWorker | RuntimePipeline | COMPOSITION | Dibuat dan disimpan sebagai `self.pipeline` (`src/api/runtime_monitoring.py:320-329`) |
+| RuntimeWorker | InferenceEngine | ASSOCIATION/DEPENDENCY | Inference object diinjeksi (312-317) lalu `predict_batch` dipanggil (489); annotation konkret tidak dideklarasikan, sehingga paling aman label diagram: **DEPENDENCY** |
+| RuntimeWorker | CICFlowMeterV3ModelAdapter | DEPENDENCY | Dibuat lokal dalam `_run` dan dipakai adaptasi (`src/api/runtime_monitoring.py:376,454`) |
+| RuntimeWorker | persist_predictions | DEPENDENCY | Memanggil module-level function (`src/api/runtime_monitoring.py:506-513`; `src/api/service.py:76-131`) |
+| RuntimePipeline | RuntimeExtractorRegistry | COMPOSITION | Registry injected atau dibuat default dan disimpan (`src/api/runtime_monitoring.py:96-107`) |
+| RuntimeModelRegistry | InferenceEngine | COMPOSITION/DEPENDENCY | Factory default dan engine disimpan di `_models` (`src/api/runtime_models.py:71-78,112-115`) |
+| RuntimeValidationService | MonitoringSession / RuntimeValidationRun / RuntimeCaptureArtifact / Prediction / Alert | DEPENDENCY | ORM reads/writes di `create`, `complete`, `_derive` (`src/api/runtime_validation.py:35-201`) |
+| RuntimePipeline | InferenceEngine | — | **NOT PRESENT**; inference terjadi di worker, bukan pipeline |
+| RuntimeCollectorController | RuntimePipeline | indirect only | **NOT VERIFIED sebagai direct dependency**; pipeline dibuat oleh worker |
+
+Tidak ditemukan inheritance antarkelas service/runtime tersebut. Semua inheritance yang relevan hanya exception class atau framework/data-model inheritance, bukan rantai service.
+
+## 7. Rekomendasi Struktur Diagram BAB III
+
+Gunakan dua diagram. Satu diagram gabungan akan terlalu padat dan berisiko mencampurkan struktur data dengan orchestration runtime.
+
+### Diagram A — Persistence Layer
+
+- Tampilkan semua 12 entity aktual dan gunakan nama **ModelRecord**; bila istilah tesis harus “Model”, gunakan label `ModelRecord «table: models»`, bukan mengganti nama class.
+- Tampilkan PK, seluruh FK, dan atribut domain/audit utama. Untuk reproduksi 1:1 penuh, gunakan spesifikasi pada bagian 8; untuk gambar utama skripsi, kolom timestamp/provenance berulang dapat dipadatkan dengan catatan bahwa versi lengkap ada di tabel spesifikasi.
+- Jangan tampilkan method compartment karena semua ORM class mempunyai **NO EXPLICIT METHODS**.
+- Garis solid ORM untuk relationship bidirectional. Untuk dua hubungan FK-only (`MonitoringSession–Prediction` dan `ModelRecord–RuntimeValidationRun`), gambar association bertanda `{FK-only; no ORM relationship}` agar implementasi fisik tetap terlihat tanpa klaim ORM palsu.
+- Jangan gambar association `MonitoringSession–TrafficFlow` atau `EvidenceSource–Experiment`. Untuk `EvidenceSource`, beri note `{logical owner_type + owner_key; no FK}`.
+
+### Diagram B — Service / Runtime Layer
+
+- Fokus: `RFNIDSClient`, `MonitoringService`, `RuntimeCollectorController`, `RuntimeWorker`, `RuntimePipeline`, `InferenceEngine`, `RuntimeValidationService`.
+- Tambahkan `RuntimeModelRegistry`, `RuntimeExtractorRegistry`, dan `CICFlowMeterV3ModelAdapter` hanya bila ruang cukup; ketiganya menjelaskan verification/adaptation boundary yang nyata.
+- Hanya tampilkan public methods. Sembunyikan private methods dan seluruh module-level endpoint/helper agar diagram tetap terbaca.
+- Tampilkan `persist_predictions(...)` sebagai `<<module function>>` bila persistence orchestration perlu divisualkan; jangan letakkan dalam compartment class.
+
+## 8. Final Thesis-Ready Specification
+
+### CLASS DIAGRAM A — PERSISTENCE LAYER
+
+Semua atribut di bawah adalah **DATABASE COLUMN**. Marker: `{PK}`, `{FK -> table.column}`, `{UQ}`. Tidak ada method compartment pada seluruh class.
+
+```text
+User «users»
+--------------------
++ id : int {PK}
++ name : str
++ email : str {UQ}
++ password_hash : str
++ role : str
++ is_active : bool
++ created_at : datetime
++ updated_at : datetime
+
+Dataset «datasets»
+--------------------
++ id : int {PK}
++ name : str
++ source_path : str?
++ source_sha256 : str?
++ total_rows : int?
++ total_features : int?
++ label_column : str?
++ class_distribution : dict?
++ created_by_user_id : int? {FK -> users.id}
++ created_at : datetime
++ updated_at : datetime
+
+Experiment «experiments»
+--------------------
++ id : int {PK}
++ experiment_code : str {UQ}
++ experiment_name : str
++ experiment_type : str
++ dataset_id : int? {FK -> datasets.id}
++ description : str?
++ status : str
++ source_path : str?
++ source_sha256 : str?
++ schema_version : str?
++ imported_at : datetime?
++ created_at : datetime
++ updated_at : datetime
+
+EvaluationResult «evaluation_results»
+--------------------
++ id : int {PK}
++ experiment_id : int {FK -> experiments.id}
++ class_name : str?
++ metric_key : str?
++ accuracy : float?
++ precision_score : float?
++ recall_score : float?
++ f1_score : float?
++ macro_precision : float?
++ macro_recall : float?
++ macro_f1 : float?
++ false_positive_rate : float?
++ true_positive : int?
++ true_negative : int?
++ false_positive : int?
++ false_negative : int?
++ confusion_matrix : dict|list?
++ notes : str?
++ source_path : str?
++ source_sha256 : str?
++ created_at : datetime
+
+EvidenceSource «evidence_sources»
+--------------------
++ id : int {PK}
++ owner_type : str
++ owner_key : str
++ evidence_role : str
++ source_path : str
++ source_sha256 : str
++ schema_version : str?
++ imported_at : datetime
+
+ModelRecord «models»
+--------------------
++ id : int {PK}
++ model_name : str
++ model_version : str {UQ}
++ algorithm : str
++ accuracy : float?
++ macro_f1 : float?
++ ddos_recall : float?
++ portscan_recall : float?
++ feature_count : int?
++ is_active : bool
++ experiment_id : int? {FK -> experiments.id}
++ artifact_path : str?
++ artifact_sha256 : str?
++ parameters : dict?
++ created_at : datetime
+
+MonitoringSession «monitoring_sessions»
+--------------------
++ id : int {PK}
++ target_ip : str
++ interface_name : str
++ model_id : int {FK -> models.id}
++ selection_mode : str
++ selected_model_version : str?
++ selected_model_sha256 : str?
++ status : str
++ started_at : datetime?
++ stopped_at : datetime?
++ created_by_user_id : int? {FK -> users.id}
++ created_at : datetime
++ updated_at : datetime
++ last_error : str?
++ runtime_handle : str?
++ extractor_name : str?
++ extractor_version : str?
++ extractor_identity : str?
++ artifact_key : str? {UQ}
++ artifact_root : str?
++ processing_state : str?
++ latest_processing_at : datetime?
++ flow_count : int
++ prediction_count : int
++ alert_count : int
+
+RuntimeCaptureArtifact «runtime_capture_artifacts»
+--------------------
++ id : int {PK}
++ monitoring_session_id : int {FK -> monitoring_sessions.id}
++ artifact_key : str {UQ}
++ window_number : int
++ state : str
++ pcap_relative_path : str?
++ pcap_sha256 : str?
++ pcap_size : int?
++ csv_relative_path : str?
++ csv_sha256 : str?
++ csv_size : int?
++ extractor_identity : str?
++ extracted_row_count : int
++ adapted_row_count : int
++ error_stage : str?
++ error_message : str?
++ capture_started_at : datetime?
++ capture_finished_at : datetime?
++ extraction_finished_at : datetime?
++ committed_at : datetime?
++ created_at : datetime
+
+RuntimeValidationRun «runtime_validation_runs»
+--------------------
++ id : int {PK}
++ monitoring_session_id : int {FK -> monitoring_sessions.id}
++ scenario : str
++ status : str
++ target_ip : str
++ interface_name : str
++ started_at : datetime
++ finished_at : datetime?
++ pcap_files_processed : int
++ pcap_bytes_processed : int
++ flows_extracted : int
++ flows_adapter_valid : int
++ predictions_committed : int
++ alerts_committed : int
++ normal_predictions : int
++ portscan_predictions : int
++ ddos_predictions : int
++ pipeline_result : str
++ detection_result : str
++ extractor_identity : str?
++ adapter_identity : str?
++ model_id : int {FK -> models.id}
++ model_version : str
++ evidence_json : dict
++ notes : str?
++ created_at : datetime
+
+TrafficFlow «traffic_flows»
+--------------------
++ id : int {PK}
++ capture_session_id : str?
++ capture_interface : str?
++ pcap_segment : str?
++ capture_time : datetime?
++ source_ip : str?
++ source_port : int?
++ destination_ip : str?
++ destination_port : int?
++ protocol : str?
++ raw_features : dict
++ created_at : datetime
+
+Prediction «predictions»
+--------------------
++ id : int {PK}
++ traffic_flow_id : int {FK -> traffic_flows.id, UQ}
++ model_id : int {FK -> models.id}
++ experiment_id : int? {FK -> experiments.id}
++ monitoring_session_id : int? {FK -> monitoring_sessions.id}
++ runtime_artifact_id : int? {FK -> runtime_capture_artifacts.id}
++ source_type : str?
++ external_key : str?
++ predicted_label : str
++ confidence_score : float
++ class_probabilities : dict
++ prediction_time : datetime
++ created_at : datetime
+
+Alert «alerts»
+--------------------
++ id : int {PK}
++ prediction_id : int {FK -> predictions.id, UQ}
++ severity : str
++ title : str
++ description : str
++ status : str
++ acknowledged_at : datetime?
++ acknowledged_by_user_id : int? {FK -> users.id}
++ created_at : datetime
 ```
 
-PlantUML memakai association labels berdasarkan FK nullability: multiplicity di dekat parent `0..1` berarti child boleh tidak mempunyai parent tersebut; multiplicity child tetap `0..*`.
+Associations yang harus digambar:
 
-## 9. Final Verification
+```text
+User "0..1" -- "0..*" Dataset : created_by / datasets
+User "0..1" -- "0..*" MonitoringSession : created_by / monitoring_sessions
+User "0..1" -- "0..*" Alert : acknowledged_by / acknowledged_alerts
+Dataset "0..1" -- "0..*" Experiment : dataset / experiments
+Experiment "1" *-- "0..*" EvaluationResult : evaluation_results
+Experiment "0..1" -- "0..*" ModelRecord : experiment / models
+Experiment "0..1" -- "0..*" Prediction : experiment / predictions
+ModelRecord "1" -- "0..*" MonitoringSession : model / monitoring_sessions
+ModelRecord "1" -- "0..*" Prediction : model / predictions
+ModelRecord "1" .. "0..*" RuntimeValidationRun : {FK-only}
+MonitoringSession "1" *-- "0..*" RuntimeCaptureArtifact : runtime_artifacts
+MonitoringSession "1" *-- "0..*" RuntimeValidationRun : validation_runs
+MonitoringSession "0..1" .. "0..*" Prediction : {FK-only}
+RuntimeCaptureArtifact "0..1" -- "0..*" Prediction : runtime_artifact / predictions
+TrafficFlow "1" *-- "0..1" Prediction : prediction / traffic_flow
+Prediction "1" *-- "0..1" Alert : alert / prediction
 
-- **Total ORM classes:** 12.
-- **ORM classes found:** `User`, `Dataset`, `Experiment`, `EvaluationResult`, `EvidenceSource`, `ModelRecord`, `MonitoringSession`, `RuntimeCaptureArtifact`, `RuntimeValidationRun`, `TrafficFlow`, `Prediction`, `Alert`.
-- **Requested service/controller classes found:** 5/5 — `MonitoringService`, `RuntimeCollectorController`, `RuntimeValidationService`, `InferenceEngine`, `RFNIDSClient`.
-- **Additional relevant pipeline classes found:** 3 — `RuntimeWorker`, `RuntimePipeline`, `FeatureAdapter`. Total relevant service/controller/pipeline classes audited: 8.
-- **Class not found:** ORM class `Model`; implementation menggunakan `ModelRecord`. Tidak ada `AuthService`, class `tcpdump`, atau class `CICFlowMeter`.
-- **Verified physical relationships:** 16 FK relationships. Empat belas mempunyai ORM navigation; dua hanya physical FK: `ModelRecord → RuntimeValidationRun` dan `MonitoringSession → Prediction`.
-- **Logical-only relationship:** `EvidenceSource.owner_type/owner_key` ke owner evidence; bukan FK dan tidak digambar sebagai association fisik.
-- **Methods on ORM entities:** 0 business/CRUD methods pada seluruh 12 entity.
-- **Authentication form:** route functions + module functions + methods pada `RFNIDSClient`; bukan method `User`.
-- **ORM/schema mismatches affecting diagram:** live PostgreSQL yang diaudit sebelumnya berada pada revision `20260905_08`, sehingga tiga attributes ORM/head (`MonitoringSession.selection_mode`, `selected_model_version`, `selected_model_sha256`) belum ada di live DB. `RuntimeValidationRun.model_id` dan `Prediction.monitoring_session_id` adalah FK tanpa ORM relationship navigation. Perbedaan JSON/JSONB dan ON DELETE live tidak mengubah class association count, tetapi harus tetap dicatat pada spesifikasi database.
-- **NOT VERIFIED:** return types untuk method yang tidak diberi annotation dan external process behavior saat runtime; laporan tidak mengeksekusi capture, CICFlowMeter, inference, atau persistence.
-- **Confidence:** **HIGH** untuk class, attributes, method signatures, ORM relationships, physical FK definitions, authentication structure, dan static monitoring flow; runtime execution tidak diuji karena audit wajib read-only.
+EvidenceSource .. note : logical owner_type/owner_key only; no FK
+MonitoringSession .. TrafficFlow : DO NOT DRAW — NOT PRESENT
+```
+
+### CLASS DIAGRAM B — SERVICE / RUNTIME LAYER
+
+Return type `unspecified` berarti source tidak memberi return annotation; jangan menebaknya.
+
+```text
+RFNIDSClient
+--------------------
+- base_url : str
+- timeout : float
+- session
+- access_token : str?
+--------------------
++ health() : unspecified
++ login(email: str, password: str) : unspecified
++ current_user() : unspecified
++ logout() : unspecified
++ model_info() : unspecified
++ active_model() : unspecified
++ models() : unspecified
++ datasets() : unspecified
++ experiments() : unspecified
++ experiment_evaluation(experiment_id: int) : unspecified
++ evidence_sources(owner_type=None, owner_key=None) : unspecified
++ summary() : unspecified
++ timeline(minutes: int=60) : unspecified
++ predictions(limit=20, offset=0, **filters) : unspecified
++ prediction(prediction_id: int) : unspecified
++ traffic_flows(limit=20, offset=0, **filters) : unspecified
++ monitoring_summary() : unspecified
++ monitoring_status() : unspecified
++ monitoring_interfaces() : unspecified
++ monitoring_models() : unspecified
++ monitoring_sessions(limit=20, offset=0) : unspecified
++ monitoring_session_predictions(session_id: int, limit=5) : unspecified
++ start_monitoring(target_ip: str, interface_name: str, selected_model_id: str?=None) : unspecified
++ stop_monitoring() : unspecified
++ create_runtime_validation(session_id: int, scenario: str) : unspecified
++ runtime_validations(session_id: int) : unspecified
++ complete_runtime_validation(session_id: int, validation_id: int) : unspecified
++ alerts(limit=20, offset=0, **filters) : unspecified
++ alert(alert_id: int) : unspecified
++ acknowledge_alert(alert_id: int) : unspecified
++ export_dataset() : unspecified
++ export_experiment(experiment_id: int, format: str="json") : unspecified
++ export_confusion_matrix(experiment_id: int) : unspecified
++ export_predictions(format: str="csv", **filters) : unspecified
++ export_alerts(format: str="csv", **filters) : unspecified
+
+MonitoringService
+--------------------
+- collector
+--------------------
++ active(db: Session) : MonitoringSession?
++ reconcile_stale_sessions(db: Session) : int
++ start(db: Session, target_ip: str, interface_name: str, user: User, model_id: int?=None, inference=None, selection_mode: str="DEFAULT") : unspecified
++ shutdown(db: Session) : None
++ stop(db: Session) : unspecified
+
+RuntimeCollectorController
+--------------------
+- session_factory
+- inference
+- settings
+- worker_factory
+--------------------
++ start(session_id: int, target_ip: str, interface_name: str, inference=None) : str
++ stop(runtime_handle: str?) : bool
++ status(runtime_handle: str?) : str
++ shutdown() : unspecified
+
+RuntimeWorker
+--------------------
+- session_id
+- session_factory
+- inference
+- settings
+- pipeline : RuntimePipeline
+--------------------
++ start() : unspecified
++ stop(timeout: float) : unspecified
+
+RuntimePipeline
+--------------------
+- root : Path
+- image : str
+- window_seconds : float
+- extractor_registry : RuntimeExtractorRegistry
+--------------------
++ preflight(interface: str) : None
++ request_stop() : None
++ force_stop() : None
++ capture(interface: str, target_ip: str, output: Path, stop: Event) : unspecified
++ host_artifact_path(path: Path) : Path
++ extract(pcap: Path, output_dir: Path) : Path
+
+InferenceEngine
+--------------------
+- metadata : dict
+- feature_names : list[str]
+- model
+--------------------
++ predict_one(features: Mapping[str, Any]) : dict[str, Any]
++ predict_batch(rows: Sequence[Mapping[str, Any]]) : list[dict[str, Any]]
+
+RuntimeValidationService
+--------------------
+- artifact_root : Path
+- expected_feature_names : tuple
+--------------------
++ create(db: Session, session_id: int, scenario: str) : RuntimeValidationRun
++ complete(db: Session, session_id: int, validation_id: int) : RuntimeValidationRun
+
+RuntimeModelRegistry «optional supporting class»
+--------------------
++ resolve(model_id: str) : unspecified
++ available() : unspecified
+
+RuntimeExtractorRegistry «optional supporting class»
+--------------------
++ verify(image_digest: str, source_commit: str, adapter_identity: str=..., adapter_version: str=..., crosswalk_sha256: str=...) : ApprovedRuntimeExtractor
+```
+
+Dependencies yang harus digambar:
+
+```text
+RFNIDSClient ..> FastAPI : HTTP dependency
+MonitoringService --> RuntimeCollectorController : association (production injection)
+MonitoringService ..> MonitoringSession
+MonitoringService ..> ModelRecord
+MonitoringService ..> User
+RuntimeCollectorController *-- RuntimeWorker : composition
+RuntimeWorker *-- RuntimePipeline : composition
+RuntimeWorker ..> InferenceEngine : injected dependency
+RuntimeWorker ..> CICFlowMeterV3ModelAdapter : creates/uses
+RuntimeWorker ..> persist_predictions : <<module function>>
+RuntimePipeline *-- RuntimeExtractorRegistry : owns/defaults
+RuntimeModelRegistry *-- InferenceEngine : verifies/creates/stores
+RuntimeValidationService ..> MonitoringSession
+RuntimeValidationService ..> RuntimeValidationRun
+RuntimeValidationService ..> RuntimeCaptureArtifact
+RuntimeValidationService ..> Prediction
+RuntimeValidationService ..> Alert
+```
+
+## 9. Status Nama yang Diminta
+
+| Nama kandidat | Status | Nama/path aktual |
+|---|---|---|
+| RFNIDSClient | VERIFIED | `dashboard/api_client.py:25-226` |
+| MonitoringService | VERIFIED | `src/api/monitoring.py:54-213` |
+| RuntimeCollectorController | VERIFIED | `src/api/runtime_monitoring.py:554-645` |
+| RuntimeWorker | VERIFIED | `src/api/runtime_monitoring.py:311-551` |
+| RuntimePipeline | VERIFIED | `src/api/runtime_monitoring.py:87-308` |
+| InferenceEngine | VERIFIED | `src/inference/predictor.py:24-161` |
+| RuntimeValidationService | VERIFIED | `src/api/runtime_validation.py:30-201` |
+| Model (ORM Python class) | NOT PRESENT | Nama aktual `ModelRecord`, `src/api/models.py:155-181`; table tetap `models` |
