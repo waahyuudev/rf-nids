@@ -81,7 +81,7 @@ def _render_detail(detail: dict) -> None:
         st.info("No stored class probability vector is available for this alert's prediction.")
 
 
-def render(client) -> None:
+def _render_list(client) -> None:
     section_heading(
         "Alerts",
         "Review deterministic runtime attack alerts and acknowledge completed investigations.",
@@ -136,7 +136,17 @@ def render(client) -> None:
         [row["id"] for row in rows],
         format_func=lambda value: f"Alert #{value}",
     )
-    detail = client.alert(selected)
+    if st.button("View Detail", type="primary"):
+        st.session_state["alert_detail_id"] = selected
+        st.rerun()
+
+
+def _render_detail_view(client, alert_id) -> None:
+    if st.button("← Back to Alerts"):
+        st.session_state.pop("alert_detail_id", None)
+        st.rerun()
+
+    detail = client.alert(alert_id)
     _render_detail(detail)
 
     if detail.get("status") == "ACTIVE":
@@ -145,8 +155,16 @@ def render(client) -> None:
             "Acknowledge Alert",
             type="primary",
         ):
-            client.acknowledge_alert(selected)
-            st.success(f"Alert {selected} acknowledged.")
+            client.acknowledge_alert(alert_id)
+            st.success(f"Alert {alert_id} acknowledged.")
             st.rerun()
     else:
         st.success("This alert is acknowledged.")
+
+
+def render(client) -> None:
+    alert_id = st.session_state.get("alert_detail_id")
+    if alert_id is not None:
+        _render_detail_view(client, alert_id)
+        return
+    _render_list(client)

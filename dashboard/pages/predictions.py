@@ -88,7 +88,7 @@ def _render_detail(detail: dict) -> None:
         st.info("No stored raw feature representation is available for this prediction.")
 
 
-def render(client) -> None:
+def _render_list(client) -> None:
     section_heading(
         "Predictions",
         "Classifier results with model, confidence, alert state, and detailed provenance.",
@@ -124,4 +124,21 @@ def render(client) -> None:
         [row["id"] for row in rows],
         format_func=lambda value: f"Prediction #{value}",
     )
-    _render_detail(client.prediction(selected))
+    if st.button("View Detail", type="primary"):
+        st.session_state["prediction_detail_id"] = selected
+        st.rerun()
+
+
+def _render_detail_view(client, prediction_id) -> None:
+    if st.button("← Back to Predictions"):
+        st.session_state.pop("prediction_detail_id", None)
+        st.rerun()
+    _render_detail(client.prediction(prediction_id))
+
+
+def render(client) -> None:
+    prediction_id = st.session_state.get("prediction_detail_id")
+    if prediction_id is not None:
+        _render_detail_view(client, prediction_id)
+        return
+    _render_list(client)
