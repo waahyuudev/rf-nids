@@ -10,11 +10,18 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from dashboard.api_client import APIError, RFNIDSClient
 from dashboard.auth import (
     NOTICE_KEY,
+    TOKEN_KEY,
     clear_auth,
     handle_auth_failure,
     require_login,
     store_login,
     token_from,
+)
+from dashboard.browser_auth import (
+    clear_auth_cookie,
+    cookie_manager,
+    read_auth_cookie,
+    store_auth_cookie,
 )
 from dashboard.config import DashboardConfig
 from dashboard.demo import DEMO_BANNER
@@ -24,6 +31,28 @@ from dashboard.pages import alerts, dataset, evaluation, model_info, monitoring,
 
 st.set_page_config(page_title="RF-NIDS Monitoring Dashboard", page_icon="🛡️", layout="wide")
 apply_styles()
+
+LOGOUT_PENDING_KEY = "auth_logout_pending"
+
+cookies = cookie_manager()
+
+logout_pending = st.session_state.get(LOGOUT_PENDING_KEY, False)
+
+if logout_pending:
+    # Never restore a persisted token while logout is being finalized.
+    clear_auth(st.session_state)
+
+    persisted_token = read_auth_cookie(cookies)
+    if persisted_token:
+        clear_auth_cookie(cookies)
+    else:
+        st.session_state.pop(LOGOUT_PENDING_KEY, None)
+
+elif token_from(st.session_state) is None:
+    persisted_token = read_auth_cookie(cookies)
+    if persisted_token:
+        st.session_state[TOKEN_KEY] = persisted_token
+
 config = DashboardConfig.from_env()
 client = RFNIDSClient(
     config.api_base_url,
@@ -55,6 +84,11 @@ def render_login() -> None:
         try:
             result = client.login(email, password)
             store_login(st.session_state, result)
+            store_auth_cookie(
+                cookies,
+                result["access_token"],
+                result["expires_at"],
+            )
         except APIError as exc:
             if exc.status_code in (401, 403):
                 clear_auth(st.session_state)
@@ -82,12 +116,16 @@ except APIError:
     st.error("The current session could not be verified because the API is unavailable.")
     st.stop()
 if user is None:
+    st.session_state[LOGOUT_PENDING_KEY] = True
+    clear_auth_cookie(cookies)
     st.rerun()
 
 try:
     model = client.model_info()
 except APIError as exc:
     if handle_auth_failure(st.session_state, exc):
+        st.session_state[LOGOUT_PENDING_KEY] = True
+        clear_auth_cookie(cookies)
         st.rerun()
     model = {}
 
@@ -99,7 +137,10 @@ if logout:
         client.logout()
     except APIError:
         pass
+
+    st.session_state[LOGOUT_PENDING_KEY] = True
     clear_auth(st.session_state)
+    clear_auth_cookie(cookies)
     st.rerun()
 render_header(online)
 if config.demo_model_version:
@@ -114,6 +155,8 @@ def page_content():
          "Alerts": alerts}[page].render(client)
     except APIError as exc:
         if handle_auth_failure(st.session_state, exc):
+            st.session_state[LOGOUT_PENDING_KEY] = True
+            clear_auth_cookie(cookies)
             st.rerun()
         st.error(str(exc))
 

@@ -21,6 +21,7 @@ dependencies = [
   "psycopg2-binary>=2.9,<3",
   "alembic>=1.13,<2",
   "streamlit>=1.37,<2",
+  "extra-streamlit-components>=0.1.81,<0.2",
   "requests>=2.31,<3",
   "PyYAML>=6.0,<7",
 ]

@@ -9,11 +9,18 @@ PAGE_SIZE = 20
 ACTIVE = {"STARTING", "RUNNING", "STOPPING"}
 
 
-def _elapsed(started_at: str | None) -> str:
+def _elapsed(started_at: str | None, stopped_at: str | None = None) -> str:
     if not started_at:
         return "—"
+
     started = datetime.fromisoformat(started_at.replace("Z", "+00:00"))
-    seconds = max(0, int((datetime.now(timezone.utc) - started).total_seconds()))
+    ended = (
+        datetime.fromisoformat(stopped_at.replace("Z", "+00:00"))
+        if stopped_at
+        else datetime.now(timezone.utc)
+    )
+
+    seconds = max(0, int((ended - started).total_seconds()))
     hours, remainder = divmod(seconds, 3600)
     minutes, seconds = divmod(remainder, 60)
     return f"{hours:02d}:{minutes:02d}:{seconds:02d}"
@@ -129,7 +136,7 @@ def render(client) -> None:
             ("Session ID", current["id"]), ("Target", current["target_ip"]),
             ("Interface", current["interface_name"]),
             ("Model", session_model_display(current["model_version"], dashboard_config.demo_model_version)),
-            ("Elapsed", _elapsed(current["started_at"])), ("Flows", current["flow_count"]),
+            ("Elapsed", _elapsed(current["started_at"], current.get("stopped_at"))), ("Flows", current["flow_count"]),
             ("Predictions", current["prediction_count"]), ("Alerts", current["alert_count"]),
         ]
         for index, (label, value) in enumerate(values):
@@ -171,9 +178,20 @@ def render(client) -> None:
             "Stop / Restart": "STOP_RESTART",
         }
         scenario_label = st.selectbox("Scenario", list(scenario_labels))
-        if st.button("START VALIDATION"):
-            client.create_runtime_validation(current["id"], scenario_labels[scenario_label])
-            st.rerun()
+
+        if running:
+            if st.button("START VALIDATION"):
+                client.create_runtime_validation(
+                    current["id"],
+                    scenario_labels[scenario_label],
+                )
+                st.rerun()
+        else:
+            st.info(
+                "Runtime validation can only be started while a monitoring "
+                "session is running."
+            )
+
         validations = client.runtime_validations(current["id"])
         if validations:
             validation = validations[0]
